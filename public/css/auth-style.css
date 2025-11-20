@@ -1,0 +1,61 @@
+/* Custom styles for the login page */
+body {
+    /* Background color similar to the admin panel's main content area */
+    background-color: #f0f2f5; 
+    /* Use flexbox to center the login card */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    /* PERBAIKAN: Tambahkan padding untuk memberikan ruang di layar kecil */
+    /* This prevents the card from touching the screen edges on mobile devices. */
+    padding: 1rem;
+}
+
+/* Styling for the login card */
+.auth-card{
+    width: 100%;
+    max-width: 420px; /* Max width for the card */
+    border: none; /* Remove default border */
+    border-radius: 0.75rem; /* Softer corners */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1); /* A more pronounced shadow */
+}
+
+/* Header section of the card */
+.auth-card-header {
+    text-align: center;
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+}
+
+.auth-card-header .fa-store-alt {
+    color: #0d6efd; /* Primary blue color */
+}
+
+.auth-card-header h2 {
+    font-weight: 700;
+    margin-top: 1rem;
+}
+
+/* Input group styling */
+.input-group-text {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    width: 42px; /* Fixed width for icon alignment */
+    justify-content: center;
+}
+
+/* Button styling */
+.btn-primary {
+    padding: 0.75rem;
+    font-weight: 600;
+}
+
+/* Footer links styling */
+.auth-card-footer {
+    padding-top: 1.5rem;
+}
+
+.auth-card-footer a {
+    text-decoration: none;
+}

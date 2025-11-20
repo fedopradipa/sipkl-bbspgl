@@ -6,11 +6,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +20,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id',
+        'foto_profil',
+        'jabatan',
+        'nip',
     ];
 
     /**
@@ -34,12 +37,36 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * Get the attributes that should be cast.
      *
-     * @var array<string, string>
+     * @return array<string, string>
      */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    /**
+     * Relasi "One-to-Many" (Inverse): Satu User memiliki satu Role.
+     * (Sesuai diskusi arsitektur kita di Model 118).
+     */
+    public function role()
+    {
+        // Foreign key di tabel 'users' ini adalah 'role_id'
+        // Primary key di tabel 'roles' adalah 'id_role'
+        return $this->belongsTo(Role::class, 'role_id', 'id_role');
+    }
+
+    /**
+     * (Opsional) Helper function untuk mengecek Superadmin
+     * Ini akan sangat berguna di file Blade atau Controller
+     */
+    public function isSuperadmin(): bool
+    {
+        // Cek jika relasi role ada DAN nama_role adalah 'superadmin'
+        return $this->role && $this->role->nama_role === 'superadmin';
+    }
 }
