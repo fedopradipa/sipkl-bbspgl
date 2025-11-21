@@ -5,6 +5,7 @@
 <div class="card mb-4">
   <div class="card-body">
     <h5 class="card-title">Data Lowongan PKL</h5>
+
     {{-- Controls: Add, Filter, Search --}}
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
       <div class="d-flex flex-wrap align-items-center">
@@ -24,7 +25,6 @@
           </button>
 
           {{-- TOMBOL RESET DENGAN IKON --}}
-          {{-- Tampilkan tombol ini hanya jika ada parameter 'keyword' di URL --}}
           @if(request('keyword'))
           <a href="{{ route('lowongan.index') }}" class="btn btn-danger btn-sm ms-2" title="Reset">
             <i class="fas fa-sync-alt"></i>
@@ -33,6 +33,7 @@
         </form>
       </div>
     </div>
+
     <div class="table-responsive">
       <table class="table">
         <thead>
@@ -50,31 +51,37 @@
         <tbody>
           @forelse ($lowongans as $item)
           <tr>
+            {{-- Penomoran Pagination --}}
             <th scope="row">{{ ($lowongans->currentPage() - 1) * $lowongans->perPage() + $loop->iteration }}</th>
+
             <td>{{ $item->judul }}</td>
             <td>{{ $item->divisi }}</td>
             <td>{{ $item->kuota }}</td>
-            <td>{{ \Carbon\Carbon::parse($item->window_start_date)->format('d M Y') }} - {{ \Carbon\Carbon::parse($item->window_end_date)->format('d M Y') }}</td>
-            <td>{{ \Carbon\Carbon::parse($item->jam_masuk_standar)->format('H:i') }} - {{ \Carbon\Carbon::parse($item->jam_pulang_standar)->format('H:i') }}</td>
+
+            {{-- OPTIMASI KECIL: Langsung format tanpa parse ulang (karena sudah di-casts di Model) --}}
             <td>
-              {{-- Logika Visualisasi Status --}}
+              {{ $item->window_start_date->format('d M Y') }} - {{ $item->window_end_date->format('d M Y') }}
+            </td>
+
+            {{-- Jam Kerja tetap butuh Parse karena Time tidak di-casts otomatis --}}
+            <td>
+              {{ \Carbon\Carbon::parse($item->jam_masuk_standar)->format('H:i') }} - {{ \Carbon\Carbon::parse($item->jam_pulang_standar)->format('H:i') }}
+            </td>
+
+            <td>
+              {{-- Logika Visualisasi Status (Sesuai Desain Asli Anda) --}}
               @if(!$item->is_open)
-              {{-- 1. Admin sengaja mematikan --}}
               <span class="badge bg-danger">Ditutup (Manual)</span>
 
               @elseif($item->is_open && \Carbon\Carbon::now()->gt($item->window_end_date))
-              {{-- 2. Admin lupa mematikan, tapi tanggal sudah lewat --}}
               <span class="badge bg-warning text-dark">
                 <i class="fas fa-clock me-1"></i> Kedaluwarsa
               </span>
-              <br>
 
               @elseif($item->is_open && \Carbon\Carbon::now()->lt($item->window_start_date))
-              {{-- 3. Belum waktunya buka --}}
               <span class="badge bg-info text-dark">Belum Dibuka</span>
 
               @else
-              {{-- 4. Aktif normal --}}
               <span class="badge bg-success">Aktif & Tayang</span>
               @endif
             </td>
@@ -83,6 +90,7 @@
               <div class="d-flex gap-1">
                 <a class="btn btn-info btn-sm" href="{{ route('lowongan.show', $item->id) }}" title="Lihat Detail"><i class="fas fa-eye"></i></a>
                 <a class="btn btn-warning btn-sm" href="{{ route('lowongan.edit', $item->id) }}" title="Edit"><i class="fas fa-pencil-alt"></i></a>
+
                 <form action="{{ route('lowongan.destroy', $item->id) }}" method="POST">
                   @csrf
                   @method('DELETE')

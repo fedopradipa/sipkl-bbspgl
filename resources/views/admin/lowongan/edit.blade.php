@@ -44,20 +44,21 @@
                 @enderror
             </div>
 
-            {{-- Validasi Periode (Menggunakan Fieldset sesuai style Create) --}}
+            {{-- Validasi Periode --}}
             <fieldset class="border p-3 mb-3">
                 <legend class="w-auto h6">Periode Pendaftaran</legend>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="window_start_date" class="form-label">Tanggal Mulai Pendaftaran <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control @error('window_start_date') is-invalid @enderror" id="window_start_date" name="window_start_date" value="{{ old('window_start_date', $lowongan->window_start_date) }}">
+                        <input type="date" class="form-control @error('window_start_date') is-invalid @enderror" id="window_start_date" name="window_start_date"
+                            value="{{ old('window_start_date', \Carbon\Carbon::parse($lowongan->window_start_date)->format('Y-m-d'))}}">
                         @error('window_start_date')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="window_end_date" class="form-label">Tanggal Selesai Pendaftaran <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control @error('window_end_date') is-invalid @enderror" id="window_end_date" name="window_end_date" value="{{ old('window_end_date', $lowongan->window_end_date) }}">
+                        <input type="date" class="form-control @error('window_end_date') is-invalid @enderror" id="window_end_date" name="window_end_date" value="{{ old('window_start_date', \Carbon\Carbon::parse($lowongan->window_start_date)->format('Y-m-d')) }}">
                         @error('window_end_date')
                         <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
