@@ -42,6 +42,11 @@ $isTeknisiOrSuperadmin = in_array($userRole, ['teknisi', 'superadmin']);
                     <i class="fas fa-tags fa-fw me-2"></i>lowongan
                 </a>
             </li>
+            <li>
+                <a class="nav-link" href="{{route('pembimbing.index')}}">
+                    <i class="fas fa-tags fa-fw me-2"></i>Pembimbing Lapangan
+                </a>
+            </li>
 
 
             {{-- =============================================== --}}
