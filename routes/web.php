@@ -8,13 +8,15 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PembimbingController;
-
+use App\Http\Controllers\GuestController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
 
+Route::get('/', [GuestController::class, 'index'])->name('guest.home');
+Route::get('/lowongan-public/{lowongan}', [GuestController::class, 'show'])->name('guest.lowongan.show');
 // ===============================================
 // RUTE OTENTIKASI (LOGIN/LOGOUT)
 // ===============================================
@@ -31,7 +33,7 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middl
 // ===============================================
 Route::middleware('auth')->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // RUTE PROFIL PENGGUNA (Akses mandiri)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -57,7 +59,10 @@ Route::middleware('auth')->group(function () {
 
 
     // ===============================================
-    // RUTE Siswwa
+    // RUTE SISWA
     // ===============================================
-
+    Route::get('/lowongan/{lowongan}/apply', function () {
+        // Nanti kita ganti ini dengan Controller pelamaran beneran
+        return "Halaman Formulir Lamaran (Akan Dibuat)";
+    })->name('lowongan.apply');
 });
