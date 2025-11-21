@@ -5,6 +5,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\Auth\LoginController;
 
 
@@ -50,7 +51,7 @@ Route::middleware('auth')->group(function () {
     // ===============================================
     // Semua fitur ini dikunci untuk role 'admin'
     Route::middleware('role:admin')->group(function () {
-        // Route untuk role Admin
+        Route::resource('lowongan', LowonganController::class);
     });
 
 
