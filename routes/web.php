@@ -7,7 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\Auth\LoginController;
-
+use App\Http\Controllers\PembimbingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ use App\Http\Controllers\Auth\LoginController;
 // ===============================================
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('login', [LoginController::class, 'login']); 
+    Route::post('login', [LoginController::class, 'login']);
 });
 
 Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
@@ -52,11 +52,12 @@ Route::middleware('auth')->group(function () {
     // Semua fitur ini dikunci untuk role 'admin'
     Route::middleware('role:admin')->group(function () {
         Route::resource('lowongan', LowonganController::class);
+        Route::resource('pembimbing', PembimbingController::class);
     });
 
 
     // ===============================================
     // RUTE Siswwa
     // ===============================================
-    
+
 });
