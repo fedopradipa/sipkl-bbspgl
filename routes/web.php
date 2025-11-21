@@ -59,10 +59,22 @@ Route::middleware('auth')->group(function () {
 
 
     // ===============================================
-    // RUTE SISWA
+    // RUTE peserta
     // ===============================================
-    Route::get('/lowongan/{lowongan}/apply', function () {
-        // Nanti kita ganti ini dengan Controller pelamaran beneran
-        return "Halaman Formulir Lamaran (Akan Dibuat)";
-    })->name('lowongan.apply');
+    // Grup untuk Peserta yang sudah Login
+    Route::middleware(['auth', 'role:peserta'])->group(function () {
+
+        // Form Pendaftaran (Menampilkan Form)
+        Route::get('/lowongan/{lowongan}/apply', [App\Http\Controllers\LamaranController::class, 'create'])
+            ->name('lowongan.apply');
+
+        // Proses Submit Form
+        Route::post('/lowongan/{lowongan}/apply', [App\Http\Controllers\LamaranController::class, 'store'])
+            ->name('lowongan.store');
+
+        // Dashboard Peserta (Placeholder dulu)
+        Route::get('/dashboard', function () {
+            return "Halaman Dashboard Peserta (Akan dibuat di step selanjutnya)";
+        })->name('dashboard');
+    });
 });

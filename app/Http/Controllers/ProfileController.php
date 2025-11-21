@@ -55,7 +55,7 @@ class ProfileController extends Controller
             ],
             'jabatan' => 'nullable|string|max:100',
             'foto_profil' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Maks 2MB
-            
+
             // Validasi password (opsional)
             'password' => 'nullable|string|min:8|confirmed', // 'confirmed' akan mencari 'password_confirmation'
         ], [
