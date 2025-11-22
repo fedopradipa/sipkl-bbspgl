@@ -11,34 +11,46 @@ class RoleMiddleware
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // Periksa apakah pengguna sudah login
+        // 1. Cek Login
         if (!Auth::check()) {
             return redirect('/login');
         }
 
         $user = Auth::user();
-        $userRole = $user->role->nama_role ?? 'guest'; // Dapatkan nama role pengguna
-        // Contoh: "Peserta " menjadi "peserta"
-        $userRoleClean = strtolower(trim($userRole));
+        // Ambil role user, pastikan lowercase agar tidak sensitif huruf besar/kecil
+        $userRole = strtolower(trim($user->role->nama_role ?? 'guest'));
 
-        // B. Bersihkan Daftar Role yang Diizinkan (Ubah ke huruf kecil semua)
-        // Contoh: ["Admin", "PESERTA"] menjadi ["admin", "peserta"]
-        $rolesClean = array_map('strtolower', $roles);
-        // Jika pengguna adalah Superadmin, selalu izinkan akses
+        // 2. JALUR KHUSUS SUPERADMIN (VIP Pass)
+        // Superadmin selalu boleh lewat kemanapun
         if ($userRole === 'superadmin') {
             return $next($request);
         }
 
-        // Periksa apakah role pengguna ada dalam daftar role yang diizinkan
-        if (in_array($userRole, $roles)) {
+        // 3. BERSIHKAN DAN PECAH DAFTAR ROLE YANG DIIZINKAN
+        // Masalah utama Anda ada disini sebelumnya.
+        // Kita harus memecah string "superadmin|admin" menjadi array terpisah.
+        $allowedRoles = [];
+
+        foreach ($roles as $role) {
+            // Pecah berdasarkan pipa '|' jika ada
+            $parts = explode('|', $role);
+
+            foreach ($parts as $part) {
+                // Masukkan ke array baru dalam format lowercase
+                $allowedRoles[] = strtolower(trim($part));
+            }
+        }
+
+        // 4. CEK APAKAH ROLE USER ADA DI ARRAY YANG SUDAH BERSIH
+        // Sekarang kita bandingkan "admin" dengan ["superadmin", "admin"]
+        if (in_array($userRole, $allowedRoles)) {
             return $next($request);
         }
 
-        return redirect()->route('dashboard')->with('error', 'Akses Ditolak. Anda tidak memiliki izin untuk mengakses fitur ini.');
+        // Jika gagal
+        return redirect()->route('dashboard')->with('error', 'Akses Ditolak.');
     }
 }

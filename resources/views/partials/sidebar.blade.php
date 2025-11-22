@@ -39,14 +39,27 @@
             <div class="overflow-hidden">
                 <h6 class="mb-0 small fw-bold text-truncate" style="max-width: 120px;">{{ auth()->user()->name }}</h6>
                 <small class="text-muted" style="font-size: 10px;">{{ strtoupper(auth()->user()->role->nama_role) }}</small>
+
             </div>
 
-            <form action="{{ route('logout') }}" method="POST" class="ms-auto">
+            <form action="{{ route('logout') }}" method="POST" class="d-flex align-items-center gap-2 ms-auto">
                 @csrf
-                <button type="submit" class="btn btn-sm btn-light text-danger" title="Keluar">
+
+                <!-- Tombol Edit Profile -->
+                <a href="{{ Auth::user()->edit_profile_route }}"
+                    class="btn btn-sm btn-light"
+                    title="Edit Profil Saya">
+                    <i class="fas fa-cog"></i>
+                </a>
+
+                <!-- Tombol Logout -->
+                <button type="submit"
+                    class="btn btn-sm btn-danger"
+                    title="Keluar">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
             </form>
+
         </div>
     </div>
 </nav>

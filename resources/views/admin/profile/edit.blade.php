@@ -47,7 +47,7 @@
         @endif
 
         {{-- Form Utama --}}
-        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" id="profile-form">
+        <form action="{{ route('profile.general.update') }}" method="POST" enctype="multipart/form-data" id="profile-form">
             @csrf
             @method('PUT')
 

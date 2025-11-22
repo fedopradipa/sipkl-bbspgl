@@ -7,25 +7,38 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use  App\Models\ProfilePeserta;
 
 class ProfileController extends Controller
 {
     /**
      * Menampilkan form untuk mengedit profil pengguna yang sedang login.
-     * (Langkah 4 - GET /profile)
+     * Menggunakan Internal Delegation (Best Practice).
      */
     public function edit()
     {
-        // Ambil data user yang sedang login
         $user = Auth::user();
 
+        // 1. DISPATCHER LOGIC: Jika user adalah Peserta
+        if ($user->isPeserta()) {
+
+            // BEST PRACTICE: Panggil Controller lain secara internal.
+            // Kita instansiasi PesertaProfileController
+            $pesertaController = app(\App\Http\Controllers\PesertaProfileController::class);
+
+            // Lalu, kita panggil method 'edit' milik controller tersebut
+            // Ini akan merender View milik Peserta secara langsung, TANPA HTTP Redirect.
+            return $pesertaController->edit();
+        }
+
+        // 2. LOGIC ADMIN (Original Code)
+        // Jika bukan Peserta (Admin/Superadmin/Lainnya), jalankan View Admin.
         return view('admin.profile.edit', [
             'user' => $user,
             'title' => 'Edit Profil Saya',
             'header' => 'Edit Profil Saya'
         ]);
     }
-
     /**
      * Memperbarui profil pengguna yang sedang login di database.
      * (Langkah 4 - PUT /profile)
@@ -34,7 +47,11 @@ class ProfileController extends Controller
     {
         // 1. Ambil user yang sedang login
         $user = Auth::user();
-
+        // 1. CEK ROLE (PENTING! Jangan proses Peserta di sini)
+        if ($user->isPeserta()) {
+            // Arahkan Peserta ke rute update yang benar
+            return redirect()->route('profile.peserta.edit')->with('error', 'Silakan simpan data profil melalui halaman khusus Anda.');
+        }
         // 2. Validasi input
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
@@ -99,6 +116,6 @@ class ProfileController extends Controller
         $user->update($dataToUpdate);
 
         // 7. Redirect kembali ke halaman edit profil
-        return redirect()->route('profile.edit')->with('success', 'Profil Anda berhasil diperbarui.');
+        return redirect()->route('profile.general.edit')->with('success', 'Profil Anda berhasil diperbarui.');
     }
 }

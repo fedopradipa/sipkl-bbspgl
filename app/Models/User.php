@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\ProfilePeserta;
 
 class User extends Authenticatable
 {
@@ -89,5 +90,28 @@ class User extends Authenticatable
     public function isPeserta(): bool
     {
         return $this->role && strtolower($this->role->nama_role) === 'peserta';
+    }
+
+
+
+    // app/Models/User.php
+
+    public function getEditProfileRouteAttribute()
+    {
+        // Ambil nama role (sesuaikan dengan struktur DB Anda, bisa $this->role_id atau $this->role->name)
+        $role = $this->role->nama_role ?? 'guest';
+
+        // 1. Jika PESERTA -> Ke route khusus peserta
+        if ($role === 'peserta') {
+            return route('profile.peserta.edit');
+        }
+
+        // 2. Jika ADMIN atau SUPERADMIN -> Ke route general
+        // PERBAIKAN DISINI: Pastikan return route-nya 'profile.general.edit'
+        if ($role === 'admin' || $role === 'superadmin') {
+            return route('profile.general.edit');
+        }
+
+        return '#';
     }
 }
