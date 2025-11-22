@@ -23,7 +23,12 @@ class RoleMiddleware
 
         $user = Auth::user();
         $userRole = $user->role->nama_role ?? 'guest'; // Dapatkan nama role pengguna
+        // Contoh: "Peserta " menjadi "peserta"
+        $userRoleClean = strtolower(trim($userRole));
 
+        // B. Bersihkan Daftar Role yang Diizinkan (Ubah ke huruf kecil semua)
+        // Contoh: ["Admin", "PESERTA"] menjadi ["admin", "peserta"]
+        $rolesClean = array_map('strtolower', $roles);
         // Jika pengguna adalah Superadmin, selalu izinkan akses
         if ($userRole === 'superadmin') {
             return $next($request);
@@ -34,6 +39,6 @@ class RoleMiddleware
             return $next($request);
         }
 
-    return redirect()->route('dashboard')->with('error', 'Akses Ditolak. Anda tidak memiliki izin untuk mengakses fitur ini.');
+        return redirect()->route('dashboard')->with('error', 'Akses Ditolak. Anda tidak memiliki izin untuk mengakses fitur ini.');
     }
 }

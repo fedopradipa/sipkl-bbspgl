@@ -60,13 +60,34 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'role_id', 'id_role');
     }
 
+// =================================================================
+    // BAGIAN PENTING: HELPER ROLE (WAJIB ADA)
+    // =================================================================
+
     /**
-     * (Opsional) Helper function untuk mengecek Superadmin
-     * Ini akan sangat berguna di file Blade atau Controller
+     * Cek apakah user adalah Superadmin
      */
     public function isSuperadmin(): bool
     {
-        // Cek jika relasi role ada DAN nama_role adalah 'superadmin'
-        return $this->role && $this->role->nama_role === 'superadmin';
+        // Menggunakan strtolower agar aman dari perbedaan huruf besar/kecil
+        return $this->role && strtolower($this->role->nama_role) === 'superadmin';
+    }
+
+    /**
+     * Cek apakah user adalah Admin
+     * (Fungsi ini WAJIB ADA karena dipanggil oleh Middleware/View)
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role && strtolower($this->role->nama_role) === 'admin';
+    }
+
+    /**
+     * Cek apakah user adalah Peserta
+     * (Wajib ada untuk logika dashboard peserta)
+     */
+    public function isPeserta(): bool
+    {
+        return $this->role && strtolower($this->role->nama_role) === 'peserta';
     }
 }

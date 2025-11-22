@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @push('style')
 <style>
@@ -13,11 +13,11 @@
 
 @section('content')
 
-{{-- 
+{{--
   Ringkasan Status Inventaris (Memakai 6 Card, 3 di antaranya adalah Inbox Tugas)
 --}}
 <div class="row g-4 mb-4">
-    
+
     {{-- Card 1: Total Unit (Read-only) --}}
     <div class="col-lg-3 col-md-6">
         <div class="card shadow-sm h-100">
@@ -25,7 +25,7 @@
                 <i class="fas fa-box-open stat-card-icon text-dark"></i>
                 <div>
                     <div class="fw-bold text-muted">TOTAL UNIT ALAT</div>
-                    <div class="fs-4">#</div> 
+                    <div class="fs-4">#</div>
                     <small class="text-muted">(Termasuk yang Dihapuskan)</small>
                 </div>
             </div>
@@ -34,7 +34,7 @@
             </a>
         </div>
     </div>
-    
+
 </div>
 
 {{-- Tambahkan Tabel Aktivitas Terbaru di sini --}}

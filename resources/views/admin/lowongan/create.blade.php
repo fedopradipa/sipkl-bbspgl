@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('content')
 <div class="card mb-4">
@@ -11,7 +11,7 @@
                 <label for="judul" class="form-label">Judul Lowongan <span class="text-danger">*</span></label>
                 <input type="text" class="form-control @error('judul') is-invalid @enderror" id="judul" name="judul" value="{{ old('judul') }}" placeholder="Contoh: Web Developer">
                 @error('judul')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -19,7 +19,7 @@
                 <label for="divisi" class="form-label">Divisi <span class="text-danger">*</span></label>
                 <input type="text" class="form-control @error('divisi') is-invalid @enderror" id="divisi" name="divisi" value="{{ old('divisi') }}" placeholder="Contoh: Teknologi Informasi">
                 @error('divisi')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -27,7 +27,7 @@
                 <label for="kuota" class="form-label">Kuota <span class="text-danger">*</span></label>
                 <input type="number" class="form-control @error('kuota') is-invalid @enderror" id="kuota" name="kuota" value="{{ old('kuota', 1) }}" min="1">
                 @error('kuota')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -35,7 +35,7 @@
                 <label for="deskripsi" class="form-label">Deskripsi Lowongan</label>
                 <textarea class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi" rows="5">{{ old('deskripsi') }}</textarea>
                 @error('deskripsi')
-                    <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
 
@@ -47,14 +47,14 @@
                         <label for="window_start_date" class="form-label">Tanggal Mulai Pendaftaran <span class="text-danger">*</span></label>
                         <input type="date" class="form-control @error('window_start_date') is-invalid @enderror" id="window_start_date" name="window_start_date" value="{{ old('window_start_date') }}">
                         @error('window_start_date')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="window_end_date" class="form-label">Tanggal Selesai Pendaftaran <span class="text-danger">*</span></label>
                         <input type="date" class="form-control @error('window_end_date') is-invalid @enderror" id="window_end_date" name="window_end_date" value="{{ old('window_end_date') }}">
                         @error('window_end_date')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                     <label for="min_duration" class="form-label">Durasi Minimal (Bulan) <span class="text-danger">*</span></label>
                     <input type="number" class="form-control @error('min_duration') is-invalid @enderror" id="min_duration" name="min_duration" value="{{ old('min_duration', 1) }}" min="1">
                     @error('min_duration')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </fieldset>
@@ -81,14 +81,14 @@
                         <label for="jam_masuk_standar" class="form-label">Jam Masuk Standar <span class="text-danger">*</span></label>
                         <input type="time" class="form-control @error('jam_masuk_standar') is-invalid @enderror" id="jam_masuk_standar" name="jam_masuk_standar" value="{{ old('jam_masuk_standar', '08:00') }}">
                         @error('jam_masuk_standar')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="jam_pulang_standar" class="form-label">Jam Pulang Standar <span class="text-danger">*</span></label>
                         <input type="time" class="form-control @error('jam_pulang_standar') is-invalid @enderror" id="jam_pulang_standar" name="jam_pulang_standar" value="{{ old('jam_pulang_standar', '16:00') }}">
                         @error('jam_pulang_standar')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
@@ -100,7 +100,7 @@
                     Buka Lowongan
                 </label>
             </div>
-            
+
             <a href="{{ route('lowongan.index') }}" class="btn btn-secondary">
                 <i class="fas fa-arrow-left me-1"></i> Kembali
             </a>

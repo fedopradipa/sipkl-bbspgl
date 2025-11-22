@@ -1,4 +1,4 @@
-@extends('layouts.admin') {{-- Sesuaikan dengan layout utama Anda --}}
+@extends('layouts.app') {{-- Sesuaikan dengan layout utama Anda --}}
 
 @section('content')
 <div class="row">
@@ -11,22 +11,22 @@
             <div class="card-body text-center">
                 {{-- Tampilkan foto profil ATAU placeholder inisial --}}
                 @if ($user->foto_profil)
-                    <img src="{{ asset('storage/foto_profil/' . $user->foto_profil) }}" alt="Foto Profil" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                <img src="{{ asset('storage/foto_profil/' . $user->foto_profil) }}" alt="Foto Profil" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
                 @else
-                    <img src="https://placehold.co/150x150/e2e8f0/6c757d?text={{ strtoupper(substr($user->name, 0, 1)) }}" alt="Foto Profil" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                <img src="https://placehold.co/150x150/e2e8f0/6c757d?text={{ strtoupper(substr($user->name, 0, 1)) }}" alt="Foto Profil" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
                 @endif
-                
+
                 <h5 class="my-3">{{ $user->name }}</h5>
-                
+
                 {{-- Tampilkan Jabatan (jika ada), jika tidak, tampilkan Role --}}
                 <p class="text-muted mb-1">{{ $user->jabatan ?? $user->role->nama_role }}</p>
                 <p class="text-muted mb-4">NIP: {{ $user->nip ?? '-' }}</p>
 
                 <div class="d-flex justify-content-center gap-2">
-                     <a href="{{ route('user.index') }}" class="btn btn-secondary btn-sm">
+                    <a href="{{ route('user.index') }}" class="btn btn-secondary btn-sm">
                         <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar
                     </a>
-                     <a href="{{ route('user.edit', $user->id) }}" class="btn btn-warning btn-sm">
+                    <a href="{{ route('user.edit', $user->id) }}" class="btn btn-warning btn-sm">
                         <i class="fas fa-pencil-alt me-1"></i> Edit Pengguna Ini
                     </a>
                 </div>

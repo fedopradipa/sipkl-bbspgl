@@ -95,7 +95,7 @@
             </div>
             @else
             {{-- Logika Tombol Apply --}}
-            <a href="{{ route('lowongan.apply', $lowongan->id) }}" class="btn btn-primary btn-lg fw-bold shadow-sm">
+            <a href="{{ route('lamaran.apply', $lowongan->id) }}" class="btn btn-primary btn-lg fw-bold shadow-sm">
               Lamar Posisi Ini
             </a>
 

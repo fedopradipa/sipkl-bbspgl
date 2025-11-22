@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.app')
 
 @section('content')
 <!-- TABEL -->
@@ -17,26 +17,26 @@
                 {{-- Form untuk pencarian --}}
                 {{-- Diperbarui ke role.index --}}
                 <form action="{{ route('role.index') }}" method="GET" class="d-flex align-items-center">
-                    
-                    <input type="text" name="keyword" class="form-control form-control-sm me-2" 
-                           placeholder="Cari peran..." value="{{ request('keyword') }}">
-                    
+
+                    <input type="text" name="keyword" class="form-control form-control-sm me-2"
+                        placeholder="Cari peran..." value="{{ request('keyword') }}">
+
                     {{-- Tombol Cari dengan Ikon --}}
                     <button type="submit" class="btn btn-secondary btn-sm" title="Cari">
                         <i class="fas fa-search"></i>
                     </button>
-                    
+
                     {{-- TOMBOL RESET DENGAN IKON --}}
                     {{-- Diperbarui ke role.index --}}
                     @if(request('keyword'))
-                        <a href="{{ route('role.index') }}" class="btn btn-danger btn-sm ms-2" title="Reset">
-                            <i class="fas fa-sync-alt"></i>
-                        </a>
+                    <a href="{{ route('role.index') }}" class="btn btn-danger btn-sm ms-2" title="Reset">
+                        <i class="fas fa-sync-alt"></i>
+                    </a>
                     @endif
                 </form>
             </div>
         </div>
-        
+
         <div class="table-responsive">
             <table class="table">
                 <thead>
@@ -56,7 +56,7 @@
                         {{-- Diperbarui ke nama_role (Sesuai Model Role) --}}
                         <td>{{ $item->nama_role }}</td>
                         {{-- Kolom Lokasi Dihapus --}}
-                        
+
                         <td class="align-top">
                             <div class="d-flex gap-1">
                                 {{-- Diperbarui ke role.* dan id_role --}}
@@ -78,9 +78,9 @@
                         {{-- colspan disesuaikan menjadi 3 --}}
                         <td colspan="3" class="text-center">
                             @if(request('keyword'))
-                                Data dengan kata kunci "{{ request('keyword') }}" tidak ditemukan.
+                            Data dengan kata kunci "{{ request('keyword') }}" tidak ditemukan.
                             @else
-                                Tidak ada data peran (role).
+                            Tidak ada data peran (role).
                             @endif
                         </td>
                     </tr>

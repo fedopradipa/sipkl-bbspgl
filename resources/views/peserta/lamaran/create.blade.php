@@ -28,7 +28,7 @@
 
       <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
-          <form action="{{ route('lowongan.store', $lowongan->id) }}" method="POST">
+          <form action="{{ route('lamaran.store', $lowongan->id) }}" method="POST">
             @csrf
 
             <h5 class="fw-bold text-secondary mb-3"><i class="fas fa-calendar-alt me-2"></i>Rencana Jadwal</h5>

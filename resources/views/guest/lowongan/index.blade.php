@@ -82,7 +82,7 @@
             <a href="{{ route('guest.lowongan.show', $item->id) }}" class="btn btn-outline-primary flex-grow-1 fw-bold">
               Lihat Detail
             </a>
-            <a href="{{ route('lowongan.apply', $item->id) }}" class="btn btn-primary flex-grow-1 fw-bold">
+            <a href="{{ route('lamaran.apply', $item->id) }}" class="btn btn-primary flex-grow-1 fw-bold">
               Lamar
             </a>
           </div>

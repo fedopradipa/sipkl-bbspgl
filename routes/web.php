@@ -9,6 +9,7 @@ use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PembimbingController;
 use App\Http\Controllers\GuestController;
+use  App\Http\Controllers\DashboardPesertaController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -66,15 +67,14 @@ Route::middleware('auth')->group(function () {
 
         // Form Pendaftaran (Menampilkan Form)
         Route::get('/lowongan/{lowongan}/apply', [App\Http\Controllers\LamaranController::class, 'create'])
-            ->name('lowongan.apply');
+            ->name('lamaran.apply');
 
         // Proses Submit Form
         Route::post('/lowongan/{lowongan}/apply', [App\Http\Controllers\LamaranController::class, 'store'])
-            ->name('lowongan.store');
+            ->name('lamaran.store');
 
         // Dashboard Peserta (Placeholder dulu)
-        Route::get('/dashboard', function () {
-            return "Halaman Dashboard Peserta (Akan dibuat di step selanjutnya)";
-        })->name('dashboard');
+        Route::get('/dashboard', [DashboardPesertaController::class, 'index'])
+            ->name('dashboard');
     });
 });

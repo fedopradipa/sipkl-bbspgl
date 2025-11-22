@@ -25,6 +25,7 @@ class GuestController extends Controller
         return view('guest.lowongan.index', [
             'lowongans' => $lowongans,
             'title' => 'Lowongan PKL Tersedia',
+            // 'header'    => 'Selamat Datang di BBSPGL'
             // Tidak butuh $header karena layout tamu beda
         ]);
     }
@@ -40,6 +41,7 @@ class GuestController extends Controller
         return view('guest.lowongan.show', [
             'lowongan' => $lowongan,
             'title' => $lowongan->judul
+
         ]);
     }
 }

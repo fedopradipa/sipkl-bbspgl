@@ -1,4 +1,4 @@
-@extends('layouts.admin') {{-- Sesuaikan dengan layout utama Anda --}}
+@extends('layouts.app') {{-- Sesuaikan dengan layout utama Anda --}}
 
 @section('content')
 <div class="card mb-4">
@@ -12,18 +12,18 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                           id="name" name="name" value="{{ old('name') }}" required>
+                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                        id="name" name="name" value="{{ old('name') }}" required>
                     @error('name')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                           id="email" name="email" value="{{ old('email') }}" required>
+                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                        id="email" name="email" value="{{ old('email') }}" required>
                     @error('email')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
@@ -34,13 +34,13 @@
                     <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
                         <option value="" disabled selected>Pilih peran...</option>
                         @foreach($roles as $role)
-                            <option value="{{ $role->id_role }}" {{ old('role_id') == $role->id_role ? 'selected' : '' }}>
-                                {{ $role->nama_role }}
-                            </option>
+                        <option value="{{ $role->id_role }}" {{ old('role_id') == $role->id_role ? 'selected' : '' }}>
+                            {{ $role->nama_role }}
+                        </option>
                         @endforeach
                     </select>
                     @error('role_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
@@ -52,18 +52,18 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="nip" class="form-label">NIP</label>
-                    <input type="text" class="form-control @error('nip') is-invalid @enderror" 
-                           id="nip" name="nip" value="{{ old('nip') }}" placeholder="NIP Pegawai (jika ada)">
+                    <input type="text" class="form-control @error('nip') is-invalid @enderror"
+                        id="nip" name="nip" value="{{ old('nip') }}" placeholder="NIP Pegawai (jika ada)">
                     @error('nip')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="jabatan" class="form-label">Jabatan</label>
-                    <input type="text" class="form-control @error('jabatan') is-invalid @enderror" 
-                           id="jabatan" name="jabatan" value="{{ old('jabatan') }}" placeholder="Misal: Teknisi, Admin Logistik...">
+                    <input type="text" class="form-control @error('jabatan') is-invalid @enderror"
+                        id="jabatan" name="jabatan" value="{{ old('jabatan') }}" placeholder="Misal: Teknisi, Admin Logistik...">
                     @error('jabatan')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
             </div>
@@ -75,10 +75,10 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="password" class="form-label">Password Baru <span class="text-danger">*</span></label>
-                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                           id="password" name="password" required>
+                    <input type="password" class="form-control @error('password') is-invalid @enderror"
+                        id="password" name="password" required>
                     @error('password')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                    <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="col-md-6 mb-3">
