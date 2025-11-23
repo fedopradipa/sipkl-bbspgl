@@ -43,12 +43,27 @@ class LoginController extends Controller
         $remember = $request->filled('remember');
 
         if (Auth::attempt($credentials, $remember)) {
-            // 3. Jika berhasil:
-            // Regenerasi session ID untuk keamanan (mencegah session fixation)
             $request->session()->regenerate();
 
-            // Redirect ke halaman dashboard
-            return redirect()->intended('/'); // '/' adalah rute Dashboard kita
+            // --- PERBAIKAN PENTING DISINI ---
+
+            $user = Auth::user();
+
+            // Cek role dan arahkan ke dashboard spesifik (Override intended jika login langsung)
+            if ($user->isSuperadmin()) {
+                $dashboardRoute = route('superadmin.dashboard');
+            } elseif ($user->isAdmin()) {
+                $dashboardRoute = route('admin.dashboard');
+            } elseif ($user->isPeserta()) {
+                $dashboardRoute = route('peserta.dashboard');
+            } else {
+                // Fallback jika role tidak terdefinisi
+                $dashboardRoute = route('guest.home');
+            }
+
+            // Redirect ke intended URL jika ada (misal dari form lamaran), 
+            // jika tidak ada, redirect ke dashboard spesifik.
+            return redirect()->intended($dashboardRoute);
         }
 
         // 4. Jika gagal:

@@ -68,20 +68,25 @@
               {{ \Carbon\Carbon::parse($item->jam_masuk_standar)->format('H:i') }} - {{ \Carbon\Carbon::parse($item->jam_pulang_standar)->format('H:i') }}
             </td>
 
+
+
             <td>
               {{-- Logika Visualisasi Status (Sesuai Desain Asli Anda) --}}
-              @if(!$item->is_open)
-              <span class="badge bg-danger">Ditutup (Manual)</span>
+              @php
+              // 1. Ambil status yang sudah diolah Model (endOfDay fix sudah termasuk)
+              $status = $item->status_text;
+              @endphp
 
-              @elseif($item->is_open && \Carbon\Carbon::now()->gt($item->window_end_date))
+              @if($status == 'Ditutup Admin')
+              <span class="badge bg-danger">Ditutup (Manual)</span>
+              @elseif($status == 'Kedaluwarsa')
               <span class="badge bg-warning text-dark">
                 <i class="fas fa-clock me-1"></i> Kedaluwarsa
               </span>
-
-              @elseif($item->is_open && \Carbon\Carbon::now()->lt($item->window_start_date))
+              @elseif($status == 'Belum Dibuka')
               <span class="badge bg-info text-dark">Belum Dibuka</span>
-
               @else
+              {{-- Jika status adalah 'Dibuka' --}}
               <span class="badge bg-success">Aktif & Tayang</span>
               @endif
             </td>

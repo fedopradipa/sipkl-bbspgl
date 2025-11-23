@@ -1,6 +1,6 @@
 <ul class="nav nav-pills flex-column mb-auto">
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : 'text-dark' }}" href="{{ route('dashboard') }}">
+    <a class="nav-link {{ request()->routeIs('superadmin.dashboard') ? 'active' : 'text-dark' }}" href="{{ route('superadmin.dashboard') }}">
       <i class="fas fa-chart-pie fa-fw me-2"></i> Dashboard Pusat
     </a>
   </li>

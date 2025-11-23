@@ -24,7 +24,7 @@ class LamaranController extends Controller
         // 2. BEST PRACTICE: Cek Lamaran Aktif Global
         // Jika punya lamaran 'pending' atau 'diterima' di TEMPAT LAIN, tolak disini.
         if ($this->hasAnyActiveApplication()) {
-            return redirect()->route('dashboard')
+            return redirect()->route('peserta.dashboard')
                 ->with('error', 'Anda masih memiliki lamaran aktif. Tunggu verifikasi selesai atau status ditolak untuk melamar kembali.');
         }
 
@@ -42,7 +42,7 @@ class LamaranController extends Controller
     {
         // 1. Cek Security Ulang (Double Check saat Submit)
         if (!$lowongan->is_open || $this->hasAnyActiveApplication()) {
-            return redirect()->route('dashboard')
+            return redirect()->route('peserta.dashboard')
                 ->with('error', 'Validasi gagal. Lowongan tutup atau Anda memiliki lamaran aktif.');
         }
 
@@ -62,7 +62,7 @@ class LamaranController extends Controller
         // 5. Simpan ke Database
         Lamaran::create($finalData);
 
-        return redirect()->route('dashboard')
+        return redirect()->route('peserta.dashboard')
             ->with('success', 'Lamaran berhasil dikirim! Menunggu verifikasi admin.');
     }
 

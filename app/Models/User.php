@@ -94,8 +94,6 @@ class User extends Authenticatable
 
 
 
-    // app/Models/User.php
-
     public function getEditProfileRouteAttribute()
     {
         // Ambil nama role (sesuaikan dengan struktur DB Anda, bisa $this->role_id atau $this->role->name)

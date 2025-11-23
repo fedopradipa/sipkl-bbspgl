@@ -17,13 +17,13 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $search = $request->keyword;
-        
+
         // Menggunakan eager loading 'role' (dari Model User)
-        $users = User::with('role') 
+        $users = User::with('role')
             ->when($search, function ($query, $search) {
                 // Mencari berdasarkan nama atau email
                 return $query->where('name', 'like', "%{$search}%")
-                             ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             })
             ->latest('id') // 'id' adalah primary key default 'users'
             ->paginate(10)
@@ -35,7 +35,7 @@ class UserController extends Controller
             'header' => 'Daftar Pengguna (Admin)'
         ]);
     }
-    
+
     /**
      * Menampilkan form untuk membuat pengguna (user) baru.
      */
@@ -64,7 +64,7 @@ class UserController extends Controller
             'role_id' => 'required|exists:roles,id_role', // Pastikan role_id ada di tabel roles
             'nip' => 'nullable|string|max:50|unique:users,nip',
             'jabatan' => 'nullable|string|max:100',
-        ],[
+        ], [
             'name.required' => 'Nama wajib diisi.',
             'email.required' => 'Email wajib diisi.',
             'email.unique' => 'Email ini sudah terdaftar.',
@@ -82,7 +82,7 @@ class UserController extends Controller
         $dataToCreate['password'] = Hash::make($request->password); // Enkripsi password
 
         User::create($dataToCreate);
-        
+
         return redirect()->route('user.index')->with('success', 'Pengguna baru berhasil ditambahkan.');
     }
 
@@ -141,8 +141,8 @@ class UserController extends Controller
                 Rule::unique('users', 'nip')->ignore($user->id, 'id') // Abaikan NIP user ini sendiri
             ],
             'jabatan' => 'nullable|string|max:100',
-            'password' => 'nullable|string|min:8|confirmed', 
-        ],[
+            'password' => 'nullable|string|min:8|confirmed',
+        ], [
             'name.required' => 'Nama wajib diisi.',
             'email.required' => 'Email wajib diisi.',
             'email.unique' => 'Email ini sudah terdaftar.',
@@ -167,7 +167,7 @@ class UserController extends Controller
 
         // 4. Update data
         $user->update($dataToUpdate);
-        
+
         return redirect()->route('user.index')->with('success', 'Data pengguna berhasil diupdate.');
     }
 
@@ -184,10 +184,9 @@ class UserController extends Controller
 
         try {
             $user->delete();
-            
+
             return redirect()->route('user.index')
                 ->with('success', 'Pengguna berhasil dihapus.');
-        
         } catch (QueryException $e) {
             // (Opsional) Tangkap error jika user terhubung ke data lain
             return redirect()->route('user.index')

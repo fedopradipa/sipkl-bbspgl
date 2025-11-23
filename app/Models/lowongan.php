@@ -54,10 +54,11 @@ class Lowongan extends Model
     public function scopeTersedia($query)
     {
         return $query->where('is_open', true)
-            ->whereDate('window_start_date', '<=', Carbon::now())
-            ->whereDate('window_end_date', '>=', Carbon::now());
+            // Cek 1: Apakah tanggal mulai sudah tiba (Hari ini atau sebelum)
+            ->whereDate('window_start_date', '<=', Carbon::today())
+            // Cek 2: Apakah tanggal akhir belum terlewati (Hari ini atau setelah)
+            ->whereDate('window_end_date', '>=', Carbon::today());
     }
-
     /**
      * -------------------------------------------------------------
      * ACCESSOR: STATUS TEXT
@@ -65,22 +66,29 @@ class Lowongan extends Model
      * Panggil dengan: $lowongan->status_text
      * Digunakan di Tabel Admin untuk memberi tahu jika lowongan expired.
      */
+    // File: App\Models\Lowongan.php
+
     public function getStatusTextAttribute()
     {
         $now = Carbon::now();
 
+        // Pastikan is_open di cek dulu
         if (!$this->is_open) {
-            return 'Ditutup Admin';
+            return 'Ditutup Admin'; // Admin manual tutup
         }
+
+        // Tentukan tanggal akhir yang sebenarnya (akhir hari)
+        $windowEndDateAtMidnight = $this->window_end_date->endOfDay();
 
         if ($now->lt($this->window_start_date)) {
-            return 'Belum Dibuka';
+            return 'Belum Dibuka'; // Tanggal belum mulai
         }
 
-        if ($now->gt($this->window_end_date)) {
+        // PERBAIKAN UTAMA: Kita bandingkan dengan akhir hari (23:59:59)
+        if ($now->gt($windowEndDateAtMidnight)) {
             return 'Kedaluwarsa';
         }
 
-        return 'Dibuka';
+        return 'Dibuka'; // Aktif & Dalam Periode
     }
 }

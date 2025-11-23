@@ -57,7 +57,7 @@ Route::middleware('auth')->group(function () {
     // 3. RUTE KHUSUS SUPERADMIN
     // ===============================================
     Route::middleware('role:superadmin')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard'); // Dashboard Superadmin
+        Route::get('/superadmin/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard'); // Dashboard Superadmin
         Route::resource('role', RoleController::class);
         Route::resource('user', UserController::class);
     });
@@ -66,9 +66,7 @@ Route::middleware('auth')->group(function () {
     // 4. RUTE KHUSUS ADMIN (OPERATOR ONLY)
     // ===============================================
     Route::middleware('role:admin')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard'); // Dashboard Admin
-        Route::resource('lowongan', LowonganController::class);
-        Route::resource('pembimbing', PembimbingController::class);
+        Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard'); // Dashboard Admin
     });
 
     // ===============================================
@@ -79,7 +77,7 @@ Route::middleware('auth')->group(function () {
 
         // FIX PENTING: Panggil Dashboard Peserta dengan nama yang jelas
         // Ini adalah Dashboard state-based yang sesungguhnya
-        Route::get('/dashboard', [DashboardPesertaController::class, 'index'])->name('dashboard');
+        Route::get('/peserta/dashboard', [DashboardPesertaController::class, 'index'])->name('peserta.dashboard');
 
         // FIX PENTING: Penggunaan Rute Profil yang Overwrite Global
         Route::get('/profile', [PesertaProfileController::class, 'edit'])->name('profile.peserta.edit');

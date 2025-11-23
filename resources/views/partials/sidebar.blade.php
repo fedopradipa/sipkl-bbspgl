@@ -1,5 +1,5 @@
 <nav id="sidebar" class="p-3 d-flex flex-column bg-white shadow-sm h-100" style="min-width: 260px;">
-    <a href="{{ route('dashboard') }}" class="d-flex flex-column align-items-center text-dark text-decoration-none mb-4 pt-2 border-bottom pb-3">
+    <a class="d-flex flex-column align-items-center text-dark text-decoration-none mb-4 pt-2 border-bottom pb-3">
         <i class="fas fa-boxes fa-2x text-primary mb-2"></i>
         <span class="fw-bold fs-5">SIPKL BBSPGL</span>
     </a>
