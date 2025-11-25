@@ -6,48 +6,37 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ProfilePeserta;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Hash; // <--- WAJIB: Import ini untuk enkripsi password
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage; // <--- WAJIB: Import Storage untuk kelola file
 
 class PesertaProfileController extends Controller
 {
-    /**
-     * Menampilkan Form Edit Profil Peserta (GET /profile/peserta)
-     */
     public function edit()
     {
         $user = Auth::user();
-
-        // Ambil data profil, jika kosong buat objek baru agar tidak error di view
         $ProfilePeserta = ProfilePeserta::firstOrNew(['pengguna_id' => $user->id]);
 
         return view('peserta.profile.edit', [
             'user' => $user,
-            'profil' => $ProfilePeserta, // Variabel ini dipakai di view: value="{{ old('...', $profil->...) }}"
+            'profil' => $ProfilePeserta,
             'title' => 'Edit Profil Peserta',
             'header' => 'Kelola Data Diri'
         ]);
     }
 
-    /**
-     * Menyimpan Update Profil Peserta (PUT /profile/peserta)
-     */
     public function update(Request $request)
     {
         $user = Auth::user();
 
         // 1. VALIDASI INPUT
         $validated = $request->validate([
-            // Validasi User
             'name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'email',
-                Rule::unique('users', 'email')->ignore($user->id)
-            ],
-            // Validasi Password (Opsional, hanya wajib jika kolom diisi)
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
             'password' => 'nullable|string|min:8|confirmed',
+            // Validasi Foto (Best Practice: batasi tipe dan ukuran)
+            'foto_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
 
-            // Validasi Profil Peserta
+            // Validasi Data Peserta
             'nim_nis' => 'required|string|max:50',
             'institusi' => 'required|string|max:255',
             'jurusan' => 'required|string|max:100',
@@ -55,25 +44,46 @@ class PesertaProfileController extends Controller
             'alamat' => 'nullable|string|max:500',
         ]);
 
-        // 2. UPDATE TABEL USERS
-        // Siapkan data dasar
+        // 2. SIAPKAN DATA USER (Nama & Email)
         $userData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
         ];
 
-        // Cek apakah user mengisi password baru?
+        // 3. LOGIC PASSWORD (Jika diisi)
         if ($request->filled('password')) {
-            // Jika ya, enkripsi password dan masukkan ke array update
             $userData['password'] = Hash::make($validated['password']);
         }
 
-        // Eksekusi update user
+        // 4. LOGIC FOTO PROFIL (Best Practice)
+        if ($request->hasFile('foto_profil')) {
+
+            // A. Hapus Foto Lama (PENTING: Agar storage tidak penuh)
+            // Cek apakah user punya foto lama DAN filenya benar-benar ada di storage
+            if ($user->foto_profil && Storage::exists('public/foto_profil/' . $user->foto_profil)) {
+                Storage::delete('public/foto_profil/' . $user->foto_profil);
+            }
+
+            // B. Proses Upload Foto Baru
+            $file = $request->file('foto_profil');
+
+            // Buat nama unik: waktu_upload + string acak + ekstensi asli
+            // Contoh: 17098822_ab123cd.jpg
+            $filename = time() . '_' . $file->hashName();
+
+            // Simpan ke folder: storage/app/public/foto_profil
+            $file->storeAs('public/foto_profil', $filename);
+
+            // C. Masukkan nama file ke array update database
+            $userData['foto_profil'] = $filename;
+        }
+
+        // 5. EKSEKUSI UPDATE USER (Nama, Email, Password, Foto)
         $user->update($userData);
 
-        // 3. UPDATE TABEL PROFILE_PESERTA
+        // 6. UPDATE TABEL PROFILE_PESERTA
         ProfilePeserta::updateOrCreate(
-            ['pengguna_id' => $user->id], // Cari berdasarkan ID user
+            ['pengguna_id' => $user->id],
             [
                 'nim_nis' => $validated['nim_nis'],
                 'institusi' => $validated['institusi'],
@@ -83,8 +93,7 @@ class PesertaProfileController extends Controller
             ]
         );
 
-        // 4. REDIRECT
         return redirect()->route('profile.peserta.edit')
-            ->with('success', 'Profil berhasil diperbarui.');
+            ->with('success', 'Profil dan Foto berhasil diperbarui.');
     }
 }

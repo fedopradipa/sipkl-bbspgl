@@ -25,7 +25,8 @@
   </li>
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('verifikasi.lamaran') ? 'active' : 'text-dark' }}" href="#">
+    <a class="nav-link {{ request()->routeIs('lamaran.*') ? 'active' : 'text-dark' }}"
+      href="{{ route('lamaran.index.admin') }}">
       <i class="fas fa-check-double fa-fw me-2"></i>Verifikasi Lamaran
     </a>
   </li>

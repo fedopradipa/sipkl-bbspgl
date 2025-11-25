@@ -11,7 +11,8 @@ use App\Http\Controllers\PembimbingController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\DashboardPesertaController;
 use App\Http\Controllers\LamaranController;
-use App\Http\Controllers\PesertaProfileController; // Tambahkan controller profil khusus peserta
+use App\Http\Controllers\PesertaProfileController;
+use App\Http\Controllers\PresensiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +68,12 @@ Route::middleware('auth')->group(function () {
     // ===============================================
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard'); // Dashboard Admin
+        // Kita juga butuh index/show lamaran untuk Admin
+        Route::get('/lamaran', [LamaranController::class, 'indexAdmin'])->name('lamaran.index.admin');
+        Route::get('/lamaran/{lamaran}', [LamaranController::class, 'showAdmin'])->name('lamaran.show.admin');
+
+        Route::post('/lamaran/{lamaran}/approve', [LamaranController::class, 'approve'])->name('lamaran.approve');
+        Route::post('/lamaran/{lamaran}/reject', [LamaranController::class, 'reject'])->name('lamaran.reject');
     });
 
     // ===============================================
@@ -87,6 +94,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/lowongan/{lowongan}/apply', [LamaranController::class, 'create'])->name('lamaran.apply');
         Route::post('/lowongan/{lowongan}/apply', [LamaranController::class, 'store'])->name('lamaran.store');
 
-        // Rute Presensi (Next Step)
+        // Rute Presensi 
+        Route::post('/presensi/checkin', [PresensiController::class, 'checkin'])->name('presensi.checkin');
+        Route::post('/presensi/checkout', [PresensiController::class, 'checkout'])->name('presensi.checkout');
     });
 });

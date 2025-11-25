@@ -31,9 +31,14 @@
         <div class="d-flex align-items-center">
             {{-- Avatar Logic --}}
             @if(auth()->user()->foto_profil)
-            <img src="{{ asset('storage/'.auth()->user()->foto_profil) }}" width="35" height="35" class="rounded-circle me-2 object-fit-cover">
+            {{-- Tambahkan 'foto_profil/' setelah 'storage/' --}}
+            <img src="{{ asset('storage/foto_profil/'.auth()->user()->foto_profil) }}"
+                width="35" height="35"
+                class="rounded-circle me-2 object-fit-cover">
             @else
-            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random" width="35" height="35" class="rounded-circle me-2">
+            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random"
+                width="35" height="35"
+                class="rounded-circle me-2">
             @endif
 
             <div class="overflow-hidden">

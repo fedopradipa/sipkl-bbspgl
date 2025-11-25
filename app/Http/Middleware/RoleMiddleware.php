@@ -9,48 +9,52 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        // 1. Cek Login
         if (!Auth::check()) {
             return redirect('/login');
         }
 
         $user = Auth::user();
-        // Ambil role user, pastikan lowercase agar tidak sensitif huruf besar/kecil
-        $userRole = strtolower(trim($user->role->nama_role ?? 'guest'));
+        $rawRole = $user->role->nama_role ?? 'guest';
+        $userRoleClean = strtolower(trim($rawRole)); // Role yang sedang dimiliki user
+        $allowedRoles = []; // Daftar role yang diizinkan rute ini
 
-        // 2. JALUR KHUSUS SUPERADMIN (VIP Pass)
-        // Superadmin selalu boleh lewat kemanapun
-        if ($userRole === 'superadmin') {
-            return $next($request);
-        }
-
-        // 3. BERSIHKAN DAN PECAH DAFTAR ROLE YANG DIIZINKAN
-        // Masalah utama Anda ada disini sebelumnya.
-        // Kita harus memecah string "superadmin|admin" menjadi array terpisah.
-        $allowedRoles = [];
-
+        // 1. BERSIHKAN DAN PECAH DAFTAR ROLE YANG DIIZINKAN DARI ROUTE
         foreach ($roles as $role) {
-            // Pecah berdasarkan pipa '|' jika ada
             $parts = explode('|', $role);
-
             foreach ($parts as $part) {
-                // Masukkan ke array baru dalam format lowercase
                 $allowedRoles[] = strtolower(trim($part));
             }
         }
 
-        // 4. CEK APAKAH ROLE USER ADA DI ARRAY YANG SUDAH BERSIH
-        // Sekarang kita bandingkan "admin" dengan ["superadmin", "admin"]
-        if (in_array($userRole, $allowedRoles)) {
+        // 2. LOGIKA BYPASS SUPERADMIN
+        if ($userRoleClean === 'superadmin') {
             return $next($request);
         }
 
-        // Jika gagal
-        return redirect()->route('dashboard')->with('error', 'Akses Ditolak.');
+        // 3. CEK KECOCOKAN
+        if (in_array($userRoleClean, $allowedRoles)) {
+            return $next($request);
+        }
+
+        // 4. JIKA GAGAL (Akses Ditolak), TENTUKAN KEMANA HARUS DIKEMBALIKAN
+
+        $errorMessage = 'Akses Ditolak. Anda tidak diizinkan mengakses fitur ' . strtoupper($allowedRoles[0] ?? 'ini') . '.';
+
+        // Tentukan rute dashboard spesifik untuk user yang sedang login
+        if ($user->isSuperadmin()) {
+            $redirectRoute = 'superadmin.dashboard';
+        } elseif ($user->isAdmin()) {
+            $redirectRoute = 'admin.dashboard';
+        } elseif ($user->isPeserta()) {
+            $redirectRoute = 'peserta.dashboard';
+        } else {
+            // Fallback jika role tidak jelas
+            $redirectRoute = '/';
+        }
+
+        // Redirect ke dashboard yang benar dengan pesan error
+        return redirect()->route($redirectRoute)->with('error', $errorMessage);
     }
 }

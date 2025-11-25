@@ -60,6 +60,10 @@ class User extends Authenticatable
         // Primary key di tabel 'roles' adalah 'id_role'
         return $this->belongsTo(Role::class, 'role_id', 'id_role');
     }
+    public function biodata()
+    {
+        return $this->hasOne(ProfilePeserta::class, 'pengguna_id');
+    }
 
 // =================================================================
     // BAGIAN PENTING: HELPER ROLE (WAJIB ADA)

@@ -2,18 +2,6 @@
 
 @section('content')
 <div class="container py-4">
-  {{-- SECTION HEADER: Sapaan --}}
-  <div class="d-flex align-items-center justify-content-between mb-4">
-    <div>
-      <h5 class="text-muted mb-0 small">Halo, Semangat Pagi!</h5>
-      <h2 class="fw-bold text-dark">{{ $user->nama }}</h2>
-    </div>
-    <div class="bg-white p-2 rounded-circle shadow-sm">
-      {{-- Placeholder Foto Profil --}}
-      <i class="fas fa-user-circle fa-2x text-secondary"></i>
-    </div>
-  </div>
-
   {{-- SECTION UTAMA: STATE-BASED UI --}}
   @switch($state)
 
@@ -135,12 +123,15 @@
 
         <form action="{{ route('presensi.checkout') }}" method="POST">
           @csrf
+          {{-- TAMBAHKAN INI DI FORM CHECKOUT JUGA AGAR LAT_PULANG TERISI --}}
+          <input type="hidden" name="latitude" id="lat_out">
+          <input type="hidden" name="longitude" id="long_out">
+
           <button type="submit" class="btn btn-danger fw-bold btn-lg px-5 rounded-pill shadow">
             CHECK OUT PULANG
           </button>
         </form>
       </div>
-
       @else
       {{-- Sudah Selesai Hari Ini --}}
       <div class="py-3">
@@ -214,9 +205,20 @@
 <script>
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
-      if (document.getElementById('lat')) {
-        document.getElementById('lat').value = position.coords.latitude;
-        document.getElementById('long').value = position.coords.longitude;
+      // Isi form Check In
+      const latIn = document.getElementById('lat');
+      const longIn = document.getElementById('long');
+      if (latIn && longIn) {
+        latIn.value = position.coords.latitude;
+        longIn.value = position.coords.longitude;
+      }
+
+      // Isi form Check Out (Tambahan)
+      const latOut = document.getElementById('lat_out');
+      const longOut = document.getElementById('long_out');
+      if (latOut && longOut) {
+        latOut.value = position.coords.latitude;
+        longOut.value = position.coords.longitude;
       }
     });
   }

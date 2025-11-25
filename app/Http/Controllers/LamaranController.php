@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Lamaran; // Pastikan Model ini ada (atau LamaranPkl sesuai file Anda)
 use App\Models\Lowongan;
+use App\Models\Pembimbing;
+use App\Models\pembimbings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -65,7 +67,117 @@ class LamaranController extends Controller
         return redirect()->route('peserta.dashboard')
             ->with('success', 'Lamaran berhasil dikirim! Menunggu verifikasi admin.');
     }
+    /**
+     * Menangani persetujuan (penerimaan) lamaran oleh Admin.
+     * Ini dipanggil saat Admin menekan tombol "Terima" di modal.
+     */
+    /**
+     * Menangani persetujuan (penerimaan) lamaran oleh Admin.
+     */
+    public function approve(Request $request, Lamaran $lamaran)
+    {
+        // Cek keamanan agar hanya Admin yang bisa mengakses
+        if (!auth()->user()->isAdmin() && !auth()->user()->isSuperadmin()) {
+            abort(403);
+        }
 
+        $lowongan = $lamaran->lowongan; // Pastikan relasi Lowongan sudah terambil
+
+        // 1. Validasi Input Modal Admin
+        $validated = $request->validate([
+            // FIX 1: Ubah 'pembimbings_id' menjadi 'pembimbing_id'
+            // FIX 2: Ubah 'exists:pembimbings,id' menjadi 'exists:pembimbing,id' (sesuai nama tabel master)
+            'pembimbing_id' => 'required|exists:pembimbings,id',
+
+            'tgl_mulai_resmi' => 'required|date|after_or_equal:' . $lowongan->window_start_date->format('Y-m-d'),
+            'tgl_selesai_resmi' => 'required|date|after:tgl_mulai_resmi',
+            'hari_kerja_resmi' => 'required|array|min:1',
+        ], [
+            'hari_kerja_resmi.required' => 'Admin wajib memilih hari kerja resmi.',
+        ]);
+
+        // 2. Logic Update Status & Data Resmi
+        $lamaran->update([
+            'status' => 'diterima',
+            // FIX 3: Ubah 'pembimbings_id' menjadi 'pembimbing_id'
+            'pembimbing_id' => $validated['pembimbing_id'],
+
+            'tgl_mulai_resmi' => $validated['tgl_mulai_resmi'],
+            'tgl_selesai_resmi' => $validated['tgl_selesai_resmi'],
+            'hari_kerja_resmi' => $validated['hari_kerja_resmi'],
+        ]);
+
+        // 3. Output: Auto-Generate PDF Surat Balasan (Placeholder)
+        $pathSurat = 'storage/surat/balasan_' . $lamaran->id . '.pdf';
+        $lamaran->update(['path_surat_balasan' => $pathSurat]);
+
+        return back()->with('success', 'Peserta berhasil diterima dan surat balasan telah dibuat.');
+    }
+    /**
+     * Menangani penolakan lamaran oleh Admin.
+     */
+    public function reject(Request $request, Lamaran $lamaran)
+    {
+        if (!auth()->user()->isAdmin() && !auth()->user()->isSuperadmin()) {
+            abort(403);
+        }
+
+        $request->validate(['catatan_admin' => 'required|string|min:10']);
+
+        $lamaran->update([
+            'status' => 'ditolak',
+            'catatan_admin' => $request->catatan_admin,
+        ]);
+
+        // Opsional: Kirim notifikasi email ke peserta
+
+        return back()->with('success', 'Lamaran berhasil ditolak dan status diperbarui.');
+    }
+
+    public function indexAdmin(Request $request)
+    {
+        $status = $request->input('status', 'pending'); // Default: Filter yang statusnya 'pending'
+        $search = $request->input('keyword');
+
+        $lamarans = Lamaran::with(['pengguna', 'lowongan']) // EAGER LOADING (BEST PRACTICE)
+            ->when($status !== 'all', function ($query) use ($status) {
+                return $query->where('status', $status);
+            })
+            ->when($search, function ($query, $search) {
+                // BEST PRACTICE: Search Across Relations (Mencari di tabel pengguna dan lowongan)
+                return $query->whereHas('pengguna', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%"); // Menggunakan 'name' dari tabel users
+                })->orWhereHas('lowongan', function ($q) use ($search) {
+                    $q->where('judul', 'like', "%{$search}%")
+                        ->orWhere('divisi', 'like', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate(15);
+
+        // Ambil data pembimbings aktif untuk Dropdown di Modal Persetujuan
+        $mentors = Pembimbing::where('is_active', true)->get(['id', 'nama']);
+
+        return view('admin.lamaran.index', [
+            'lamarans' => $lamarans,
+            'mentors' => $mentors,
+            'currentStatus' => $status,
+            'title' => 'Verifikasi Lamaran',
+            'header' => 'Daftar Lamaran Masuk'
+        ]);
+    }
+
+
+    public function showAdmin($id)
+    {
+        $lamaran = \App\Models\Lamaran::with(['pengguna.biodata', 'lowongan'])->findOrFail($id);
+
+        // 1. Definisikan variabel title
+        $title = 'Detail Lamaran Peserta';
+
+        // 2. Masukkan 'title' ke dalam compact
+        return view('admin.lamaran.show', compact('lamaran', 'title'));
+    }
     /**
      * -------------------------------------------------------
      * PRIVATE METHODS (HELPER)
