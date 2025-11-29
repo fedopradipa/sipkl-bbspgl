@@ -74,6 +74,11 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/lamaran/{lamaran}/approve', [LamaranController::class, 'approve'])->name('lamaran.approve');
         Route::post('/lamaran/{lamaran}/reject', [LamaranController::class, 'reject'])->name('lamaran.reject');
+        // Di dalam group role:admin
+        Route::delete('/lamaran/{lamaran}', [LamaranController::class, 'destroy'])->name('lamaran.destroy');
+
+        // Route Laporan Presensi
+        Route::get('/laporan/presensi', [App\Http\Controllers\LaporanController::class, 'presensi'])->name('laporan.presensi');
     });
 
     // ===============================================
@@ -97,5 +102,9 @@ Route::middleware('auth')->group(function () {
         // Rute Presensi 
         Route::post('/presensi/checkin', [PresensiController::class, 'checkin'])->name('presensi.checkin');
         Route::post('/presensi/checkout', [PresensiController::class, 'checkout'])->name('presensi.checkout');
+
+
+        Route::get('/presensi/riwayat', [App\Http\Controllers\PresensiController::class, 'riwayat'])
+            ->name('presensi.riwayat');
     });
 });

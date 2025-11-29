@@ -65,48 +65,63 @@
 
     approveModal.addEventListener('show.bs.modal', function(event) {
       const button = event.relatedTarget;
+
+      // Ambil Data dari Tombol
       const lamaranId = button.getAttribute('data-lamaran-id');
-      const startUsulan = button.getAttribute('data-start-usulan');
-      const endUsulan = button.getAttribute('data-end-usulan'); // Ambil end date
-      const daysUsulan = button.getAttribute('data-days-usulan'); // Ambil array hari kerja
+      const currentStatus = button.getAttribute('data-current-status');
 
+      // Data untuk Form (Prioritas ke Data Resmi jika Mode Edit)
+      const pembimbingId = button.getAttribute('data-resmi-pembimbing');
+      const tglStart = button.getAttribute('data-resmi-start');
+      const tglEnd = button.getAttribute('data-resmi-end');
+      const daysJson = button.getAttribute('data-resmi-days');
+
+      // Setup Form Action
       const form = document.getElementById('approveForm');
-
-      // 1. SET FORM ACTION (URI)
       form.action = '/lamaran/' + lamaranId + '/approve';
 
-      // 2. SET TANGGAL RESMI (Default ke Tanggal Usulan)
-      document.getElementById('tgl_mulai_resmi').value = startUsulan;
-      document.getElementById('tgl_selesai_resmi').value = endUsulan; // <-- Otomatis terisi
+      // Setup Judul Modal (UX)
+      const modalTitle = document.getElementById('approveModalLabel');
+      const submitBtn = form.querySelector('button[type="submit"]');
 
-      // Tampilkan tanggal usulan di bawah input
-      document.getElementById('usulanStart').textContent = new Date(startUsulan).toLocaleDateString('id-ID', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      if (currentStatus === 'diterima') {
+        modalTitle.innerText = 'Edit Data Magang';
+        modalTitle.classList.remove('text-success'); // Hapus warna lama jika ada logic CSS
+        submitBtn.innerText = 'Simpan Perubahan';
+        submitBtn.classList.replace('btn-success', 'btn-warning');
+      } else {
+        modalTitle.innerText = 'Finalisasi Penerimaan';
+        submitBtn.innerText = 'Terima Peserta';
+        submitBtn.classList.replace('btn-warning', 'btn-success');
+      }
 
-      // 3. OPSI UTAMA: CENTANG HARI KERJA OTOMATIS
+      // ISI FORM INPUT
+      // 1. Pembimbing (Set Selected)
+      const selectPembimbing = document.getElementById('pembimbing_id');
+      selectPembimbing.value = pembimbingId || ""; // Reset jika null
 
-      // Pertama, hapus semua centang yang mungkin tersisa dari sesi sebelumnya
-      document.querySelectorAll('#approveModal input[name="hari_kerja_resmi[]"]').forEach(checkbox => {
-        checkbox.checked = false;
-      });
+      // 2. Tanggal
+      document.getElementById('tgl_mulai_resmi').value = tglStart;
+      document.getElementById('tgl_selesai_resmi').value = tglEnd;
 
-      if (daysUsulan) {
-        // Karena kita kirim data-days-usulan dari PHP (yang sudah di-cast jadi array INDO), 
-        // kita harus parse string JSON itu kembali ke JavaScript Array.
-        const selectedDays = JSON.parse(daysUsulan);
+      // Info text kecil
+      const usulanRaw = button.getAttribute('data-usulan-start');
+      document.getElementById('usulanStart').textContent = usulanRaw; // Tampilkan usulan asli sebagai pengingat
 
-        selectedDays.forEach(dayIndo => {
-          // Cari checkbox yang value-nya (Bahasa Indonesia) sama
-          // Catatan: Value checkbox di modal ini adalah Bahasa Indonesia (Senin, Selasa, dst)
-          const checkbox = document.querySelector(`#approveModal input[name="hari_kerja_resmi[]"][value="${dayIndo}"]`);
+      // 3. Checkbox Hari Kerja
+      // Reset dulu semua centang
+      document.querySelectorAll('#approveModal input[name="hari_kerja_resmi[]"]').forEach(box => box.checked = false);
 
-          if (checkbox) {
-            checkbox.checked = true; // Centang otomatis
-          }
-        });
+      if (daysJson) {
+        try {
+          const daysArray = JSON.parse(daysJson);
+          daysArray.forEach(day => {
+            const box = document.querySelector(`#approveModal input[value="${day}"]`);
+            if (box) box.checked = true;
+          });
+        } catch (e) {
+          console.error("Error parsing JSON days", e);
+        }
       }
     });
   });

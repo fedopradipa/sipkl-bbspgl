@@ -30,18 +30,13 @@
       <i class="fas fa-check-double fa-fw me-2"></i>Verifikasi Lamaran
     </a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link text-dark" href="#">
-      <i class="fas fa-hand-holding fa-fw me-2"></i>Peminjaman Alat (Contoh)
-    </a>
-  </li>
-
   <li class="nav-heading px-3 mt-3 mb-1 text-muted text-uppercase small">
     Laporan
   </li>
 
   <li class="nav-item">
-    <a class="nav-link text-dark" href="#">
+    <a class="nav-link {{ request()->routeIs('laporan.presensi') ? 'active' : 'text-dark' }}"
+      href="{{ route('laporan.presensi') }}">
       <i class="fas fa-file-pdf fa-fw me-2"></i>Laporan Presensi
     </a>
   </li>

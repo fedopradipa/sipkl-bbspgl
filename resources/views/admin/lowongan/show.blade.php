@@ -30,11 +30,11 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="window_start_date" class="form-label">Tanggal Mulai Pendaftaran</label>
-                    <input type="date" class="form-control" id="window_start_date" name="window_start_date" value="{{ $lowongan->window_start_date }}" disabled>
+                    <input type="date" class="form-control" id="window_start_date" name="window_start_date" value="{{ $lowongan->window_start_date?->format('Y-m-d')  }}" disabled>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="window_end_date" class="form-label">Tanggal Selesai Pendaftaran</label>
-                    <input type="date" class="form-control" id="window_end_date" name="window_end_date" value="{{ $lowongan->window_end_date }}" disabled>
+                    <input type="date" class="form-control" id="window_end_date" name="window_end_date" value="{{ $lowongan->window_end_date?->format('Y-m-d') }}" disabled>
                 </div>
             </div>
             <div class="mb-3">

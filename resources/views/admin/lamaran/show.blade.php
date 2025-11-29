@@ -2,18 +2,34 @@
 
 @section('content')
 <div class="container-fluid">
-  {{-- Tombol Kembali --}}
-  <a href="{{ route('lamaran.index.admin') }}" class="btn btn-secondary mb-4">
-    <i class="fas fa-arrow-left"></i> Kembali
-  </a>
+
+  {{-- 1. DATA PREPARATION BLOCK (Best Practice Clean-up) --}}
+  @php
+  // Persiapan data atribut untuk Modal (mengurangi redundansi di tombol)
+  $resmiStart = $lamaran->tgl_mulai_resmi ? $lamaran->tgl_mulai_resmi->format('Y-m-d') : $lamaran->tgl_mulai_usulan->format('Y-m-d');
+  $resmiEnd = $lamaran->tgl_selesai_resmi ? $lamaran->tgl_selesai_resmi->format('Y-m-d') : $lamaran->tgl_selesai_usulan->format('Y-m-d');
+  $resmiDays = $lamaran->hari_kerja_resmi ? json_encode($lamaran->hari_kerja_resmi) : json_encode($lamaran->hari_kerja_usulan);
+  $pembimbingId = $lamaran->pembimbing_id ?? '';
+
+  // Kumpulan semua atribut data untuk disebar (spread) di tombol
+  $modalDataAttributes = [
+  'lamaran-id' => $lamaran->id,
+  'current-status' => $lamaran->status,
+  'usulan-start' => $lamaran->tgl_mulai_usulan->format('Y-m-d'),
+  'resmi-pembimbing' => $pembimbingId,
+  'resmi-start' => $resmiStart,
+  'resmi-end' => $resmiEnd,
+  'resmi-days' => $resmiDays,
+  ];
+  @endphp
 
   {{-- ROW UTAMA: GRID dengan GAP --}}
-  <div class="row g-4"> {{-- Gunakan g-4 untuk gap antar kolom --}}
+  <div class="row g-4 mb-5 pb-5"> {{-- Tambahkan margin bottom untuk Fixed Footer --}}
 
-    {{-- KOLOM KIRI (md-4): Info Lamaran & Foto Peserta --}}
+    {{-- KOLOM KIRI (md-4): Info Lamaran & Penerimaan Resmi --}}
     <div class="col-md-4">
 
-      {{-- KARTU A: Informasi Lamaran (Status & Durasi) --}}
+      {{-- KARTU A: Info Lamaran --}}
       <div class="card shadow mb-4">
         <div class="card-header py-3 bg-primary text-white">
           <h6 class="m-0 font-weight-bold">Info Lamaran</h6>
@@ -50,7 +66,6 @@
               {{ ucfirst($lamaran->status) }}
             </span>
           </div>
-          {{-- Catatan Penolakan (Hanya jika ditolak) --}}
           @if($lamaran->status == 'ditolak')
           <div class="alert alert-danger small mt-3 p-2">
             <strong>Catatan Admin:</strong> {{ $lamaran->catatan_admin ?? 'Tidak ada catatan.' }}
@@ -64,7 +79,6 @@
       <div class="card shadow border-success border-3 mt-4">
         <div class="card-header py-3 fw-bold bg-success text-white">Data Penerimaan Resmi</div>
         <div class="card-body">
-
           <h5 class="fw-bold text-dark">Pembimbing Lapangan</h5>
           <p class="fs-5 mb-1">{{ $lamaran->pembimbing->nama ?? '—' }}</p>
           <p class="text-muted small">{{ $lamaran->pembimbing->jabatan ?? 'Belum Ditetapkan' }}</p>
@@ -104,22 +118,17 @@
 
           <div class="row align-items-center mb-4">
             {{-- Foto Profil --}}
-            {{-- Bagian Foto Profil Peserta di show.blade.php --}}
             <div class="col-md-3 text-center">
-
-              {{-- PERBAIKAN DISINI: Ambil dari $lamaran->pengguna->foto_profil --}}
               @if($lamaran->pengguna->foto_profil)
               <img src="{{ asset('storage/foto_profil/' . $lamaran->pengguna->foto_profil) }}"
                 alt="Foto Profil {{ $lamaran->pengguna->name }}"
                 class="img-fluid rounded-circle shadow-sm"
                 style="width: 120px; height: 120px; object-fit: cover;">
               @else
-              {{-- Placeholder --}}
               <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width: 120px; height: 120px;">
                 <i class="fas fa-user-circle fa-4x text-muted"></i>
               </div>
               @endif
-
             </div>
             {{-- Nama & Email --}}
             <div class="col-md-9">
@@ -149,17 +158,12 @@
             <div class="col-md-4 fw-bold text-secondary">Nomor HP/WA</div>
             <div class="col-md-8">: {{ $lamaran->pengguna->biodata->no_hp ?? '-' }}</div>
           </div>
-          <div class="row mb-2">
-            <div class="col-md-4 fw-bold text-secondary">Alamat</div>
-            <div class="col-md-8">: {{ $lamaran->pengguna->biodata->alamat ?? '-' }}</div>
-          </div>
 
           <hr class="my-4">
 
           {{-- Bagian File Pendukung --}}
           <h6 class="fw-bold text-dark mb-3">Dokumen Pendukung</h6>
           <div class="row g-3">
-
             {{-- File CV --}}
             <div class="col-md-6">
               <div class="card h-100 shadow-sm py-2">
@@ -205,7 +209,7 @@
           @else
           <div class="alert alert-warning mt-3" role="alert">
             <i class="fas fa-exclamation-triangle me-2"></i>
-            Pengguna ini belum melengkapi biodata profilnya (NIM/Kampus, dll).
+            Pengguna ini belum melengkapi biodata profilnya.
           </div>
           @endif
         </div>
@@ -214,7 +218,71 @@
         </div>
       </div>
     </div> {{-- End col-md-8 --}}
-
   </div> {{-- End row utama --}}
-</div>
-@endsection
+
+  {{-- 2. ACTION BAR (Fixed Bottom) --}}
+  <div class="fixed-bottom bg-white shadow-lg border-top py-3">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+
+      {{-- Tombol Kembali --}}
+      <a href="{{ route('lamaran.index.admin') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar Verifikasi
+      </a>
+
+      {{-- Tombol Aksi --}}
+      <div class="d-flex gap-2">
+
+        {{-- TOMBOL HAPUS --}}
+        <form action="{{ route('lamaran.destroy', $lamaran->id) }}" method="POST" onsubmit="return confirm('Hapus permanen data ini? Peserta akan hilang dari sistem.');">
+          @csrf @method('DELETE')
+          <button type="submit" class="btn btn-outline-danger">
+            <i class="fas fa-trash me-1"></i> Hapus Permanen
+          </button>
+        </form>
+
+        {{-- LOGIKA UTAMA --}}
+        @if($lamaran->status == 'pending')
+        {{-- Hanya muncul jika PENDING --}}
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal" data-lamaran-id="{{ $lamaran->id }}">
+          <i class="fas fa-times me-1"></i> Tolak Lamaran
+        </button>
+        <button class="btn btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#approveModal"
+          @foreach($modalDataAttributes as $key=> $value)
+          data-{{ $key }}="{{ $value }}"
+          @endforeach
+          >
+          <i class="fas fa-check me-1"></i> Terima Peserta
+        </button>
+
+        @elseif($lamaran->status == 'diterima')
+        {{-- Hanya muncul jika DITERIMA (Edit/Finalisasi) --}}
+        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal" data-lamaran-id="{{ $lamaran->id }}">
+          <i class="fas fa-times me-1"></i> Tolak Lamaran
+        </button>
+        <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#approveModal"
+          @foreach($modalDataAttributes as $key=> $value)
+          data-{{ $key }}="{{ $value }}"
+          @endforeach
+          >
+          <i class="fas fa-edit me-1"></i> Edit Data Resmi
+        </button>
+
+        @elseif($lamaran->status == 'ditolak')
+        {{-- Hanya muncul jika DITOLAK (Re-evaluasi) --}}
+        <button class="btn btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#approveModal"
+          @foreach($modalDataAttributes as $key=> $value)
+          data-{{ $key }}="{{ $value }}"
+          @endforeach
+          >
+          <i class="fas fa-redo me-1"></i> Terima Ulang
+        </button>
+        @endif
+      </div>
+    </div>
+  </div>
+
+  {{-- Memanggil Modal Persetujuan dan Penolakan --}}
+  @include('admin.lamaran.partials.approve_modal')
+  @include('admin.lamaran.partials.reject_modal')
+
+  @endsection

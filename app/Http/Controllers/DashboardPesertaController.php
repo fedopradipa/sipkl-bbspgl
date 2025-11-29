@@ -17,43 +17,63 @@ class DashboardPesertaController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Ambil Data Lamaran Terakhir
-        // Kita gunakan Eager Loading (with) agar query lebih efisien
+        // 1. Ambil Data Lamaran
         $lamaran = Lamaran::with(['lowongan', 'pembimbing'])
             ->where('pengguna_id', $user->id)
             ->latest()
             ->first();
 
-        // Skenario A: User Baru (Belum pernah melamar)
         if (!$lamaran) {
-            return view('peserta.dashboard.empty', [
-                'title' => 'Selamat Datang'
-            ]);
+            return view('peserta.dashboard.empty', ['title' => 'Selamat Datang']);
         }
 
-        // 2. Fitur "Lazy Auto-Close"
-        // Cek apakah kemarin lupa checkout? Jika ya, sistem tutupkan otomatis.
+        // 2. Auto-Close Check
         $this->runAutoCloseCheck($lamaran->id);
 
-        // 3. Tentukan Status UI (Pending / Pra-Mulai / Active / Selesai)
+        // 3. Tentukan State UI
         $state = $this->determineState($lamaran);
 
-        // 4. Cek Data Presensi HARI INI (Khusus jika status Active)
-        // Ini untuk menentukan tombol apa yang muncul: "Check In" atau "Check Out"
+        // 4. LOGIC BARU: CEK HARI KERJA (Sabtu/Minggu vs Jadwal Resmi)
         $presensiHariIni = null;
+        $isHariKerja = false; // Default: Bukan hari kerja
+
         if ($state == 'active') {
-            $presensiHariIni = Presensi::where('lamaran_id', $lamaran->id)
-                ->whereDate('tanggal', Carbon::today())
-                ->first();
+            // A. Konversi Hari Ini ke Bahasa Indonesia
+            $englishDay = Carbon::now()->format('l');
+            $indoDays = [
+                'Sunday' => 'Minggu',
+                'Monday' => 'Senin',
+                'Tuesday' => 'Selasa',
+                'Wednesday' => 'Rabu',
+                'Thursday' => 'Kamis',
+                'Friday' => 'Jumat',
+                'Saturday' => 'Sabtu'
+            ];
+            $hariIni = $indoDays[$englishDay];
+
+            // B. Cek apakah hari ini ada di array 'hari_kerja_resmi'
+            // Gunakan array kosong [] sebagai fallback jika null
+            $jadwalKerja = $lamaran->hari_kerja_resmi ?? [];
+
+            // LOGIC UTAMA: Hanya jika hari ini ada di jadwal, aktifkan tombol
+            if (is_array($jadwalKerja) && in_array($hariIni, $jadwalKerja)) {
+                $isHariKerja = true;
+
+                // Ambil data presensi
+                $presensiHariIni = Presensi::where('lamaran_id', $lamaran->id)
+                    ->whereDate('tanggal', Carbon::today())
+                    ->first();
+            }
         }
 
         return view('peserta.dashboard.index', [
-            'title'    => 'Dashboard Peserta',
-            'header'   => 'Dashboard Saya',
-            'user'     => $user,
-            'lamaran'  => $lamaran,
-            'state'    => $state,
-            'presensi' => $presensiHariIni
+            'title'        => 'Dashboard Peserta',
+            'header'       => 'Dashboard Saya',
+            'user'         => $user,
+            'lamaran'      => $lamaran,
+            'state'        => $state,
+            'presensi'     => $presensiHariIni,
+            'isHariKerja'  => $isHariKerja, // <-- Variabel penting untuk View
         ]);
     }
 

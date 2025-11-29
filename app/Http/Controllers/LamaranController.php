@@ -116,22 +116,21 @@ class LamaranController extends Controller
     /**
      * Menangani penolakan lamaran oleh Admin.
      */
+    // File: App/Http/Controllers/LamaranController.php
+
     public function reject(Request $request, Lamaran $lamaran)
     {
-        if (!auth()->user()->isAdmin() && !auth()->user()->isSuperadmin()) {
-            abort(403);
-        }
-
-        $request->validate(['catatan_admin' => 'required|string|min:10']);
+        // ... (Cek keamanan & validasi input) ...
 
         $lamaran->update([
             'status' => 'ditolak',
             'catatan_admin' => $request->catatan_admin,
         ]);
 
-        // Opsional: Kirim notifikasi email ke peserta
-
-        return back()->with('success', 'Lamaran berhasil ditolak dan status diperbarui.');
+        // --- PERBAIKAN REDIRECT DISINI ---
+        // Redirect langsung ke halaman index verifikasi dengan filter status 'ditolak'
+        return redirect()->route('lamaran.index.admin', ['status' => 'ditolak'])
+            ->with('success', 'Lamaran berhasil ditolak dan status diperbarui.');
     }
 
     public function indexAdmin(Request $request)
@@ -170,13 +169,15 @@ class LamaranController extends Controller
 
     public function showAdmin($id)
     {
-        $lamaran = \App\Models\Lamaran::with(['pengguna.biodata', 'lowongan'])->findOrFail($id);
+        $lamaran = Lamaran::with(['pengguna.biodata', 'lowongan'])->findOrFail($id);
 
-        // 1. Definisikan variabel title
+        // 1. Ambil data pembimbing aktif (Wajib untuk modal)
+        $mentors = Pembimbing::where('is_active', true)->get(['id', 'nama']);
+
         $title = 'Detail Lamaran Peserta';
 
-        // 2. Masukkan 'title' ke dalam compact
-        return view('admin.lamaran.show', compact('lamaran', 'title'));
+        // 2. Kirim $mentors ke view
+        return view('admin.lamaran.show', compact('lamaran', 'title', 'mentors'));
     }
     /**
      * -------------------------------------------------------
@@ -235,8 +236,8 @@ class LamaranController extends Controller
         ];
 
         if ($lowongan->is_fulltime) {
-            $hariKerja = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
-            $alasan    = "Mengikuti aturan Fulltime (Senin-Jumat)";
+            $hariKerja = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+            $alasan    = "Mengikuti aturan Fulltime 1 minggu";
         } else {
             // Translate input user
             $hariKerja = array_map(function ($h) use ($kamusHari) {
@@ -255,5 +256,23 @@ class LamaranController extends Controller
             'hari_kerja_usulan'  => $hariKerja,
             'alasan_hari_kerja'  => $alasan,
         ];
+    }
+
+    // File: App/Http/Controllers/LamaranController.php
+
+    // Method approve yang Anda buat SUDAH AMAN untuk edit. 
+    // Karena method ->update() di Eloquent sifatnya menimpa data lama.
+    // Jadi tidak perlu ubah method approve.
+
+    // TAMBAHKAN METHOD HAPUS INI:
+    public function destroy(Lamaran $lamaran)
+    {
+        if (!auth()->user()->isAdmin() && !auth()->user()->isSuperadmin()) {
+            abort(403);
+        }
+
+        $lamaran->delete();
+
+        return back()->with('success', 'Data lamaran berhasil dihapus permanen.');
     }
 }

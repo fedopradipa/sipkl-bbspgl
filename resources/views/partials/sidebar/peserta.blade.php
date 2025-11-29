@@ -27,7 +27,7 @@
   @endphp
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('riwayat.kehadiran') ? 'active' : 'text-dark' }}" href="#"
+    <a class="nav-link {{ request()->routeIs('riwayat.kehadiran') ? 'active' : 'text-dark' }}" href="{{route('presensi.riwayat') }}"
       @if(!$isMagangActive) disabled @endif>
       <i class="fas fa-fingerprint fa-fw me-2"></i> Riwayat Kehadiran
     </a>
