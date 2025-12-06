@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title }}</title>
+    <link rel="icon" href="{{ asset('images/logo.png')  }}" type="image/x-icon">
+
     <!-- =============================================== -->
     <!-- STYLE/CSS AREA                                  -->
     <!-- =============================================== -->
@@ -43,24 +45,6 @@
 
             @include('partials.footer')
         </div>
-    </div>
-
-    @else
-    {{-- ==================================================== --}}
-    {{-- TAMPILAN 2: TAMU / GUEST                             --}}
-    {{-- Layout Full Width Biasa (Tanpa Sidebar)              --}}
-    {{-- ==================================================== --}}
-
-    <div class="guest-wrapper">
-        @include('partials.navbar')
-
-        <main class="flex-grow-1">
-            @yield('content')
-        </main>
-
-        <footer class="bg-dark text-white py-4 mt-auto text-center">
-            <small>&copy; {{ date('Y') }} BBSPGL Career</small>
-        </footer>
     </div>
 
     @endauth

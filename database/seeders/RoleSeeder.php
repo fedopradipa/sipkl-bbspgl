@@ -14,17 +14,17 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         // Gunakan firstOrCreate untuk menghindari duplikat jika seeder dijalankan lagi
-        
+
         // 1. Buat Superadmin (ID 1)
         Role::firstOrCreate(
             ['id_role' => 1], // Cek berdasarkan Primary Key (id_role)
-            ['nama_role' => 'superadmin'] // Data yang akan dibuat jika tidak ada
+            ['nama_role' => 'admin'] // Data yang akan dibuat jika tidak ada
         );
-        
+
         // 2. Buat Admin (ID 2)
         Role::firstOrCreate(
             ['id_role' => 2], // Cek berdasarkan Primary Key (id_role)
-            ['nama_role' => 'admin'] // Data yang akan dibuat jika tidak ada
+            ['nama_role' => 'peserta'] // Data yang akan dibuat jika tidak ada
         );
     }
 }

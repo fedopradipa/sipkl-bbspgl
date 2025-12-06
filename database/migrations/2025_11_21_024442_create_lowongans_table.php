@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('judul');
             $table->string('divisi');
             $table->text('deskripsi')->nullable();
-            $table->integer('kuota')->default(1);
 
             // Validasi Periode
             $table->date('window_start_date');
@@ -29,6 +28,12 @@ return new class extends Migration
             // Validasi Jam
             $table->time('jam_masuk_standar')->default('08:00:00');
             $table->time('jam_pulang_standar')->default('16:00:00');
+
+            // 2. Jurusan Terkait (String)
+            $table->string('jurusan_terkait')->nullable();
+
+            // 3. Fasilitas (Text)
+            $table->text('fasilitas')->nullable();
 
             $table->boolean('is_open')->default(true);
             $table->timestamps();

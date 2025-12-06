@@ -34,7 +34,7 @@ return new class extends Migration
             $table->json('hari_kerja_resmi')->nullable(); // Acuan untuk Absensi
 
             // File
-            $table->string('path_surat_balasan')->nullable();
+            $table->string('file_surat_pengantar')->nullable();
             $table->string('path_laporan_akhir')->nullable();
 
             $table->timestamps();

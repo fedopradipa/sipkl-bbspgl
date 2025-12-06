@@ -161,51 +161,35 @@
 
           <hr class="my-4">
 
-          {{-- Bagian File Pendukung --}}
-          <h6 class="fw-bold text-dark mb-3">Dokumen Pendukung</h6>
-          <div class="row g-3">
-            {{-- File CV --}}
-            <div class="col-md-6">
-              <div class="card h-100 shadow-sm py-2">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Curriculum Vitae (CV)</div>
-                      @if(!empty($lamaran->pengguna->biodata->file_cv))
-                      <a href="{{ asset('storage/' . $lamaran->pengguna->biodata->file_cv) }}" target="_blank" class="btn btn-sm btn-primary mt-1">
-                        <i class="fas fa-download me-1"></i> Lihat / Unduh
-                      </a>
-                      @else
-                      <div class="text-danger small mt-1">Tidak ada file diunggah</div>
-                      @endif
-                    </div>
-                    <div class="col-auto"><i class="fas fa-file-pdf fa-2x text-gray-300"></i></div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {{-- File Transkrip / Proposal --}}
-            <div class="col-md-6">
-              <div class="card h-100 shadow-sm py-2">
-                <div class="card-body">
-                  <div class="row align-items-center">
-                    <div class="col mr-2">
-                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Transkrip / Proposal</div>
-                      @if(!empty($lamaran->file_proposal))
-                      <a href="{{ asset('storage/' . $lamaran->file_proposal) }}" target="_blank" class="btn btn-sm btn-info mt-1 text-white">
-                        <i class="fas fa-download me-1"></i> Lihat / Unduh
-                      </a>
-                      @else
-                      <div class="text-danger small mt-1">Tidak ada file diunggah</div>
-                      @endif
-                    </div>
-                    <div class="col-auto"><i class="fas fa-file-alt fa-2x text-gray-300"></i></div>
+          {{-- File Surat Pengantar --}}
+          <div class="col-md-6">
+            <div class="card h-100 shadow-sm py-2">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Surat Pengantar</div>
+
+                    @if($lamaran->file_surat_pengantar)
+                    {{-- Tombol Download --}}
+                    <a href="{{ asset('storage/surat_pengantar/' . $lamaran->file_surat_pengantar) }}"
+                      target="_blank"
+                      class="btn btn-sm btn-primary mt-1">
+                      <i class="fas fa-download me-1"></i> Lihat / Unduh
+                    </a>
+                    @else
+                    <div class="text-danger small mt-1">File tidak dilampirkan</div>
+                    @endif
+                  </div>
+                  <div class="col-auto">
+                    <i class="fas fa-envelope-open-text fa-2x text-gray-300"></i>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
+
           @else
           <div class="alert alert-warning mt-3" role="alert">
             <i class="fas fa-exclamation-triangle me-2"></i>
@@ -235,7 +219,7 @@
         {{-- TOMBOL HAPUS --}}
         <form action="{{ route('lamaran.destroy', $lamaran->id) }}" method="POST" onsubmit="return confirm('Hapus permanen data ini? Peserta akan hilang dari sistem.');">
           @csrf @method('DELETE')
-          <button type="submit" class="btn btn-outline-danger">
+          <button type="submit" class="btn btn-danger ">
             <i class="fas fa-trash me-1"></i> Hapus Permanen
           </button>
         </form>
@@ -243,7 +227,7 @@
         {{-- LOGIKA UTAMA --}}
         @if($lamaran->status == 'pending')
         {{-- Hanya muncul jika PENDING --}}
-        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal" data-lamaran-id="{{ $lamaran->id }}">
+        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal" data-lamaran-id="{{ $lamaran->id }}">
           <i class="fas fa-times me-1"></i> Tolak Lamaran
         </button>
         <button class="btn btn-success fw-bold" data-bs-toggle="modal" data-bs-target="#approveModal"
@@ -256,7 +240,7 @@
 
         @elseif($lamaran->status == 'diterima')
         {{-- Hanya muncul jika DITERIMA (Edit/Finalisasi) --}}
-        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal" data-lamaran-id="{{ $lamaran->id }}">
+        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal" data-lamaran-id="{{ $lamaran->id }}">
           <i class="fas fa-times me-1"></i> Tolak Lamaran
         </button>
         <button class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#approveModal"

@@ -8,6 +8,7 @@ use App\Models\Pembimbing;
 use App\Models\pembimbings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class LamaranController extends Controller
@@ -57,11 +58,24 @@ class LamaranController extends Controller
                 'min_duration' => "Durasi magang kurang. Minimal {$lowongan->min_duration} bulan."
             ])->withInput();
         }
+        // --- LOGIKA UPLOAD FILE BARU ---
+        $pathSurat = null;
+        if ($request->hasFile('file_surat_pengantar')) {
+            $file = $request->file('file_surat_pengantar');
+            // Simpan dengan nama unik
+            $filename = 'surat_' . Auth::id() . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-        // 4. Persiapkan Data (Logic Hari Kerja + Translate Indo)
+            // Simpan ke folder storage/app/public/surat_pengantar
+            $file->storeAs('public/surat_pengantar', $filename);
+
+            $pathSurat = $filename; // Hanya simpan nama file di DB
+        }
+
+        //  Persiapkan Data (Logic Hari Kerja + Translate Indo)
         $finalData = $this->prepareData($request, $lowongan);
-
-        // 5. Simpan ke Database
+        // Masukkan path file ke array data
+        $finalData['file_surat_pengantar'] = $pathSurat;
+        // Simpan ke Database
         Lamaran::create($finalData);
 
         return redirect()->route('peserta.dashboard')
@@ -85,8 +99,6 @@ class LamaranController extends Controller
 
         // 1. Validasi Input Modal Admin
         $validated = $request->validate([
-            // FIX 1: Ubah 'pembimbings_id' menjadi 'pembimbing_id'
-            // FIX 2: Ubah 'exists:pembimbings,id' menjadi 'exists:pembimbing,id' (sesuai nama tabel master)
             'pembimbing_id' => 'required|exists:pembimbings,id',
 
             'tgl_mulai_resmi' => 'required|date|after_or_equal:' . $lowongan->window_start_date->format('Y-m-d'),
@@ -99,7 +111,6 @@ class LamaranController extends Controller
         // 2. Logic Update Status & Data Resmi
         $lamaran->update([
             'status' => 'diterima',
-            // FIX 3: Ubah 'pembimbings_id' menjadi 'pembimbing_id'
             'pembimbing_id' => $validated['pembimbing_id'],
 
             'tgl_mulai_resmi' => $validated['tgl_mulai_resmi'],
@@ -107,16 +118,11 @@ class LamaranController extends Controller
             'hari_kerja_resmi' => $validated['hari_kerja_resmi'],
         ]);
 
-        // 3. Output: Auto-Generate PDF Surat Balasan (Placeholder)
-        $pathSurat = 'storage/surat/balasan_' . $lamaran->id . '.pdf';
-        $lamaran->update(['path_surat_balasan' => $pathSurat]);
-
         return back()->with('success', 'Peserta berhasil diterima dan surat balasan telah dibuat.');
     }
     /**
      * Menangani penolakan lamaran oleh Admin.
      */
-    // File: App/Http/Controllers/LamaranController.php
 
     public function reject(Request $request, Lamaran $lamaran)
     {
@@ -204,12 +210,14 @@ class LamaranController extends Controller
             'tgl_selesai_usulan' => 'required|date|after:tgl_mulai_usulan',
             'hari_kerja'         => $lowongan->is_fulltime ? 'nullable' : 'required|array|min:1',
             'alasan_hari_kerja'  => $lowongan->is_fulltime ? 'nullable' : 'required|string',
+            'file_surat_pengantar' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ];
 
         $messages = [
             'tgl_mulai_usulan.after_or_equal' => 'Tanggal mulai tidak boleh sebelum periode lowongan.',
             'tgl_selesai_usulan.after'        => 'Tanggal selesai harus setelah tanggal mulai.',
             'hari_kerja.required'             => 'Anda wajib memilih minimal 1 hari kerja.',
+            'file_surat_pengantar' => 'Anda wajib menyertakan dokumen',
         ];
 
         return $request->validate($rules, $messages);
@@ -257,12 +265,6 @@ class LamaranController extends Controller
             'alasan_hari_kerja'  => $alasan,
         ];
     }
-
-    // File: App/Http/Controllers/LamaranController.php
-
-    // Method approve yang Anda buat SUDAH AMAN untuk edit. 
-    // Karena method ->update() di Eloquent sifatnya menimpa data lama.
-    // Jadi tidak perlu ubah method approve.
 
     // TAMBAHKAN METHOD HAPUS INI:
     public function destroy(Lamaran $lamaran)

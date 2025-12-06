@@ -29,20 +29,29 @@
             </div>
 
             <div class="mb-3">
-                <label for="kuota" class="form-label">Kuota <span class="text-danger">*</span></label>
-                <input type="number" class="form-control @error('kuota') is-invalid @enderror" id="kuota" name="kuota" value="{{ old('kuota', $lowongan->kuota) }}" min="1">
-                @error('kuota')
-                <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="mb-3">
                 <label for="deskripsi" class="form-label">Deskripsi Lowongan</label>
                 <textarea class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi" rows="5">{{ old('deskripsi', $lowongan->deskripsi) }}</textarea>
                 @error('deskripsi')
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
+
+            <div class="mb-3">
+                <label for="jurusan_terkait" class="form-label">Jurusan Terkait <span class="text-danger"></span></label>
+                <input type="text" class="form-control @error('jurusan_terkait') is-invalid @enderror" id="jurusan_terkait" name="jurusan_terkait" value="{{ old ('jurusan_terkait', $lowongan->jurusan_terkait)}}">
+                @error('jurusan_terkait')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="mb-3">
+                <label for="fasilitas" class="form-label">Fasilitas <span class="text-danger"></span></label>
+                <input type="text" class="form-control @error('fasilitas') is-invalid @enderror" id="fasilitas" name="fasilitas" value="{{ old('fasilitas', $lowongan->fasilitas) }}">
+                @error('fasilitas')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
 
             {{-- Validasi Periode --}}
             <fieldset class="border p-3 mb-3">

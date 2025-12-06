@@ -30,8 +30,20 @@
 
       {{-- Search --}}
       <div class="input-group input-group-sm shadow-sm" style="max-width: 250px;">
-        <input type="text" name="keyword" class="form-control" placeholder="Cari nama..." value="{{ request('keyword') }}">
-        <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+        <input
+          type="text"
+          name="keyword"
+          class="form-control"
+          placeholder="Cari nama..."
+          value="{{ request('keyword') }}">
+        <button class="btn btn-primary" type="submit">
+          <i class="fas fa-search"></i>
+        </button>
+        @if(request('keyword'))
+        <a href="{{ url()->current() }}" class="btn btn-outline-secondary" title="Hapus">
+          <i class="fas fa-times"></i>
+        </a>
+        @endif
       </div>
     </form>
   </div>

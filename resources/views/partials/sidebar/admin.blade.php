@@ -25,9 +25,25 @@
   </li>
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('lamaran.*') ? 'active' : 'text-dark' }}"
+    <a class="nav-link {{ request()->routeIs('lamaran.*') ? 'active' : 'text-dark' }} d-flex justify-content-between align-items-center"
       href="{{ route('lamaran.index.admin') }}">
-      <i class="fas fa-check-double fa-fw me-2"></i>Verifikasi Lamaran
+
+      {{-- Label Menu --}}
+      <div>
+        <i class="fas fa-check-double fa-fw me-2"></i>Verifikasi Lamaran
+      </div>
+
+      {{-- LOGIC COUNTER: Hitung lamaran status 'pending' --}}
+      @php
+      $pendingLamaranCount = \App\Models\Lamaran::where('status', 'pending')->count();
+      @endphp
+
+      {{-- Tampilkan Badge jika ada yang pending --}}
+      @if($pendingLamaranCount > 0)
+      <span class="badge bg-danger rounded-pill ms-auto">
+        {{ $pendingLamaranCount }}
+      </span>
+      @endif
     </a>
   </li>
   <li class="nav-item">
@@ -41,13 +57,27 @@
     </a>
   </li>
   <li class="nav-heading px-3 mt-3 mb-1 text-muted text-uppercase small">
-    Laporan
+    Presensi
   </li>
-
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('presensi.index.admin') ? 'active' : 'text-dark' }}"
       href="{{ route('presensi.index.admin') }}">
-      <i class="fas fa-file-pdf fa-fw me-2"></i>Laporan Presensi
+      <i class="fas fa-file-pdf fa-fw me-2"></i>Presensi Peserta
+    </a>
+  </li>
+
+  <li class="nav-heading px-3 mt-3 mb-1 text-muted text-uppercase small">
+    Manajemen Sistem
+  </li>
+
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('role.*') ? 'active' : 'text-dark' }}" href="{{ route('role.index') }}">
+      <i class="fas fa-user-shield fa-fw me-2"></i> Kelola Role
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('user.*') ? 'active' : 'text-dark' }}" href="{{ route('user.index') }}">
+      <i class="fas fa-users-cog fa-fw me-2"></i> Kelola User
     </a>
   </li>
 </ul>

@@ -26,7 +26,7 @@ class Lamaran extends Model
         'tgl_mulai_resmi',
         'tgl_selesai_resmi',
         'hari_kerja_resmi',
-        'path_surat_balasan',
+        'file_surat_pengantar',
         'path_laporan_akhir'
     ];
 

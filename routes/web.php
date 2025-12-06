@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\PembimbingController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\DashboardPesertaController;
@@ -33,6 +34,10 @@ Route::get('/lowongan-public/{lowongan}', [GuestController::class, 'show'])->nam
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [LoginController::class, 'login']);
+
+    // Register Routes (BARU)
+    Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('register', [RegisterController::class, 'register']);
 });
 
 Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
@@ -56,14 +61,16 @@ Route::middleware('auth')->group(function () {
         // 2. Resource Lowongan & Pembimbing (Admin & Superadmin boleh akses)
         Route::resource('lowongan', LowonganController::class);
         Route::resource('pembimbing', PembimbingController::class);
+
+        Route::resource('role', RoleController::class);
+        Route::resource('user', UserController::class);
     });
     // ===============================================
     // 3. RUTE KHUSUS SUPERADMIN
     // ===============================================
     Route::middleware('role:superadmin')->group(function () {
         Route::get('/superadmin/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard'); // Dashboard Superadmin
-        Route::resource('role', RoleController::class);
-        Route::resource('user', UserController::class);
+
     });
 
     // ===============================================
@@ -71,10 +78,13 @@ Route::middleware('auth')->group(function () {
     // ===============================================
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard'); // Dashboard Admin
+
+        Route::resource('role', RoleController::class);
+        Route::resource('user', UserController::class);
+
         // Kita juga butuh index/show lamaran untuk Admin
         Route::get('/lamaran', [LamaranController::class, 'indexAdmin'])->name('lamaran.index.admin');
         Route::get('/lamaran/{lamaran}', [LamaranController::class, 'showAdmin'])->name('lamaran.show.admin');
-
         Route::post('/lamaran/{lamaran}/approve', [LamaranController::class, 'approve'])->name('lamaran.approve');
         Route::post('/lamaran/{lamaran}/reject', [LamaranController::class, 'reject'])->name('lamaran.reject');
         Route::delete('/lamaran/{lamaran}', [LamaranController::class, 'destroy'])->name('lamaran.destroy');
@@ -86,7 +96,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/presensi/admin/update', [PresensiAdminController::class, 'updateAdmin'])->name('presensi.update.admin');
         Route::delete('/presensi/admin/{id}', [PresensiAdminController::class, 'destroy'])->name('presensi.destroy.admin');
 
-        // Di dalam middleware role:admin
 
         // MANAJEMEN IZIN
         Route::get('/verifikasi-izin', [IzinAdminController::class, 'index'])->name('izin.index.admin');

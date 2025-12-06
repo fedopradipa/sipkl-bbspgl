@@ -85,6 +85,6 @@ class LoginController extends Controller
         $request->session()->regenerateToken(); // Buat token CSRF baru
 
         // Redirect ke halaman login
-        return redirect()->route('login');
+        return redirect()->route('guest.home');
     }
 }

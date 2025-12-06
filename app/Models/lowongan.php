@@ -14,7 +14,6 @@ class Lowongan extends Model
     protected $fillable = [
         'judul',
         'divisi',
-        'kuota',
         'deskripsi',
         'is_open',
         'window_start_date',
@@ -22,7 +21,9 @@ class Lowongan extends Model
         'is_fulltime',
         'jam_masuk_standar',
         'jam_pulang_standar',
-        'min_duration'
+        'min_duration',
+        'jurusan_terkait',
+        'fasilitas',
     ];
 
     protected $casts = [

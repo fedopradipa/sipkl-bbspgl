@@ -125,8 +125,9 @@ class LowonganController extends Controller
         $rules = [
             'judul' => 'required|string|max:255',
             'divisi' => 'required|string|max:255',
-            'kuota' => 'required|integer|min:1',
             'deskripsi' => 'nullable|string',
+            'jurusan_terkait' => 'nullable|string',
+            'fasilitas' => 'nullable|string',
             'window_start_date' => 'required|date',
             'window_end_date' => 'required|date|after_or_equal:window_start_date',
             'min_duration' => 'required|integer|min:1',
@@ -135,6 +136,7 @@ class LowonganController extends Controller
             // Pastikan field boolean divalidasi juga agar masuk ke $validatedData
             'is_fulltime' => 'boolean',
             'is_open' => 'boolean',
+
         ];
 
         // 3. Pesan Error Bahasa Indonesia

@@ -2,10 +2,7 @@
 
 @section('content')
 <div class="container-fluid">
-
-  <h4 class="fw-bold text-primary mb-4">Verifikasi Izin & Sakit</h4>
-
-  {{-- Filter Status --}}
+  {{-- Filter Status (TAMPILAN TETAP SAMA) --}}
   <div class="card shadow-sm mb-4 border-0">
     <div class="card-body py-2">
       <div class="btn-group">
@@ -19,7 +16,7 @@
     </div>
   </div>
 
-  {{-- Tabel Data --}}
+  {{-- Tabel Data (TAMPILAN TETAP SAMA) --}}
   <div class="card shadow mb-4">
     <div class="card-body p-0">
       <div class="table-responsive">
@@ -77,21 +74,23 @@
               </td>
               <td class="text-end pe-4">
                 @if($item->status == 'pending')
-                <div class="btn-group">
-                  {{-- Tombol Approve (Langsung Submit) --}}
+                <div class="btn-group gap-1">
+                  {{-- Tombol Approve --}}
                   <form action="{{ route('izin.approve.admin', $item->id) }}" method="POST" onsubmit="return confirm('Setujui izin ini? Sistem akan otomatis mengisi absen peserta.');">
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-success rounded-start">
-                      <i class="fas fa-check"></i> Terima
+                    <button type="submit" class="btn btn-sm btn-success rounded-start" title="Terima">
+                      <i class="fas fa-check"></i>
                     </button>
                   </form>
 
-                  {{-- Tombol Reject (Modal) --}}
-                  <button type="button" class="btn btn-sm btn-danger rounded-end"
+                  {{-- Tombol Reject (FIXED) --}}
+                  {{-- Kita kirim data-url lengkap dari Laravel, bukan rakit di JS --}}
+                  <button type="button" class="btn btn-warning btn-sm"
                     data-bs-toggle="modal"
                     data-bs-target="#rejectIzinModal"
-                    data-id="{{ $item->id }}">
-                    <i class="fas fa-times"></i> Tolak
+                    data-url="{{ route('izin.reject.admin', $item->id) }}"
+                    title="Tolak">
+                    <i class="fas fa-times"></i>
                   </button>
                 </div>
                 @else
@@ -115,39 +114,7 @@
 
 </div>
 
-{{-- MODAL TOLAK --}}
-<div class="modal fade" id="rejectIzinModal" tabindex="-1">
-  <div class="modal-dialog">
-    <form id="formRejectIzin" method="POST" class="modal-content">
-      @csrf
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title">Tolak Pengajuan</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Alasan Penolakan <span class="text-danger">*</span></label>
-          <textarea name="catatan_admin" class="form-control" rows="3" required placeholder="Contoh: Bukti surat dokter tidak valid..."></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-        <button type="submit" class="btn btn-danger">Tolak Izin</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const rejectModal = document.getElementById('rejectIzinModal');
-    rejectModal.addEventListener('show.bs.modal', function(event) {
-      const btn = event.relatedTarget;
-      const id = btn.getAttribute('data-id');
-      // Set action form
-      document.getElementById('formRejectIzin').action = '/izin/' + id + '/reject';
-    });
-  });
-</script>
+{{-- INCLUDE MODAL DARI FOLDER PARTIALS --}}
+@include('admin.izin.partials.reject_modal')
 
 @endsection

@@ -23,13 +23,6 @@
                 @enderror
             </div>
 
-            <div class="mb-3">
-                <label for="kuota" class="form-label">Kuota <span class="text-danger">*</span></label>
-                <input type="number" class="form-control @error('kuota') is-invalid @enderror" id="kuota" name="kuota" value="{{ old('kuota', 1) }}" min="1">
-                @error('kuota')
-                <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
 
             <div class="mb-3">
                 <label for="deskripsi" class="form-label">Deskripsi Lowongan</label>
@@ -38,6 +31,25 @@
                 <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
             </div>
+            <div class="mb-3">
+                <label class="form-label ">Jurusan Terkait <span class="text-danger">*</span></label>
+                <input type="text" name="jurusan_terkait" class="form-control @error('jurusan_terkait') is-invalid @enderror"
+                    value="{{ old('jurusan_terkait') }}"
+                    placeholder="Contoh: Teknik Informatika, Sistem Informasi, DKV">
+                <div class="form-text">Pisahkan jurusan dengan koma.</div>
+                @error('jurusan_terkait') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            {{-- 3. Fasilitas --}}
+            <div class="mb-3">
+                <label class="form-label ">Fasilitas / Benefit</label>
+                <input type="text" name="fasilitas" class="form-control @error('fasilitas') is-invalid @enderror"
+                    value="{{ old('fasilitas') }}"
+                    placeholder="Contoh: Makan Siang, Sertifikat, Uang Transport">
+                @error('fasilitas') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            </div>
+
+            {{-- === AKHIR TAMBAHAN === --}}
 
             {{-- Validasi Periode --}}
             <fieldset class="border p-3 mb-3">

@@ -15,14 +15,18 @@
             <input type="text" class="form-control" id="divisi" name="divisi" value="{{ $lowongan->divisi }}" disabled>
         </div>
 
-        <div class="mb-3">
-            <label for="kuota" class="form-label">Kuota</label>
-            <input type="number" class="form-control" id="kuota" name="kuota" value="{{ $lowongan->kuota }}" disabled>
-        </div>
 
         <div class="mb-3">
             <label for="deskripsi" class="form-label">Deskripsi Lowongan</label>
             <textarea class="form-control" id="deskripsi" name="deskripsi" rows="5" disabled>{{ $lowongan->deskripsi }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="jurusan_terkait" class="form-label">Jurusan Terkait</label>
+            <input type="text" class="form-control" id="jurusan_terkait" name="jurusan_terkait" value="{{ $lowongan->jurusan_terkait}}" disabled>
+        </div>
+        <div class="mb-3">
+            <label for="fasilitas" class="form-label">Fasilitas</label>
+            <input type="text" class="form-control" id="fasilitas" name="fasilitas" value="{{ $lowongan->fasilitas}}" disabled>
         </div>
 
         <fieldset class="border p-3 mb-3">

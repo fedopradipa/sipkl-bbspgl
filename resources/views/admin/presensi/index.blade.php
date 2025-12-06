@@ -224,8 +224,8 @@
 
               {{-- Tombol Aksi --}}
               <td class="text-center">
-                <div class="btn-group" role="group">
-                  <button class="btn btn-sm btn-outline-warning"
+                <div class="btn-group gap-1" role="group">
+                  <button class="btn btn-warning btn-sm"
                     data-bs-toggle="modal"
                     data-bs-target="#editModal"
                     data-id="{{ $item->id }}"
@@ -233,12 +233,12 @@
                     data-pulang="{{ $item->jam_pulang }}"
                     data-status="{{ $item->status }}"
                     title="Edit Absen">
-                    <i class="fas fa-edit"></i>
+                    <i class="fas fa-pencil-alt"></i>
                   </button>
 
                   <form action="{{ route('presensi.destroy.admin', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data presensi ini?');">
                     @csrf @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
                       <i class="fas fa-trash"></i>
                     </button>
                   </form>
