@@ -178,7 +178,7 @@ class PresensiController extends Controller
             ->first();
 
         if (!$lamaran) {
-            return redirect()->route('dashboard')->with('error', 'Data magang tidak ditemukan.');
+            return redirect()->route('peserta.dashboard')->with('error', 'Data tidak ditemukan.');
         }
 
         // 2. Filter Tanggal (Default: Bulan Ini)
@@ -208,6 +208,9 @@ class PresensiController extends Controller
             'sampai' => $sampai
         ]);
     }
+
+
+
 
     /**
      * ------------------------------------------------------------------

@@ -35,8 +35,8 @@
   </li>
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('laporan.presensi') ? 'active' : 'text-dark' }}"
-      href="{{ route('laporan.presensi') }}">
+    <a class="nav-link {{ request()->routeIs('presensi.index.admin') ? 'active' : 'text-dark' }}"
+      href="{{ route('presensi.index.admin') }}">
       <i class="fas fa-file-pdf fa-fw me-2"></i>Laporan Presensi
     </a>
   </li>

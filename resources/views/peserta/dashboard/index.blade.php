@@ -73,7 +73,7 @@
   <div class="card border-0 shadow-sm mb-4 border-start border-primary border-5">
     <div class="card-body p-4">
       <h4 class="fw-bold text-primary mb-2">Selamat! Anda Diterima 🎉</h4>
-      <p class="text-muted mb-4">Masa magang Anda belum dimulai. Silakan persiapkan diri.</p>
+      <p class="text-muted mb-4">Masa PKL Anda belum dimulai. Silakan persiapkan diri.</p>
 
       <div class="row g-3">
         <div class="col-md-6">

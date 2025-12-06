@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardPesertaController;
 use App\Http\Controllers\LamaranController;
 use App\Http\Controllers\PesertaProfileController;
 use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\PresensiAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,11 +75,14 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/lamaran/{lamaran}/approve', [LamaranController::class, 'approve'])->name('lamaran.approve');
         Route::post('/lamaran/{lamaran}/reject', [LamaranController::class, 'reject'])->name('lamaran.reject');
-        // Di dalam group role:admin
         Route::delete('/lamaran/{lamaran}', [LamaranController::class, 'destroy'])->name('lamaran.destroy');
 
-        // Route Laporan Presensi
-        Route::get('/laporan/presensi', [App\Http\Controllers\LaporanController::class, 'presensi'])->name('laporan.presensi');
+        // Route Presensi
+        Route::get('/laporan/presensi', [PresensiAdminController::class, 'presensi'])->name('presensi.index.admin');
+        // CRUD Presensi Admin
+        Route::post('/presensi/admin/store', [PresensiAdminController::class, 'storeAdmin'])->name('presensi.store.admin');
+        Route::put('/presensi/admin/update', [PresensiAdminController::class, 'updateAdmin'])->name('presensi.update.admin');
+        Route::delete('/presensi/admin/{id}', [PresensiAdminController::class, 'destroy'])->name('presensi.destroy.admin');
     });
 
     // ===============================================

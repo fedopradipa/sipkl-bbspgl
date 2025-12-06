@@ -96,63 +96,49 @@
 
             {{-- KOLOM 4: AKSI (Fixed) --}}
             <td class="text-end pe-4">
+              <div class="d-flex justify-content-end gap-1">
 
-              {{-- 1. TOMBOL DETAIL (Direct Link ke Show) --}}
-              <a href="{{ route('lamaran.show.admin', $lamaran->id) }}"
-                class="btn btn-sm btn-outline-info me-1"
-                title="Lihat Detail Lengkap">
-                <i class="fas fa-eye"></i> Detail
-              </a>
+                {{-- 1. Detail --}}
+                <a class="btn btn-info btn-sm" href="{{ route('lamaran.show.admin', $lamaran->id) }}" title="Lihat Detail">
+                  <i class="fas fa-eye"></i>
+                </a>
 
-              {{-- 2. DROPDOWN AKSI (Terima/Tolak/Hapus) --}}
-              <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-bs-toggle="dropdown">
-                  Proses
+                {{-- 2. Terima / Edit --}}
+                <button type="button" class="btn btn-sm {{ $lamaran->status == 'diterima' ? 'btn-outline-primary' : 'btn-success' }}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#approveModal"
+                  title="{{ $lamaran->status == 'diterima' ? 'Edit Data' : 'Terima' }}"
+                  data-lamaran-id="{{ $lamaran->id }}"
+                  data-current-status="{{ $lamaran->status }}"
+                  data-usulan-start="{{ $lamaran->tgl_mulai_usulan->format('Y-m-d') }}"
+                  data-usulan-end="{{ $lamaran->tgl_selesai_usulan->format('Y-m-d') }}"
+                  data-resmi-pembimbing="{{ $lamaran->pembimbing_id }}"
+                  data-resmi-start="{{ $lamaran->tgl_mulai_resmi ? $lamaran->tgl_mulai_resmi->format('Y-m-d') : $lamaran->tgl_mulai_usulan->format('Y-m-d') }}"
+                  data-resmi-end="{{ $lamaran->tgl_selesai_resmi ? $lamaran->tgl_selesai_resmi->format('Y-m-d') : $lamaran->tgl_selesai_usulan->format('Y-m-d') }}"
+                  data-resmi-days="{{ $lamaran->hari_kerja_resmi ? json_encode($lamaran->hari_kerja_resmi) : json_encode($lamaran->hari_kerja_usulan) }}">
+                  <i class="fas {{ $lamaran->status == 'diterima' ? 'fa-edit' : 'fa-check' }}"></i>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
 
-                  {{-- Menu TERIMA / EDIT --}}
-                  <li>
-                    <button class="dropdown-item text-success fw-bold"
-                      data-bs-toggle="modal"
-                      data-bs-target="#approveModal"
-                      {{-- Data Attributes --}}
-                      data-lamaran-id="{{ $lamaran->id }}"
-                      data-current-status="{{ $lamaran->status }}"
-                      data-usulan-start="{{ $lamaran->tgl_mulai_usulan->format('Y-m-d') }}"
-                      data-usulan-end="{{ $lamaran->tgl_selesai_usulan->format('Y-m-d') }}"
-                      data-resmi-pembimbing="{{ $lamaran->pembimbing_id }}"
-                      data-resmi-start="{{ $lamaran->tgl_mulai_resmi ? $lamaran->tgl_mulai_resmi->format('Y-m-d') : $lamaran->tgl_mulai_usulan->format('Y-m-d') }}"
-                      data-resmi-end="{{ $lamaran->tgl_selesai_resmi ? $lamaran->tgl_selesai_resmi->format('Y-m-d') : $lamaran->tgl_selesai_usulan->format('Y-m-d') }}"
-                      data-resmi-days="{{ $lamaran->hari_kerja_resmi ? json_encode($lamaran->hari_kerja_resmi) : json_encode($lamaran->hari_kerja_usulan) }}">
-                      <i class="fas fa-check me-2"></i> {{ $lamaran->status == 'diterima' ? 'Edit Data' : 'Terima' }}
-                    </button>
-                  </li>
+                {{-- 3. Tolak (Hanya jika belum ditolak) --}}
+                @if($lamaran->status != 'ditolak')
+                <button type="button" class="btn btn-warning btn-sm"
+                  data-bs-toggle="modal"
+                  data-bs-target="#rejectModal"
+                  data-lamaran-id="{{ $lamaran->id }}"
+                  title="Tolak">
+                  <i class="fas fa-times"></i>
+                </button>
+                @endif
 
-                  {{-- Menu TOLAK --}}
-                  @if($lamaran->status != 'ditolak')
-                  <li>
-                    <button class="dropdown-item text-warning fw-bold"
-                      data-bs-toggle="modal" data-bs-target="#rejectModal" data-lamaran-id="{{ $lamaran->id }}">
-                      <i class="fas fa-times me-2"></i> Tolak
-                    </button>
-                  </li>
-                  @endif
+                {{-- 4. Hapus --}}
+                <form action="{{ route('lamaran.destroy', $lamaran->id) }}" method="POST">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus permanen data ini?');" title="Hapus">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
 
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-
-                  {{-- Menu HAPUS --}}
-                  <li>
-                    <form action="{{ route('lamaran.destroy', $lamaran->id) }}" method="POST" onsubmit="return confirm('Hapus permanen data ini?');">
-                      @csrf @method('DELETE')
-                      <button type="submit" class="dropdown-item text-danger">
-                        <i class="fas fa-trash me-2"></i> Hapus Permanen
-                      </button>
-                    </form>
-                  </li>
-                </ul>
               </div>
             </td>
           </tr>
