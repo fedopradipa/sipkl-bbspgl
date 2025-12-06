@@ -30,6 +30,16 @@
       <i class="fas fa-check-double fa-fw me-2"></i>Verifikasi Lamaran
     </a>
   </li>
+  <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('izin.*') ? 'active' : 'text-dark' }}" href="{{ route('izin.index.admin') }}">
+      <i class="fas fa-envelope-open-text fa-fw me-2"></i> Verifikasi Izin
+      {{-- Opsional: Badge hitung pending --}}
+      @php $countIzin = \App\Models\PengajuanIzin::where('status', 'pending')->count(); @endphp
+      @if($countIzin > 0)
+      <span class="badge bg-danger rounded-pill ms-auto">{{ $countIzin }}</span>
+      @endif
+    </a>
+  </li>
   <li class="nav-heading px-3 mt-3 mb-1 text-muted text-uppercase small">
     Laporan
   </li>

@@ -14,6 +14,8 @@ use App\Http\Controllers\LamaranController;
 use App\Http\Controllers\PesertaProfileController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\PresensiAdminController;
+use App\Http\Controllers\IzinController;
+use App\Http\Controllers\IzinAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +85,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/presensi/admin/store', [PresensiAdminController::class, 'storeAdmin'])->name('presensi.store.admin');
         Route::put('/presensi/admin/update', [PresensiAdminController::class, 'updateAdmin'])->name('presensi.update.admin');
         Route::delete('/presensi/admin/{id}', [PresensiAdminController::class, 'destroy'])->name('presensi.destroy.admin');
+
+        // Di dalam middleware role:admin
+
+        // MANAJEMEN IZIN
+        Route::get('/verifikasi-izin', [IzinAdminController::class, 'index'])->name('izin.index.admin');
+        Route::post('/izin/{id}/approve', [IzinAdminController::class, 'approve'])->name('izin.approve.admin');
+        Route::post('/izin/{id}/reject', [IzinAdminController::class, 'reject'])->name('izin.reject.admin');
     });
 
     // ===============================================
@@ -108,7 +117,14 @@ Route::middleware('auth')->group(function () {
         Route::post('/presensi/checkout', [PresensiController::class, 'checkout'])->name('presensi.checkout');
 
 
-        Route::get('/presensi/riwayat', [App\Http\Controllers\PresensiController::class, 'riwayat'])
+        Route::get('/presensi/riwayat', [PresensiController::class, 'riwayat'])
             ->name('presensi.riwayat');
+
+        // Di dalam Route group role:peserta
+
+        // CRUD IZIN PESERTA
+        Route::get('/izin', [IzinController::class, 'index'])->name('izin.index');
+        Route::get('/izin/create', [IzinController::class, 'create'])->name('izin.create');
+        Route::post('/izin', [IzinController::class, 'store'])->name('izin.store');
     });
 });

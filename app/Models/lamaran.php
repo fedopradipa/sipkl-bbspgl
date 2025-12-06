@@ -65,4 +65,12 @@ class Lamaran extends Model
     {
         return $this->belongsTo(User::class, 'pengguna_id'); // Atau User::class jika model usernya User
     }
+
+    /**
+     * Relasi ke Pengajuan Izin
+     */
+    public function izin()
+    {
+        return $this->hasMany(PengajuanIzin::class, 'lamaran_id');
+    }
 }

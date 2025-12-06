@@ -34,19 +34,12 @@
   </li>
 
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('jurnal.*') ? 'active' : 'text-dark' }}" href="#"
-      @if(!$isMagangActive) disabled @endif>
-      <i class="fas fa-book fa-fw me-2"></i> Jurnal Kegiatan
+    <a class="nav-link {{ request()->routeIs('izin.*') ? 'active' : 'text-dark' }}" href="{{ route('izin.index') }}">
+      <i class="fas fa-envelope-open-text fa-fw me-2"></i> Izin / Sakit
     </a>
   </li>
 
   <li class="nav-heading px-3 mt-3 mb-1 text-muted text-uppercase small">
     Lainnya
-  </li>
-
-  <li class="nav-item">
-    <a class="nav-link text-dark" href="#">
-      <i class="fas fa-user fa-fw me-2"></i> Profil Saya
-    </a>
   </li>
 </ul>
