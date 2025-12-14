@@ -1,6 +1,6 @@
 <div class="modal fade" id="createModal" tabindex="-1">
   <div class="modal-dialog">
-    <form action="{{ route('presensi.store.admin') }}" method="POST" class="modal-content">
+    <form action="{{ route('admin.presensi.store') }}" method="POST" class="modal-content">
       @csrf
       <div class="modal-header bg-success text-white">
         <h5 class="modal-title">Input Absen Manual</h5>

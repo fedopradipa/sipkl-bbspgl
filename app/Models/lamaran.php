@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Lamaran extends Model
 {
@@ -72,5 +73,115 @@ class Lamaran extends Model
     public function izin()
     {
         return $this->hasMany(PengajuanIzin::class, 'lamaran_id');
+    }
+
+    /**
+     * Relasi ke Presensi
+     */
+    public function presensi()
+    {
+        return $this->hasMany(\App\Models\Presensi::class, 'lamaran_id');
+    }
+
+    
+    /*
+    |--------------------------------------------------------------------------
+    | HELPER METHODS
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Cek apakah masa magang sudah habis
+     */
+    public function isExpired(): bool
+    {
+        if (!$this->tgl_selesai_resmi) {
+            return false;
+        }
+
+        return Carbon::now()->greaterThan(Carbon::parse($this->tgl_selesai_resmi));
+    }
+
+    /**
+     * Hitung sisa hari masa magang
+     */
+    public function getDaysLeftAttribute(): int
+    {
+        if (!$this->tgl_selesai_resmi) {
+            return 0;
+        }
+
+        $endDate = Carbon::parse($this->tgl_selesai_resmi);
+        $now = Carbon::now();
+
+        return $now->diffInDays($endDate, false);
+    }
+
+    /**
+     * Cek apakah peserta masih aktif
+     */
+    public function isActive(): bool
+    {
+        return $this->status === 'diterima' && !$this->isExpired();
+    }
+
+    /**
+     * Cek apakah peserta sudah alumni
+     */
+    public function isAlumni(): bool
+    {
+        return in_array($this->status, ['selesai', 'berhenti']);
+    }
+
+    /**
+     * Get status color
+     */
+    public function getStatusColorAttribute(): string
+    {
+        return match ($this->status) {
+            'pending' => 'warning',
+            'diterima' => 'primary',
+            'ditolak' => 'danger',
+            'selesai' => 'success',
+            'berhenti' => 'danger',
+            default => 'secondary'
+        };
+    }
+
+    /**
+     * Get status label
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'pending' => 'Menunggu',
+            'diterima' => 'Aktif',
+            'ditolak' => 'Ditolak',
+            'selesai' => 'Lulus',
+            'berhenti' => 'Berhenti',
+            default => 'Unknown'
+        };
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'diterima');
+    }
+
+    public function scopeAlumni($query)
+    {
+        return $query->whereIn('status', ['selesai', 'berhenti']);
+    }
+
+    public function scopeExpiredButActive($query)
+    {
+        return $query->where('status', 'diterima')
+            ->where('tgl_selesai_resmi', '<', Carbon::today());
     }
 }

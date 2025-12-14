@@ -11,15 +11,15 @@ class Presensi extends Model
 
   // PENTING: Karena nama tabel di migrasi 'presensi' (bukan presensis), 
   // kita harus definisikan secara manual.
-  protected $table = 'presensi';
+  protected $table = 'presensis';
 
   protected $fillable = [
+    'user_id',
     'lamaran_id',
     'tanggal',
     'jam_masuk',
     'jam_pulang',
     'status',           // hadir, sakit, izin, alpha
-    'keterangan_waktu', // tepat_waktu, terlambat
     'lat_masuk',
     'long_masuk',
     'lat_pulang',
@@ -41,5 +41,11 @@ class Presensi extends Model
   public function lamaran()
   {
     return $this->belongsTo(Lamaran::class, 'lamaran_id');
+  }
+
+  // Relasi ke User 
+  public function user()
+  {
+    return $this->belongsTo(User::class, 'user_id');
   }
 }

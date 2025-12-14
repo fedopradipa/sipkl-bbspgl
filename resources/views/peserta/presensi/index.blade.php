@@ -102,10 +102,10 @@
                 {{-- Masuk --}}
                 <div class="mb-1">
                   <i class="fas fa-arrow-right text-success me-1" style="font-size: 0.7rem;"></i>
-                  <span class="fw-bold {{ $item->keterangan_waktu == 'terlambat' ? 'text-danger' : 'text-dark' }}">
+                  <span class="fw-bold {{ $item->status == 'terlambat' ? 'text-danger' : 'text-dark' }}">
                     {{ \Carbon\Carbon::parse($item->jam_masuk)->format('H:i') }}
                   </span>
-                  @if($item->keterangan_waktu == 'terlambat')
+                  @if($item->status == 'terlambat')
                   <i class="fas fa-exclamation-circle text-danger ms-1" style="font-size: 0.7rem;" title="Terlambat"></i>
                   @endif
                 </div>

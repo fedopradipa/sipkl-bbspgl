@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('profil_peserta', function (Blueprint $table) {
+        Schema::create('profile_pesertas', function (Blueprint $table) {
             $table->id();
             // Cascade: Jika user dihapus, profil ikut terhapus
             $table->foreignId('pengguna_id')->constrained('users')->onDelete('cascade');
@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('jurusan');
             $table->string('no_hp', 20);
             $table->text('alamat')->nullable();
+            $table->string('foto_profil', 255)->nullable();
             $table->timestamps();
         });
     }

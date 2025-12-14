@@ -87,7 +87,7 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold text-primary">Lamaran Terbaru</h6>
-                    <a href="{{ route('lamaran.index.admin') }}" class="btn btn-sm btn-primary">Lihat Semua</a>
+                    <a href="{{ route('admin.lamaran.index') }}" class="btn btn-sm btn-primary">Lihat Semua</a>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">

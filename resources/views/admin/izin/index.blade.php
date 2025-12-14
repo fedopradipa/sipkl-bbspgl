@@ -7,7 +7,7 @@
     <div class="card-body py-2">
       <div class="btn-group">
         @foreach(['pending', 'disetujui', 'ditolak', 'all'] as $st)
-        <a href="{{ route('izin.index.admin', ['status' => $st]) }}"
+        <a href="{{ route('admin.izin.index', ['status' => $st]) }}"
           class="btn btn-sm {{ $currentStatus == $st ? 'btn-primary' : 'btn-outline-secondary' }} text-capitalize">
           {{ $st }}
         </a>

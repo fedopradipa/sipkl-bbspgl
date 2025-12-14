@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="row">
+
   {{-- Kolom Kiri: Foto Profil & Info Singkat --}}
   <div class="col-lg-4">
     <div class="card shadow-sm mb-4">
@@ -9,27 +10,32 @@
         <h6 class="mb-0">Foto Profil</h6>
       </div>
       <div class="card-body text-center">
-        {{-- Logic Foto Profil --}}
-        @if (Auth::user()->foto_profil)
-        <img id="foto-preview" src="{{ asset('storage/foto_profil/' . Auth::user()->foto_profil) }}" alt="Foto Profil" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-        @else
-        <img id="foto-preview" src="https://placehold.co/150x150/e2e8f0/6c757d?text={{ strtoupper(substr(Auth::user()->name, 0, 1)) }}" alt="Foto Profil" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-        @endif
+
+        {{-- Logic Foto Profil (Diperbaiki) --}}
+        @php
+        $currentPhotoName = $profil->foto_profil ?? null;
+        $photoUrl = $currentPhotoName
+        ? asset('storage/foto_profil/' . $currentPhotoName)
+        : 'https://placehold.co/150x150/e2e8f0/6c757d?text=' . strtoupper(substr(Auth::user()->name, 0, 1));
+        @endphp
+
+        <img id="foto-preview" src="{{ $photoUrl }}" alt="Foto Profil" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
 
         <h5 class="my-3">{{ Auth::user()->name }}</h5>
 
-        {{-- Menampilkan Info Institusi/Jurusan di bawah foto (Ambil dari relasi) --}}
+        {{-- Menampilkan Info Institusi/Jurusan (Sintaks diperbaiki) --}}
         <p class="text-muted mb-1">
-          {{ $user->$profil->institusi ?? 'Belum ada Institusi' }}
+          {{ $profil->institusi ?? 'Belum ada Institusi' }}
         </p>
         <p class="text-muted mb-4 badge bg-info text-white">
-          {{ $user->$profil->jurusan ?? 'Peserta' }}
+          {{ $profil->jurusan ?? 'Peserta' }}
         </p>
 
         {{-- Tombol Ganti Foto --}}
         <label for="foto_profil" class="btn btn-primary btn-sm">
           <i class="fas fa-upload me-1"></i> Ganti Foto
         </label>
+        {{-- Input file terhubung ke form utama --}}
         <input type="file" id="foto_profil" name="foto_profil" class="d-none @error('foto_profil') is-invalid @enderror" form="profile-form">
         @error('foto_profil')
         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -50,7 +56,6 @@
     @endif
 
     {{-- Form Utama --}}
-    {{-- Pastikan route-nya mengarah ke method update khusus peserta --}}
     <form action="{{ route('profile.peserta.update') }}" method="POST" enctype="multipart/form-data" id="profile-form">
       @csrf
       @method('PUT')
@@ -90,7 +95,6 @@
             {{-- Kolom NIM/NIS --}}
             <div class="col-md-6 mb-3">
               <label for="nim_nis" class="form-label">NIM / NIS <span class="text-danger">*</span></label>
-              {{-- Menggunakan null coalescing operator (??) untuk mencegah error jika profil belum ada --}}
               <input type="text" class="form-control @error('nim_nis') is-invalid @enderror" id="nim_nis" name="nim_nis"
                 value="{{ old('nim_nis', $profil->nim_nis ?? '') }}" placeholder="Nomor Induk...">
               @error('nim_nis')
@@ -175,7 +179,7 @@
 </div>
 @endsection
 
-{{-- Script Preview Image (Sama persis dengan sebelumnya) --}}
+{{-- Script Preview Image --}}
 @push('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', function() {

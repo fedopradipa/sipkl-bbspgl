@@ -1,22 +1,35 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\LowonganController;
+
+// --- CONTROLLERS GLOBAL / AUTH ---
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\PembimbingController;
 use App\Http\Controllers\GuestController;
-use App\Http\Controllers\DashboardPesertaController;
-use App\Http\Controllers\LamaranController;
-use App\Http\Controllers\PesertaProfileController;
-use App\Http\Controllers\PresensiController;
-use App\Http\Controllers\PresensiAdminController;
-use App\Http\Controllers\IzinController;
-use App\Http\Controllers\IzinAdminController;
+
+// --- CONTROLLERS ADMIN  ---
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\LamaranAdminController;
+use App\Http\Controllers\Admin\AlumniController;
+use App\Http\Controllers\Admin\PesertaAktifController;
+use App\Http\Controllers\Admin\PresensiAdminController;
+use App\Http\Controllers\Admin\IzinAdminController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\PembimbingController;
+use App\Http\Controllers\Admin\LowonganController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\UserController;
+
+// --- CONTROLLERS PESERTA ---
+use App\Http\Controllers\peserta\LamaranPesertaController;
+use App\Http\Controllers\peserta\DashboardPesertaController;
+use App\Http\Controllers\peserta\PesertaProfileController;
+use App\Http\Controllers\peserta\PresensiController;
+use App\Http\Controllers\peserta\IzinController;
+
+// --- MIDDLEWARE ---
+use App\Http\Middleware\CheckActiveLamaran;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,12 +43,10 @@ use App\Http\Controllers\IzinAdminController;
 Route::get('/', [GuestController::class, 'index'])->name('guest.home');
 Route::get('/lowongan-public/{lowongan}', [GuestController::class, 'show'])->name('guest.lowongan.show');
 
-// RUTE OTENTIKASI (LOGIN/LOGOUT)
+// AUTHENTICATION
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [LoginController::class, 'login']);
-
-    // Register Routes (BARU)
     Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('register', [RegisterController::class, 'register']);
 });
@@ -43,97 +54,134 @@ Route::middleware('guest')->group(function () {
 Route::post('logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
 // ===============================================
-// 2. RUTE GLOBAL TERPROTEKSI (Semua yang Sudah Login)
+// 2. RUTE GLOBAL TERPROTEKSI (Shared Resources)
 // ===============================================
 Route::middleware('auth')->group(function () {
 
-    //// ============================================================
-    // GROUP A: ADMIN & SUPERADMIN (SHARED RESOURCES)
-    // ============================================================
-    // Middleware 'OR' (|) mengizinkan keduanya akses
+    // SUPERADMIN & ADMIN SHARED
     Route::middleware(['role:superadmin|admin'])->group(function () {
-
-        // 1. Profile Management (Satu Controller untuk Admin & Superadmin)
-        // Kita beri URL spesifik agar tidak bentrok dengan peserta
+        // Profile Management Admin
         Route::get('/profile/general', [ProfileController::class, 'edit'])->name('profile.general.edit');
         Route::put('/profile/general', [ProfileController::class, 'update'])->name('profile.general.update');
 
-        // 2. Resource Lowongan & Pembimbing (Admin & Superadmin boleh akses)
+        // Master Data
         Route::resource('lowongan', LowonganController::class);
         Route::resource('pembimbing', PembimbingController::class);
-
         Route::resource('role', RoleController::class);
         Route::resource('user', UserController::class);
     });
-    // ===============================================
-    // 3. RUTE KHUSUS SUPERADMIN
-    // ===============================================
+
+    // SUPERADMIN ONLY
     Route::middleware('role:superadmin')->group(function () {
-        Route::get('/superadmin/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard'); // Dashboard Superadmin
-
+        Route::get('/superadmin/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');
     });
 
     // ===============================================
-    // 4. RUTE KHUSUS ADMIN (OPERATOR ONLY)
+    // 3. GROUP KHUSUS ADMIN (REFACTORED)
     // ===============================================
-    Route::middleware('role:admin')->group(function () {
-        Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard'); // Dashboard Admin
+    Route::middleware(['role:admin'])
+        ->prefix('admin')       // Semua URL diawali /admin/...
+        ->name('admin.')        // Semua Route Name diawali admin... (ex: admin.lamaran.index)
+        ->group(function () {
 
-        Route::resource('role', RoleController::class);
-        Route::resource('user', UserController::class);
+            // A. DASHBOARD
+            Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // Kita juga butuh index/show lamaran untuk Admin
-        Route::get('/lamaran', [LamaranController::class, 'indexAdmin'])->name('lamaran.index.admin');
-        Route::get('/lamaran/{lamaran}', [LamaranController::class, 'showAdmin'])->name('lamaran.show.admin');
-        Route::post('/lamaran/{lamaran}/approve', [LamaranController::class, 'approve'])->name('lamaran.approve');
-        Route::post('/lamaran/{lamaran}/reject', [LamaranController::class, 'reject'])->name('lamaran.reject');
-        Route::delete('/lamaran/{lamaran}', [LamaranController::class, 'destroy'])->name('lamaran.destroy');
+            // B. MANAJEMEN LAMARAN (VERIFIKASI)
+            // URL: /admin/lamaran/...
+            Route::controller(LamaranAdminController::class)->prefix('lamaran')->name('lamaran.')->group(function () {
+                Route::get('/', 'index')->name('index'); // admin.lamaran.index
+                Route::get('/{id}', 'show')->name('show');
 
-        // Route Presensi
-        Route::get('/laporan/presensi', [PresensiAdminController::class, 'presensi'])->name('presensi.index.admin');
-        // CRUD Presensi Admin
-        Route::post('/presensi/admin/store', [PresensiAdminController::class, 'storeAdmin'])->name('presensi.store.admin');
-        Route::put('/presensi/admin/update', [PresensiAdminController::class, 'updateAdmin'])->name('presensi.update.admin');
-        Route::delete('/presensi/admin/{id}', [PresensiAdminController::class, 'destroy'])->name('presensi.destroy.admin');
+                // Action Buttons
+                Route::post('/{lamaran}/approve', 'approve')->name('approve');
+                Route::post('/{lamaran}/reject', 'reject')->name('reject');
+                Route::put('/{lamaran}/status', 'updateStatus')->name('updateStatus'); // Untuk Lulus/DropOut
+                Route::delete('/{lamaran}', 'destroy')->name('destroy');
+            });
 
+            // C. MANAJEMEN ALUMNI & ARSIP
+            // URL: /admin/alumni/...
+            Route::controller(AlumniController::class)->prefix('alumni')->name('alumni.')->group(function () {
+                Route::get('/', 'index')->name('index'); // admin.alumni.index
+                Route::get('/{id}', 'show')->name('show');
+            });
 
-        // MANAJEMEN IZIN
-        Route::get('/verifikasi-izin', [IzinAdminController::class, 'index'])->name('izin.index.admin');
-        Route::post('/izin/{id}/approve', [IzinAdminController::class, 'approve'])->name('izin.approve.admin');
-        Route::post('/izin/{id}/reject', [IzinAdminController::class, 'reject'])->name('izin.reject.admin');
-    });
+            // D. PESERTA AKTIF
+            // URL: /admin/peserta-aktif/...
+            Route::controller(PesertaAktifController::class)->prefix('peserta-aktif')->name('peserta_aktif.')->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/{id}', 'show')->name('show');
+            });
+
+            // E. PRESENSI ADMIN
+            Route::controller(PresensiAdminController::class)->prefix('presensi')->name('presensi.')->group(function () {
+                Route::get('/', 'presensi')->name('index'); // admin.presensi.index
+                Route::post('/store', 'storeAdmin')->name('store');
+                Route::put('/update', 'updateAdmin')->name('update');
+                Route::delete('/{id}', 'destroy')->name('destroy');
+            });
+
+            // F. IZIN ADMIN
+            Route::controller(IzinAdminController::class)->prefix('izin')->name('izin.')->group(function () {
+                Route::get('/', 'index')->name('index'); // admin.izin.index
+                Route::post('/{id}/approve', 'approve')->name('approve');
+                Route::post('/{id}/reject', 'reject')->name('reject');
+            });
+
+            // G. LAPORAN
+            Route::get('/reports/attendance', [ReportController::class, 'index'])->name('reports.attendance.index');
+            Route::get('/reports/attendance/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.attendance.pdf');
+
+            Route::resource('role', RoleController::class);
+            Route::resource('user', UserController::class);
+        });
 
     // ===============================================
-    // 5. RUTE PESERTA (APPLICANT)
+    // 4. GROUP KHUSUS PESERTA
     // ===============================================
-    // Catatan: Route ini harus memiliki unique name/URI jika Controller-nya beda.
     Route::middleware('role:peserta')->group(function () {
 
-        // FIX PENTING: Panggil Dashboard Peserta dengan nama yang jelas
-        // Ini adalah Dashboard state-based yang sesungguhnya
+        // Dashboard & Profil
         Route::get('/peserta/dashboard', [DashboardPesertaController::class, 'index'])->name('peserta.dashboard');
-
-        // FIX PENTING: Penggunaan Rute Profil yang Overwrite Global
         Route::get('/profile', [PesertaProfileController::class, 'edit'])->name('profile.peserta.edit');
         Route::put('/profile', [PesertaProfileController::class, 'update'])->name('profile.peserta.update');
 
-        // Rute Lamaran
-        Route::get('/lowongan/{lowongan}/apply', [LamaranController::class, 'create'])->name('lamaran.apply');
-        Route::post('/lowongan/{lowongan}/apply', [LamaranController::class, 'store'])->name('lamaran.store');
+        // Proses Lamaran (Menggunakan Controller Baru)
+        Route::controller(LamaranPesertaController::class)->group(function () {
+            // Middleware CheckActiveLamaran: Mencegah apply jika sudah punya lamaran aktif
+            Route::get('/lowongan/{lowongan}/apply', 'create')
+                ->middleware(CheckActiveLamaran::class)
+                ->name('lamaran.apply');
 
-        // Rute Presensi 
-        Route::post('/presensi/checkin', [PresensiController::class, 'checkin'])->name('presensi.checkin');
-        Route::post('/presensi/checkout', [PresensiController::class, 'checkout'])->name('presensi.checkout');
+            Route::post('/lowongan/{lowongan}/apply', 'store')
+                ->middleware(CheckActiveLamaran::class)
+                ->name('lamaran.store');
+        });
 
+        // Presensi
+        Route::controller(PresensiController::class)->prefix('presensi')->name('presensi.')->group(function () {
+            Route::post('/checkin', 'checkin')->name('checkin');
+            Route::post('/checkout', 'checkout')->name('checkout');
+            Route::get('/riwayat', 'riwayat')->name('riwayat');
+        });
 
-        Route::get('/presensi/riwayat', [PresensiController::class, 'riwayat'])
-            ->name('presensi.riwayat');
-
-        // Di dalam Route group role:peserta
-
-        // CRUD IZIN PESERTA
-        Route::get('/izin', [IzinController::class, 'index'])->name('izin.index');
-        Route::get('/izin/create', [IzinController::class, 'create'])->name('izin.create');
-        Route::post('/izin', [IzinController::class, 'store'])->name('izin.store');
+        // Izin
+        Route::resource('izin', IzinController::class)->except(['destroy', 'edit', 'update']);
     });
 });
+
+/*
+|--------------------------------------------------------------------------
+| BACKWARD COMPATIBILITY (Opsional)
+|--------------------------------------------------------------------------
+| Gunakan ini jika View blade Anda masih memanggil nama route lama.
+| Hapus bagian ini jika Anda sudah merapikan semua file view.
+*/
+// Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+//     // Mapping Lamaran Lama ke Controller Baru
+//     Route::get('/lamaran-legacy', [LamaranAdminController::class, 'index'])->name('lamaran.index.admin');
+//     Route::get('/lamaran-legacy/{id}', [LamaranAdminController::class, 'show'])->name('lamaran.show.admin');
+//     // Mapping Presensi Lama
+//     Route::get('/laporan/presensi-legacy', [PresensiAdminController::class, 'presensi'])->name('presensi.index.admin');
+// });

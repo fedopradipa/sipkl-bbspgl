@@ -1,32 +1,37 @@
-@extends('layouts.app') {{-- Sesuaikan dengan layout utama Anda --}}
+@extends('layouts.app')
 
 @section('content')
 <div class="row">
-    {{-- Kolom Kiri: Foto Profil --}}
+    {{-- Kolom Kiri: Foto Profil & Info --}}
     <div class="col-lg-4">
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-light">
                 <h6 class="mb-0">Foto Profil</h6>
             </div>
             <div class="card-body text-center">
-                {{-- Tampilkan foto saat ini ATAU placeholder --}}
-                @if (Auth::user()->foto_profil)
-                {{-- DIPERBARUI: class "img-fluid" DIHAPUS --}}
-                <img id="foto-preview" src="{{ asset('storage/foto_profil/' . Auth::user()->foto_profil) }}" alt="Foto Profil" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                @else
-                {{-- DIPERBARUI: class "img-fluid" DIHAPUS, style DITAMBAHKAN, dan ?text= DITAMBAHKAN KEMBALI --}}
-                <img id="foto-preview" src="https://placehold.co/150x150/e2e8f0/6c757d?text={{ strtoupper(substr(Auth::user()->name, 0, 1)) }}" alt="Foto Profil" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                @endif
+
+                {{-- AMBIL DATA DARI $profile --}}
+                @php
+                $currentPhoto = optional($profile)->foto_profil;
+                $photoPath = $currentPhoto ? asset('storage/foto_profil/' . $currentPhoto) : 'https://placehold.co/150x150/e2e8f0/6c757d?text=' . strtoupper(substr(Auth::user()->name, 0, 1));
+                $jabatan = optional($profile)->jabatan ?? 'Belum Diisi';
+                $nip = optional($profile)->nip ?? '-';
+                @endphp
+
+                <img id="foto-preview" src="{{ $photoPath }}" alt="Foto Profil"
+                    class="rounded-circle mb-3"
+                    style="width: 150px; height: 150px; object-fit: cover;">
+
 
                 <h5 class="my-3">{{ Auth::user()->name }}</h5>
-                <p class="text-muted mb-1">{{ Auth::user()->jabatan ?? Auth::user()->role->nama_role }}</p>
-                <p class="text-muted mb-4">NIP: {{ Auth::user()->nip ?? '-' }}</p>
+                <p class="text-muted mb-1">{{ $jabatan }}</p> {{-- Mengakses variabel $jabatan --}}
+                <p class="text-muted mb-4">NIP: {{ $nip }}</p> {{-- Mengakses variabel $nip --}}
 
                 {{-- Form (bagian dari form utama) untuk upload file --}}
                 <label for="foto_profil" class="btn btn-primary btn-sm">
                     <i class="fas fa-upload me-1"></i> Ganti Foto
                 </label>
-                {{-- Input file disembunyikan tapi terhubung ke form utama --}}
+                {{-- Input file terhubung ke form utama --}}
                 <input type="file" id="foto_profil" name="foto_profil" class="d-none @error('foto_profil') is-invalid @enderror" form="profile-form">
                 @error('foto_profil')
                 <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -54,7 +59,7 @@
             {{-- Card 1: Edit Biodata --}}
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-light">
-                    <h6 class="mb-0">Edit Biodata</h6>
+                    <h6 class="mb-0">Edit Biodata & Profil Admin</h6>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -73,22 +78,31 @@
                             @enderror
                         </div>
                     </div>
+
+                    {{-- FIELD NIP & JABATAN (MENGAKSES $profile) --}}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="nip" class="form-label">NIP (Opsional)</label>
-                            <input type="text" class="form-control @error('nip') is-invalid @enderror" id="nip" name="nip" value="{{ old('nip', $user->nip) }}" placeholder="Masukkan NIP Anda...">
+                            <label for="nip" class="form-label">NIP (Nomor Induk Pegawai)</label>
+                            <input type="text" class="form-control @error('nip') is-invalid @enderror"
+                                id="nip" name="nip"
+                                value="{{ old('nip', optional($profile)->nip) }}" {{-- Mengakses $profile->nip --}}
+                                placeholder="Masukkan NIP Anda...">
                             @error('nip')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="jabatan" class="form-label">Jabatan (Opsional)</label>
-                            <input type="text" class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" value="{{ old('jabatan', $user->jabatan) }}" placeholder="Misal: Teknisi, Admin Logistik...">
+                            <label for="jabatan" class="form-label">Jabatan</label>
+                            <input type="text" class="form-control @error('jabatan') is-invalid @enderror"
+                                id="jabatan" name="jabatan"
+                                value="{{ old('jabatan', optional($profile)->jabatan) }}" {{-- Mengakses $profile->jabatan --}}
+                                placeholder="Misal: Teknisi, Admin Logistik...">
                             @error('jabatan')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
+
                 </div>
             </div>
 
@@ -128,20 +142,42 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // 1. Ambil Input File berdasarkan ID
         const fileInput = document.getElementById('foto_profil');
+
+        // 2. Ambil elemen Image Preview
         const preview = document.getElementById('foto-preview');
 
-        if (fileInput) {
+        // Pastikan kedua elemen ditemukan sebelum melanjutkan
+        if (fileInput && preview) {
+
+            // Pasang event listener saat ada perubahan (file dipilih)
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
+
                 if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        preview.src = e.target.result;
+                    // Cek apakah file yang dipilih adalah gambar
+                    if (file.type.match('image.*')) {
+                        const reader = new FileReader();
+
+                        // Setelah file selesai dibaca oleh browser
+                        reader.onload = function(e) {
+                            // Update src (sumber) dari tag <img>
+                            preview.src = e.target.result;
+                        }
+
+                        // Baca file sebagai Data URL
+                        reader.readAsDataURL(file);
+                    } else {
+                        // Opsional: Tampilkan pesan jika file bukan gambar
+                        console.error("File yang dipilih bukan gambar.");
+                        // Jika Anda ingin preview kembali ke default:
+                        // preview.src = 'URL_DEFAULT_ANDA';
                     }
-                    reader.readAsDataURL(file);
                 }
             });
+        } else {
+            console.error("Error: Elemen #foto_profil atau #foto-preview tidak ditemukan.");
         }
     });
 </script>

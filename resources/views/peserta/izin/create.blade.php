@@ -4,6 +4,19 @@
 <div class="container py-4">
   <div class="row justify-content-center">
     <div class="col-md-8">
+
+      {{-- >>> KODE INI WAJIB DITAMBAHKAN UNTUK DEBUGGING VALIDASI <<< --}}
+      @if ($errors->any())
+      <div class="alert alert-danger shadow-sm mb-4">
+        <h6 class="alert-heading fw-bold">Pengajuan Gagal! Periksa Kesalahan Berikut:</h6>
+        <ul class="mb-0">
+          @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+      @endif
+      {{-- >>> AKHIR KODE TAMBAHAN <<< --}}
       <div class="card border-0 shadow-sm">
         <div class="card-header bg-white py-3">
           <h5 class="mb-0 fw-bold">Formulir Pengajuan Izin</h5>

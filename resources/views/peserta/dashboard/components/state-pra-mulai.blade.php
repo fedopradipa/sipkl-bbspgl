@@ -47,7 +47,7 @@
       </div>
       <div>
         <h6 class="mb-0 fw-bold text-dark">{{ $lamaran->pembimbing->nama }}</h6>
-        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $lamaran->pembimbing->no_hp) }}"
+        <a href="https://wa.me/{{  preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $lamaran->pembimbing->no_hp)) }}"
           target="_blank"
           class="d-block text-success mt-1 fw-bold small text-decoration-none">
           <i class="fab fa-whatsapp me-1"></i>

@@ -1,6 +1,6 @@
 <div class="modal fade" id="editModal" tabindex="-1">
   <div class="modal-dialog">
-    <form action="{{ route('presensi.update.admin') }}" method="POST" class="modal-content">
+    <form action="{{ route('admin.presensi.update') }}" method="POST" class="modal-content">
       @csrf
       @method('PUT')
       <input type="hidden" name="id" id="edit_id">

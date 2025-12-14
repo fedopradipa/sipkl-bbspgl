@@ -11,7 +11,7 @@
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-end gap-3">
 
         {{-- FORM FILTER --}}
-        <form action="{{ route('presensi.index.admin') }}" method="GET" class="row g-2 align-items-end flex-grow-1 w-100">
+        <form action="{{ route('admin.presensi.index') }}" method="GET" class="row g-2 align-items-end flex-grow-1 w-100">
           <div class="col-md-3">
             <label class="form-label fw-bold small text-secondary">Dari Tanggal</label>
             <input type="date" name="mulai" class="form-control form-control-sm" value="{{ $mulai }}">
@@ -41,9 +41,6 @@
         <div class="d-flex gap-2 w-100 w-md-auto">
           <button class="btn btn-success btn-sm text-nowrap" data-bs-toggle="modal" data-bs-target="#createModal">
             <i class="fas fa-plus-circle me-1"></i> Input Manual
-          </button>
-          <button type="button" class="btn btn-secondary btn-sm text-nowrap" onclick="window.print()">
-            <i class="fas fa-print me-1"></i> Cetak
           </button>
         </div>
       </div>
@@ -173,7 +170,7 @@
               <td>
                 @if($item->jam_masuk)
                 <span class="fw-bold text-success">{{ \Carbon\Carbon::parse($item->jam_masuk)->format('H:i') }}</span>
-                @if($item->keterangan_waktu == 'terlambat')
+                @if($item->status == 'terlambat')
                 <span class="badge bg-danger ms-1" style="font-size: 0.6rem;">LATE</span>
                 @endif
                 @else
@@ -236,7 +233,7 @@
                     <i class="fas fa-pencil-alt"></i>
                   </button>
 
-                  <form action="{{ route('presensi.destroy.admin', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data presensi ini?');">
+                  <form action="{{ route('admin.presensi.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data presensi ini?');">
                     @csrf @method('DELETE')
                     <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
                       <i class="fas fa-trash"></i>

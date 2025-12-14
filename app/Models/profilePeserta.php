@@ -10,15 +10,17 @@ class ProfilePeserta extends Model
     use HasFactory;
 
     // WAJIB: Definisikan nama tabel karena tidak sesuai konvensi jamak standar Laravel
-    protected $table = 'profil_peserta';
+    protected $table = 'profile_pesertas';
 
     protected $fillable = [
         'pengguna_id',
         'nim_nis',
         'institusi',
-        'jurusan', // Jika ada di migrasi Anda
+        'jurusan',
         'no_hp',
-        'alamat' // Jika ada di migrasi Anda
+        'alamat',
+        'foto_profil',
+
     ];
 
     // Relasi ke Model User (Pengguna)

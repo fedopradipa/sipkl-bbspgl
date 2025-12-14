@@ -17,7 +17,7 @@ class PembimbingSeeder extends Seeder
             'nama' => 'Robin',
             'jabatan' => 'Teknisi',
             'no_hp' => '082217327502',
-            'is_open' => true,
+            'is_active' => true,
         ]);
     }
 }

@@ -27,16 +27,23 @@
 </div>
 
 <script>
-  // JavaScript untuk mengisi Action URL saat modal penolakan dibuka
   document.addEventListener('DOMContentLoaded', function() {
     const rejectModal = document.getElementById('rejectModal');
-    rejectModal.addEventListener('show.bs.modal', function(event) {
-      const button = event.relatedTarget; // Tombol "Tolak" yang ditekan
-      const lamaranId = button.getAttribute('data-lamaran-id');
 
-      const form = document.getElementById('rejectForm');
-      // Menyetel action URL ke route POST /lamaran/{id}/reject
-      form.action = '/lamaran/' + lamaranId + '/reject';
-    });
+    // Cek element agar tidak error di halaman lain
+    if (rejectModal) {
+      rejectModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const lamaranId = button.getAttribute('data-lamaran-id');
+
+        const form = document.getElementById('rejectForm');
+
+        // === PERBAIKAN DI SINI ===
+        // Tambahkan '/' di paling depan
+        // Dari: 'admin/lamaran/'...
+        // Jadi: '/admin/lamaran/'...
+        form.action = '/admin/lamaran/' + lamaranId + '/reject';
+      });
+    }
   });
 </script>
