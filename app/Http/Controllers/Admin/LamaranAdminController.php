@@ -163,4 +163,20 @@ class LamaranAdminController extends Controller
     // Default (misal status lain): Tetap bisa pakai back() atau redirect ke index juga
     return redirect()->route('admin.peserta_aktif.index')->with('success', $msg);
   }
+
+  /**
+   * Menghapus data lamaran.
+   * Route: DELETE /admin/lamaran/{id}
+   */
+  public function destroy($id)
+  {
+    // Cari data berdasarkan ID
+    $lamaran = Lamaran::findOrFail($id);
+
+    // Hapus data (Soft delete atau Hard delete tergantung model)
+    $lamaran->delete();
+
+    // Redirect kembali dengan pesan sukses
+    return back()->with('success', 'Data lamaran berhasil dihapus.');
+  }
 }
