@@ -74,8 +74,8 @@
             <div class="alert alert-info border-0 d-flex align-items-center mb-4">
               <i class="fas fa-business-time fa-2x me-3"></i>
               <div>
-                <strong>Lowongan Full-Time (WFO)</strong><br>
-                Peserta wajib masuk kantor setiap hari kerja: <u>Senin - Jumat</u>.
+                <strong>Lowongan Full-Time</strong><br>
+                Peserta wajib masuk kantor setiap hari kerja.
               </div>
             </div>
             <input type="hidden" name="is_fulltime_agreement" value="1">
