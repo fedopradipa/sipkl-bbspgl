@@ -19,7 +19,7 @@ return new class extends Migration
             // Nullable: Karena baru diisi Admin saat status = diterima
             $table->foreignId('pembimbing_id')->nullable()->constrained('pembimbings')->onDelete('set null');
 
-            $table->enum('status', ['pending', 'diterima', 'ditolak', 'selesai'])->default('pending');
+            $table->enum('status', ['pending', 'diterima', 'ditolak', 'selesai', 'berhenti'])->default('pending');
             $table->text('catatan_admin')->nullable(); // Alasan tolak
 
             // Data Usulan Peserta

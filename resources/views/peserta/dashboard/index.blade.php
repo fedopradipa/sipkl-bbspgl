@@ -15,7 +15,9 @@
   @case('ditolak')
   @include('peserta.dashboard.components.state-ditolak', ['lamaran' => $lamaran])
   @break
-
+  @case('pra_mulai')
+  @include('peserta.dashboard.components.state-pra-mulai', ['lamaran' => $lamaran])
+  @break
   @case('active')
   @include('peserta.dashboard.components.state-active', [
   'isHariKerja' => $isHariKerja,
@@ -24,19 +26,21 @@
   ])
   @break
 
-  {{-- STATE BARU: SELESAI --}}
+  @case('finalisasi')
+  @include('peserta.dashboard.components.state-finalisasi', ['lamaran' => $lamaran])
+  @break
+
   @case('selesai')
   @include('peserta.dashboard.components.state-selesai', ['lamaran' => $lamaran])
   @break
 
-  {{-- STATE BARU: BERHENTI --}}
   @case('berhenti')
   @include('peserta.dashboard.components.state-berhenti', ['lamaran' => $lamaran])
   @break
 
   @default
   {{-- State Kosong / Belum Melamar --}}
-  @include('peserta.dashboard.components.state-empty')
+  @include('peserta.dashboard.empty')
   @endswitch
   {{-- ... --}}
 

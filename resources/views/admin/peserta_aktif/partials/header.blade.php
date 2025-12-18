@@ -1,19 +1,36 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+
+  {{-- BAGIAN KIRI: Judul & Counter --}}
   <div>
     <h4 class="fw-bold text-primary mb-1">Peserta Magang Aktif</h4>
-    {{-- Mengambil total data dari pagination object --}}
-    <p class="text-muted small mb-0">Memantau {{ $peserta->total() }} peserta yang sedang melaksanakan PKL.</p>
+    <p class="text-muted small mb-0">
+      <i class="fas fa-users me-1"></i> Memantau {{ $peserta->total() }} peserta yang sedang melaksanakan PKL.
+    </p>
   </div>
-  <div class="col-md-3">
+
+  {{-- BAGIAN KANAN: Form Pencarian (Style Baru) --}}
+  <div class="col-12 col-md-auto">
     <form action="{{ route('admin.peserta_aktif.index') }}" method="GET">
-      <div class="input-group shadow-sm">
-        <span class="input-group-text bg-white border-end-0">
-          <i class="fas fa-search text-muted"></i>
-        </span>
-        <input type="text" name="search" class="form-control border-start-0 ps-0"
+      <div class="input-group input-group-sm shadow-sm" style="max-width: 250px;">
+        <input
+          type="text"
+          name="search"
+          class="form-control"
           placeholder="Cari nama atau divisi..."
           value="{{ request('search') }}">
+
+        <button class="btn btn-primary" type="submit" title="Cari">
+          <i class="fas fa-search"></i>
+        </button>
+
+        {{-- Tombol Reset hanya muncul jika sedang mencari --}}
+        @if(request('search'))
+        <a href="{{ route('admin.peserta_aktif.index') }}" class="btn btn-outline-secondary" title="Hapus Filter">
+          <i class="fas fa-times"></i>
+        </a>
+        @endif
       </div>
     </form>
   </div>
+
 </div>

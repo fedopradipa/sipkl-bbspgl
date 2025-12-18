@@ -162,6 +162,38 @@ class Lamaran extends Model
             default => 'Unknown'
         };
     }
+    public function getTotalHariEfektifAttribute()
+    {
+        // Jika data belum lengkap, return 0
+        if (!$this->tgl_mulai_resmi || !$this->tgl_selesai_resmi || empty($this->hari_kerja_resmi)) {
+            return 0;
+        }
+
+        $start = Carbon::parse($this->tgl_mulai_resmi);
+        $end   = Carbon::parse($this->tgl_selesai_resmi);
+        $daysArray = $this->hari_kerja_resmi; // Array ["Senin", "Rabu", ...]
+
+        // Pastikan Locale Indonesia agar nama hari cocok
+        // (Sebaiknya diatur di AppServiceProvider, tapi ini untuk memastikan)
+        Carbon::setLocale('id');
+
+        $count = 0;
+
+        // Loop dari tanggal mulai sampai selesai
+        while ($start->lte($end)) {
+            // Cek apakah nama hari ini ada di jadwal peserta
+            // translatedFormat('l') menghasilkan "Senin", "Selasa", dst.
+            $namaHari = $start->translatedFormat('l');
+
+            if (in_array($namaHari, $daysArray)) {
+                $count++;
+            }
+
+            $start->addDay();
+        }
+
+        return $count;
+    }
 
     /*
     |--------------------------------------------------------------------------

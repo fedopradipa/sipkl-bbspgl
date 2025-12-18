@@ -17,7 +17,7 @@
     {{-- Menambahkan CSS untuk Tom-select --}}
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app-style.css') }}">
-    @stack('style')
+    @stack('styles')
 </head>
 
 

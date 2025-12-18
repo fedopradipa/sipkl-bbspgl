@@ -7,6 +7,7 @@ use App\Models\Lowongan;
 use App\Models\Presensi; // Ditambahkan untuk fitur Dashboard Peserta
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class LamaranService
@@ -72,7 +73,7 @@ class LamaranService
       $end   = Carbon::parse($lamaran->tgl_selesai_resmi ?? $lamaran->tgl_selesai_usulan);
 
       if ($today->lt($start)) return 'pra_mulai'; // Belum tanggal masuk
-      if ($today->gt($end))   return 'selesai';   // Tanggal lewat (Menunggu Admin Luluskan)
+      if ($today->gt($end))   return 'finalisasi';   // Tanggal lewat (Menunggu Admin Luluskan)
 
       return 'active'; // Masa Magang Aktif
     }
@@ -233,14 +234,19 @@ class LamaranService
     ];
 
     if ($lowongan->is_fulltime) {
-      $hariKerja = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
-      $alasan    = "Mengikuti aturan Fulltime 1 minggu";
+      // Jika null (antisipasi error), fallback ke Senin-Jumat standar
+      $hariKerja = $lowongan->working_days ?? ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
+      $alasan    = "Mengikuti aturan jadwal terikat (Fulltime) dari lowongan";
     } else {
+      // Logika Flexible: User yang memilih hari
+      // Kita mapping nama hari Inggris (dari input datepicker/checkbox) ke Indo
+      $inputHari = $input['hari_kerja'] ?? [];
+
       $hariKerja = array_map(function ($h) use ($kamusHari) {
         return $kamusHari[$h] ?? $h;
-      }, $input['hari_kerja']);
+      }, $inputHari);
 
-      $alasan = $input['alasan_hari_kerja'];
+      $alasan = $input['alasan_hari_kerja'] ?? '-';
     }
 
     return [

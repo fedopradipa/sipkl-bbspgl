@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\LamaranService;    // <--- Import Service
 use App\Models\Lamaran;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class DashboardPesertaController extends Controller
 {

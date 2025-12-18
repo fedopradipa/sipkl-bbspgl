@@ -9,21 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    // database/migrations/xxxx_create_pengajuan_izins_table.php
+
+    public function up()
     {
         Schema::create('pengajuan_izins', function (Blueprint $table) {
             $table->id();
-            // Link ke Lamaran (bukan user, biar terikat periode magang)
             $table->foreignId('lamaran_id')->constrained('lamarans')->onDelete('cascade');
 
             $table->enum('jenis_izin', ['sakit', 'izin']);
-            $table->date('tgl_mulai');
-            $table->date('tgl_selesai');
-            $table->text('alasan');
-            $table->string('bukti_foto')->nullable(); // Path file
 
+            // GANTI INI: Dari range tanggal menjadi JSON list tanggal
+            // Isinya nanti: ["2025-12-01", "2025-12-05"]
+            $table->json('tanggal_izin');
+
+            $table->text('alasan');
+            $table->string('bukti_foto')->nullable();
             $table->enum('status', ['pending', 'disetujui', 'ditolak'])->default('pending');
-            $table->text('catatan_admin')->nullable(); // Jika ditolak
+            $table->text('catatan_admin')->nullable();
             $table->timestamps();
         });
     }

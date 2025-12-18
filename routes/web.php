@@ -15,7 +15,7 @@ use App\Http\Controllers\Admin\AlumniController;
 use App\Http\Controllers\Admin\PesertaAktifController;
 use App\Http\Controllers\Admin\PresensiAdminController;
 use App\Http\Controllers\Admin\IzinAdminController;
-use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\RekapPresensiController;
 use App\Http\Controllers\Admin\PembimbingController;
 use App\Http\Controllers\Admin\LowonganController;
 use App\Http\Controllers\Admin\RoleController;
@@ -103,8 +103,12 @@ Route::middleware('auth')->group(function () {
             // C. MANAJEMEN ALUMNI & ARSIP
             // URL: /admin/alumni/...
             Route::controller(AlumniController::class)->prefix('alumni')->name('alumni.')->group(function () {
-                Route::get('/', 'index')->name('index'); // admin.alumni.index
-                Route::get('/{id}', 'show')->name('show');
+                // 1. Daftar Alumni
+                Route::get('/', 'index')->name('index'); // route('admin.alumni.index')
+                // 2. Export / Cetak Rekapitulasi (WAJIB DI ATAS SHOW)
+                Route::get('/export', 'export')->name('export'); // route('admin.alumni.export')
+                // 3. Detail Alumni (Wildcard ID harus paling bawah)
+                Route::get('/{id}', 'show')->name('show'); // route('admin.alumni.show')
             });
 
             // D. PESERTA AKTIF
@@ -116,22 +120,22 @@ Route::middleware('auth')->group(function () {
 
             // E. PRESENSI ADMIN
             Route::controller(PresensiAdminController::class)->prefix('presensi')->name('presensi.')->group(function () {
-                Route::get('/', 'presensi')->name('index'); // admin.presensi.index
+                Route::get('/', 'index')->name('index'); // admin.presensi.index
                 Route::post('/store', 'storeAdmin')->name('store');
-                Route::put('/update', 'updateAdmin')->name('update');
+                Route::put('/{id}', 'updateAdmin')->name('update');
                 Route::delete('/{id}', 'destroy')->name('destroy');
             });
 
             // F. IZIN ADMIN
             Route::controller(IzinAdminController::class)->prefix('izin')->name('izin.')->group(function () {
                 Route::get('/', 'index')->name('index'); // admin.izin.index
-                Route::post('/{id}/approve', 'approve')->name('approve');
-                Route::post('/{id}/reject', 'reject')->name('reject');
+                Route::put('/{id}/approve', 'approve')->name('approve');
+                Route::put('/{id}/reject', 'reject')->name('reject');
             });
 
             // G. LAPORAN
-            Route::get('/reports/attendance', [ReportController::class, 'index'])->name('reports.attendance.index');
-            Route::get('/reports/attendance/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.attendance.pdf');
+            Route::get('/reports/attendance', [RekapPresensiController::class, 'index'])->name('reports.attendance.index');
+            Route::get('/reports/attendance/export-pdf', [RekapPresensiController::class, 'exportPdf'])->name('reports.attendance.pdf');
 
             Route::resource('role', RoleController::class);
             Route::resource('user', UserController::class);
@@ -167,7 +171,10 @@ Route::middleware('auth')->group(function () {
         });
 
         // Izin
-        Route::resource('izin', IzinController::class)->except(['destroy', 'edit', 'update']);
+        Route::resource('izin', IzinController::class)->except(['destroy']);
+
+        Route::post('/lamaran/upload-laporan', [LamaranPesertaController::class, 'uploadLaporan'])
+            ->name('peserta.lamaran.uploadLaporan');
     });
 });
 

@@ -11,6 +11,8 @@
       <form id="editMagangForm" method="POST" action="">
         @csrf
         {{-- Method POST digunakan untuk route approve/update --}}
+        {{-- Input Hidden untuk memberi tahu Controller --}}
+        <input type="hidden" name="request_mode" id="inputRequestMode" value="">
 
         <div class="modal-body">
           <p class="text-muted small mb-3" id="modalDescription">
@@ -43,7 +45,7 @@
           {{-- 3. Hari Kerja Resmi --}}
           <div class="mb-3 border p-3 rounded bg-light">
             <label class="form-label fw-bold d-block small text-muted mb-2">Hari Kerja Wajib <span class="text-danger">*</span></label>
-            @foreach(['Monday'=>'Senin', 'Tuesday'=>'Selasa', 'Wednesday'=>'Rabu', 'Thursday'=>'Kamis', 'Friday'=>'Jumat'] as $dayEng => $dayInd)
+            @foreach(['Monday'=>'Senin', 'Tuesday'=>'Selasa', 'Wednesday'=>'Rabu', 'Thursday'=>'Kamis', 'Friday'=>'Jumat', 'Saturday'=>'Sabtu', 'Sunday'=>'Minggu'] as $dayEng => $dayInd)
             <div class="form-check form-check-inline">
               <input class="form-check-input" type="checkbox" name="hari_kerja_resmi[]" id="day-{{ $dayEng }}" value="{{ $dayInd }}">
               <label class="form-check-label small" for="day-{{ $dayEng }}">{{ $dayInd }}</label>
@@ -86,7 +88,9 @@
         const modalTitle = editModal.querySelector('.modal-title');
         const modalDesc = document.getElementById('modalDescription');
         const submitBtn = editModal.querySelector('button[type="submit"]');
-
+        // Isi Input Hidden
+        const inputMode = document.getElementById('inputRequestMode');
+        inputMode.value = mode; // Isi value dengan 'approve' atau 'edit' (null)
         // Reset Class Header
         modalHeader.classList.remove('bg-success', 'bg-warning', 'text-dark', 'text-dark');
         submitBtn.classList.remove('btn-success', 'btn-primary');

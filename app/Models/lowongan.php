@@ -24,6 +24,9 @@ class Lowongan extends Model
         'min_duration',
         'jurusan_terkait',
         'fasilitas',
+        'working_days',
+
+
     ];
 
     protected $casts = [
@@ -31,9 +34,10 @@ class Lowongan extends Model
         'window_end_date' => 'date',
         'is_open' => 'boolean',
         'is_fulltime' => 'boolean',
+        'working_days' => 'array',
     ];
-
     /**
+
      * EVENT MODEL: Otomatis set is_open = false saat dihapus (Soft Delete)
      */
     protected static function booted()

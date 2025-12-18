@@ -23,9 +23,6 @@
             <p class="text-white-50 mb-0 fs-5">{{ $lowongan->divisi }}</p>
 
             <div class="d-flex flex-wrap gap-2 mt-3">
-              <span class="badge bg-white text-primary bg-opacity-10 border border-white border-opacity-25 backdrop-blur">
-                <i class="fas fa-clock me-1"></i> Full Time
-              </span>
               <span class="badge bg-white text-warning bg-opacity-10 border border-white border-opacity-25 backdrop-blur">
                 <i class="fas fa-hourglass-half me-1"></i> Min. {{ $lowongan->min_duration }} Bulan
               </span>
@@ -80,12 +77,13 @@
     </div>
 
     {{-- 3. KOLOM KANAN: SIDEBAR INFO (Sticky) --}}
+    {{-- 3. KOLOM KANAN: SIDEBAR INFO (Sticky) --}}
     <div class="col-lg-4">
       <div class="card border-0 shadow-lg rounded-4 sticky-top" style="top: 20px; z-index: 10;">
         <div class="card-body p-4">
           <h5 class="fw-bold mb-4 text-dark border-bottom pb-3">Ringkasan Posisi</h5>
 
-          {{-- Info Items --}}
+          {{-- Info Item: Periode --}}
           <div class="info-item">
             <div class="icon"><i class="fas fa-calendar-alt"></i></div>
             <div>
@@ -94,6 +92,27 @@
             </div>
           </div>
 
+          {{-- [BARU] Info Item: HARI KERJA --}}
+          <div class="info-item">
+            <div class="icon"><i class="fas fa-calendar-week"></i></div>
+            <div>
+              <small>Hari Kerja Wajib</small>
+              <strong class="text-dark">
+                @if($lowongan->is_fulltime)
+                {{-- Jika data array hari ada, tampilkan dipisah koma --}}
+                @if(!empty($lowongan->working_days) && is_array($lowongan->working_days))
+                {{ implode(', ', $lowongan->working_days) }}
+                @else
+                Senin - Jumat {{-- Fallback default --}}
+                @endif
+                @else
+                Fleksibel (Sesuai Kesepakatan)
+                @endif
+              </strong>
+            </div>
+          </div>
+
+          {{-- Info Item: Jam Kerja --}}
           <div class="info-item">
             <div class="icon"><i class="fas fa-clock"></i></div>
             <div>
@@ -102,7 +121,7 @@
             </div>
           </div>
 
-          {{-- INFO JURUSAN (BARU) --}}
+          {{-- Info Item: Jurusan --}}
           <div class="info-item">
             <div class="icon"><i class="fas fa-graduation-cap"></i></div>
             <div>

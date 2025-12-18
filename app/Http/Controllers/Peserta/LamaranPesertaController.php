@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Peserta;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLamaranRequest;
+use App\Http\Requests\UploadLaporanRequest;
 use App\Models\Lowongan;
+use App\Models\Lamaran;
 use App\Services\LamaranService;
 use App\Services\FileUploadService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
 
 class LamaranPesertaController extends Controller
 {
@@ -77,5 +81,42 @@ class LamaranPesertaController extends Controller
 
     return redirect()->route('peserta.dashboard')
       ->with('success', 'Lamaran berhasil dikirim! Menunggu verifikasi admin.');
+  }
+
+  /**
+   * Handle Upload Laporan Akhir (State Finalisasi)
+   */
+  public function uploadLaporan(UploadLaporanRequest $request)
+  {
+    // 1. Ambil Data Lamaran
+    $lamaran = Lamaran::findOrFail($request->id);
+
+    // 2. Security Check: Pastikan milik user yang login
+    if ($lamaran->pengguna_id !== Auth::id()) {
+      abort(403, 'Akses ditolak.');
+    }
+
+    // 3. Handle File Upload via Service
+    if ($request->hasFile('file_laporan')) {
+
+      // Optional: Hapus file lama jika ini adalah REVISI
+      if ($lamaran->path_laporan_akhir) {
+        Storage::delete('public/laporan_akhir/' . $lamaran->path_laporan_akhir);
+      }
+
+      // Gunakan FileUploadService Anda
+      $filename = $this->fileService->uploadLaporanAkhir(
+        $request->file('file_laporan'),
+        Auth::id()
+      );
+
+      // Update nama file di model
+      $lamaran->path_laporan_akhir = $filename;
+    }
+
+    // 4. Update Link & Simpan
+    $lamaran->save();
+
+    return back()->with('success', 'Laporan akhir berhasil diunggah. Menunggu verifikasi Admin.');
   }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Lamaran;
-use App\Models\Pembimbing; // <--- 1. WAJIB IMPORT MODEL PEMBIMBING
+use App\Models\Pembimbing;
 
 class PesertaAktifController extends Controller
 {
@@ -30,7 +30,7 @@ class PesertaAktifController extends Controller
     return view('admin.peserta_aktif.index', [
       'title'   => 'Daftar Peserta Aktif',
       'peserta' => $peserta,
-      'mentors' => $mentors // <--- 3. KIRIM VARIABEL KE VIEW
+      'mentors' => $mentors
     ]);
   }
 
@@ -44,10 +44,11 @@ class PesertaAktifController extends Controller
       'izin'
     ])
       ->findOrFail($id);
-
+    $mentors = Pembimbing::orderBy('nama', 'asc')->get();
     return view('admin.peserta_aktif.show', [
       'title' => 'Detail Peserta Magang',
-      'item' => $lamaran
+      'item' => $lamaran,
+      'mentors' => $mentors
     ]);
   }
 }

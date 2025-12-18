@@ -14,8 +14,7 @@ class PengajuanIzin extends Model
     protected $fillable = [
         'lamaran_id',
         'jenis_izin',
-        'tgl_mulai',
-        'tgl_selesai',
+        'tanggal_izin',
         'alasan',
         'bukti_foto',
         'status',
@@ -23,8 +22,7 @@ class PengajuanIzin extends Model
     ];
 
     protected $casts = [
-        'tgl_mulai' => 'date',
-        'tgl_selesai' => 'date',
+        'tanggal_izin' => 'array',
     ];
 
     // Relasi ke Lamaran
@@ -32,10 +30,9 @@ class PengajuanIzin extends Model
     {
         return $this->belongsTo(Lamaran::class, 'lamaran_id');
     }
-
     // Helper untuk menghitung total hari
-    public function getDurasiHariAttribute()
+    public function getTotalHariAttribute()
     {
-        return $this->tgl_mulai->diffInDays($this->tgl_selesai) + 1;
+        return count($this->tanggal_izin ?? []);
     }
 }

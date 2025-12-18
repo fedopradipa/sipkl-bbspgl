@@ -1,32 +1,32 @@
-<form action="{{ route('admin.lamaran.index') }}" method="GET" class="d-flex flex-column flex-md-row gap-2 w-100">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center w-100 gap-3">
 
-  {{-- FILTER 1: STATUS TAB --}}
-  {{-- UX UPDATE: Hapus 'diterima' & 'all'. Fokus hanya Pending (Inbox) & Ditolak (History) --}}
+  {{-- BAGIAN KIRI: Filter Tab Status (Pills Style) --}}
   <div class="btn-group shadow-sm">
     @foreach(['pending', 'ditolak'] as $st)
     <a href="{{ route('admin.lamaran.index', array_merge(request()->query(), ['status' => $st])) }}"
-      class="btn btn-sm {{ $currentStatus == $st ? 'btn-primary' : 'btn-white border' }} text-capitalize px-3">
+      class="btn btn-sm px-3 {{ $currentStatus == $st ? 'btn-primary' : 'btn-white border bg-white text-secondary' }}">
 
-      {{-- Ikon Pemanis --}}
+      {{-- Ikon --}}
       @if($st == 'pending') <i class="fas fa-inbox me-1"></i>
       @elseif($st == 'ditolak') <i class="fas fa-history me-1"></i>
       @endif
 
-      {{ $st }}
+      {{ ucfirst($st) }}
     </a>
     @endforeach
   </div>
 
-  {{-- Wrapper untuk Filter Kanan --}}
-  <div class="d-flex gap-2 ms-md-auto">
+  {{-- BAGIAN KANAN: Lowongan & Search --}}
+  <form action="{{ route('admin.lamaran.index') }}" method="GET" class="d-flex flex-column flex-md-row gap-2">
+    {{-- Pertahankan status saat filter lowongan/keyword berubah --}}
+    <input type="hidden" name="status" value="{{ $currentStatus }}">
 
-    {{-- FILTER 2: LOWONGAN --}}
+    {{-- Filter Lowongan --}}
     <select name="lowongan_id"
-      class="form-select form-select-sm shadow-sm border-0 bg-white"
-      style="max-width: 200px; cursor: pointer;"
+      class="form-select form-select-sm shadow-sm bg-white"
+      style="min-width: 200px; cursor: pointer;"
       onchange="this.form.submit()">
-      <option value="">Semua Posisi</option>
-      {{-- Gunakan variabel $lowongans dari Controller --}}
+      <option value="">-- Semua Posisi --</option>
       @foreach($lowongans as $l)
       <option value="{{ $l->id }}" {{ request('lowongan_id') == $l->id ? 'selected' : '' }}>
         {{ $l->judul }}
@@ -34,25 +34,25 @@
       @endforeach
     </select>
 
-    {{-- FILTER 3: PENCARIAN --}}
-    <div class="input-group input-group-sm shadow-sm" style="max-width: 250px;">
+    {{-- Pencarian --}}
+    <div class="input-group input-group-sm shadow-sm" style="min-width: 250px;">
       <input type="text"
         name="keyword"
-        class="form-control border-0"
-        placeholder="Cari pelamar..."
+        class="form-control"
+        placeholder="Cari nama pelamar..."
         value="{{ request('keyword') }}">
 
-      <button class="btn btn-white border-0 text-primary bg-white" type="submit">
+      <button class="btn btn-primary" type="submit">
         <i class="fas fa-search"></i>
       </button>
 
-      @if(request('keyword'))
+      @if(request('keyword') || request('lowongan_id'))
       <a href="{{ route('admin.lamaran.index', ['status' => $currentStatus]) }}"
-        class="btn btn-white border-0 text-danger bg-white"
-        title="Reset Cari">
+        class="btn btn-outline-secondary"
+        title="Reset Filter">
         <i class="fas fa-times"></i>
       </a>
       @endif
     </div>
-  </div>
-</form>
+  </form>
+</div>

@@ -1,19 +1,19 @@
 <div class="modal fade" id="editModal" tabindex="-1">
   <div class="modal-dialog">
-    <form action="{{ route('admin.presensi.update') }}" method="POST" class="modal-content">
+    <form action="" method="POST" class="modal-content" id="editForm">
       @csrf
       @method('PUT')
-      <input type="hidden" name="id" id="edit_id">
 
       <div class="modal-header bg-warning text-dark">
         <h5 class="modal-title">Koreksi Absensi</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
 
-        {{-- Pilihan Status --}}
+        {{-- 1. Pilihan Status --}}
         <div class="mb-3">
-          <label class="form-label">Status Kehadiran</label>
+          <label class="form-label fw-bold small text-uppercase text-muted">Status Kehadiran</label>
           <select name="status" id="edit_status" class="form-select">
             <option value="hadir">Hadir</option>
             <option value="sakit">Sakit</option>
@@ -22,20 +22,31 @@
           </select>
         </div>
 
-        {{-- Input Jam (Bungkus dengan ID editJamContainer) --}}
+        {{-- 2. Input Jam (Muncul HANYA jika Hadir/Terlambat) --}}
         <div class="row" id="editJamContainer">
           <div class="col-6 mb-3">
-            <label class="form-label">Jam Masuk</label>
+            <label class="form-label small">Jam Masuk</label>
             <input type="time" name="jam_masuk" id="edit_masuk" class="form-control">
           </div>
           <div class="col-6 mb-3">
-            <label class="form-label">Jam Pulang</label>
+            <label class="form-label small">Jam Pulang</label>
             <input type="time" name="jam_pulang" id="edit_pulang" class="form-control">
           </div>
         </div>
 
+        {{-- 3. Input Catatan (Muncul HANYA jika Sakit/Izin/Alpha) --}}
+        <div class="mb-3" id="editNoteContainer" style="display: none;">
+          <label class="form-label small">Catatan / Keterangan (Opsional)</label>
+          <textarea name="catatan_harian" id="edit_catatan" class="form-control" rows="2"
+            placeholder="Contoh: Surat dokter terlampir..."></textarea>
+          <div class="form-text small text-muted">
+            Kosongkan jika tidak ada keterangan tambahan.
+          </div>
+        </div>
+
       </div>
-      <div class="modal-footer">
+
+      <div class="modal-footer bg-light">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
         <button type="submit" class="btn btn-warning">Update Perubahan</button>
       </div>
@@ -43,7 +54,7 @@
   </div>
 </div>
 
-{{-- SCRIPT JS KHUSUS EDIT --}}
+{{-- SCRIPT JS UPDATE --}}
 @push('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -51,49 +62,68 @@
 
     if (editModal) {
       // Definisi Elemen
+      const editForm = document.getElementById('editForm');
       const statusSelect = document.getElementById('edit_status');
+
+      // Container
       const jamContainer = document.getElementById('editJamContainer');
+      const noteContainer = document.getElementById('editNoteContainer');
+
+      // Inputs
       const jamMasuk = document.getElementById('edit_masuk');
       const jamPulang = document.getElementById('edit_pulang');
+      const catatanInput = document.getElementById('edit_catatan');
 
-      // Fungsi Toggle Tampilan
-      function toggleEditJam() {
-        if (statusSelect.value === 'hadir') {
-          // Jika HADIR: Tampilkan & Wajib
+      // Base URL Route
+      const baseUrl = "{{ route('admin.presensi.index') }}";
+
+      // Fungsi Toggle Tampilan (UX Logic)
+      function toggleEditUI() {
+        const status = statusSelect.value;
+
+        if (status === 'hadir' || status === 'terlambat') {
+          // MODE HADIR: Tampilkan Jam, Sembunyikan Catatan
           jamContainer.style.display = 'flex';
+          noteContainer.style.display = 'none';
           jamMasuk.required = true;
         } else {
-          // Jika NON-HADIR: Sembunyikan & Tidak Wajib
+          // MODE NON-HADIR: Sembunyikan Jam, Tampilkan Catatan
           jamContainer.style.display = 'none';
+          noteContainer.style.display = 'block';
           jamMasuk.required = false;
 
-          // Reset nilai agar menjadi NULL saat disubmit
+          // Bersihkan jam agar tidak tersimpan data jam sampah
           jamMasuk.value = '';
           jamPulang.value = '';
         }
       }
 
-      // 1. Event saat Modal Dibuka (Populate Data)
+      // Event saat Modal Dibuka
       editModal.addEventListener('show.bs.modal', function(event) {
         const btn = event.relatedTarget;
 
-        // Isi data ID & Status
-        document.getElementById('edit_id').value = btn.getAttribute('data-id');
-        statusSelect.value = btn.getAttribute('data-status');
-
-        // Isi data Jam (ambil 5 karakter pertama: HH:mm)
+        // 1. Ambil Data dari Tombol
+        const id = btn.getAttribute('data-id');
+        const status = btn.getAttribute('data-status');
         const masuk = btn.getAttribute('data-masuk');
         const pulang = btn.getAttribute('data-pulang');
+        const catatan = btn.getAttribute('data-catatan'); // <--- PASTIKAN INI ADA DI TOMBOL
 
+        // 2. Update Action Form
+        editForm.action = `${baseUrl}/${id}`;
+
+        // 3. Isi Nilai Input
+        statusSelect.value = status;
         jamMasuk.value = masuk ? masuk.substring(0, 5) : '';
         jamPulang.value = pulang ? pulang.substring(0, 5) : '';
+        catatanInput.value = (catatan && catatan !== '-') ? catatan : '';
 
-        // PENTING: Panggil fungsi toggle agar UI menyesuaikan status saat ini
-        toggleEditJam();
+        // 4. Atur Tampilan UI
+        toggleEditUI();
       });
 
-      // 2. Event saat Dropdown Berubah
-      statusSelect.addEventListener('change', toggleEditJam);
+      // Event saat Status Berubah
+      statusSelect.addEventListener('change', toggleEditUI);
     }
   });
 </script>

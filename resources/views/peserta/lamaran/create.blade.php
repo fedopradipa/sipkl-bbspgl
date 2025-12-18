@@ -86,7 +86,8 @@
             <div class="mb-3">
               <label class="form-label fw-bold">Pilih Hari: <span class="text-danger">*</span></label>
               <div class="btn-group d-flex flex-wrap" role="group">
-                @foreach(['Monday'=>'Senin', 'Tuesday'=>'Selasa', 'Wednesday'=>'Rabu', 'Thursday'=>'Kamis', 'Friday'=>'Jumat'] as $dayEng => $dayInd)
+                @foreach(['Monday'=>'Senin', 'Tuesday'=>'Selasa', 'Wednesday'=>'Rabu', 'Thursday'=>'Kamis', 'Friday'=>'Jumat', 'Saturday' => 'Sabtu',
+                'Sunday' => 'Minggu'] as $dayEng => $dayInd)
                 <input type="checkbox" class="btn-check" id="btn-{{ $dayEng }}" name="hari_kerja[]" value="{{ $dayEng }}"
                   {{ (is_array(old('hari_kerja')) && in_array($dayEng, old('hari_kerja'))) ? 'checked' : '' }}>
                 <label class="btn btn-outline-primary m-1 rounded" for="btn-{{ $dayEng }}">{{ $dayInd }}</label>

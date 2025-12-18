@@ -3,65 +3,61 @@
 @section('content')
 <div class="container-fluid">
 
-  {{-- Data Preparation --}}
+  {{-- Data Preparation (JANGAN DIUBAH) --}}
   @php
-  // LOGIKA: Jika sudah diterima, ambil data resmi. Jika belum, ambil data usulan peserta.
-  $dataStart = $lamaran->tgl_mulai_resmi
-  ? $lamaran->tgl_mulai_resmi->format('Y-m-d')
-  : $lamaran->tgl_mulai_usulan->format('Y-m-d');
-
-  $dataEnd = $lamaran->tgl_selesai_resmi
-  ? $lamaran->tgl_selesai_resmi->format('Y-m-d')
-  : $lamaran->tgl_selesai_usulan->format('Y-m-d');
-
-  $dataDays = $lamaran->hari_kerja_resmi
-  ? json_encode($lamaran->hari_kerja_resmi)
-  : json_encode($lamaran->hari_kerja_usulan);
-
+  $dataStart = $lamaran->tgl_mulai_resmi ? $lamaran->tgl_mulai_resmi->format('Y-m-d') : $lamaran->tgl_mulai_usulan->format('Y-m-d');
+  $dataEnd = $lamaran->tgl_selesai_resmi ? $lamaran->tgl_selesai_resmi->format('Y-m-d') : $lamaran->tgl_selesai_usulan->format('Y-m-d');
+  $dataDays = $lamaran->hari_kerja_resmi ? json_encode($lamaran->hari_kerja_resmi) : json_encode($lamaran->hari_kerja_usulan);
   $pembimbingId = $lamaran->pembimbing_id ?? '';
 
-  // ARRAY ATTRIBUTES (KEY HARUS SESUAI JS)
   $modalDataAttributes = [
   'lamaran-id' => $lamaran->id,
-  'mode' => 'approve', // PENTING: Agar modal jadi Hijau
-  'pembimbing-id' => $pembimbingId, // JS cari 'data-pembimbing-id'
-  'start' => $dataStart, // JS cari 'data-start' (bukan resmi-start)
-  'end' => $dataEnd, // JS cari 'data-end'
-  'days' => $dataDays, // JS cari 'data-days'
+  'mode' => 'approve',
+  'pembimbing-id' => $pembimbingId,
+  'start' => $dataStart,
+  'end' => $dataEnd,
+  'days' => $dataDays,
   ];
   @endphp
 
-  {{-- Main Grid --}}
-  <div class="row g-4 mb-5 pb-5">
-
-    {{-- Kolom Kiri: Info Lamaran --}}
-    <div class="col-md-4">
-      @include('admin.lamaran.components.info_card', ['lamaran' => $lamaran])
-      @include('admin.lamaran.components.acceptance_card', ['lamaran' => $lamaran])
+  {{-- PAGE HEADER & ACTIONS --}}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-0 text-gray-800 fw-bold">Detail Lamaran Peserta</h1>
+      <p class="text-muted mb-0">Tinjau data pelamar sebelum memberikan keputusan.</p>
     </div>
 
-    {{-- Kolom Kanan: Profil Peserta --}}
-    <div class="col-md-8">
-      @include('admin.lamaran.components.profile_card', ['lamaran' => $lamaran])
-    </div>
-
-  </div>
-
-  {{-- Fixed Action Bar --}}
-  <div class="fixed-bottom bg-white shadow-lg border-top py-3">
-    <div class="container-fluid d-flex justify-content-between align-items-center">
-
-      {{-- Tombol Kembali --}}
-      <a href="{{ route('admin.lamaran.index') }}" class="btn btn-secondary">
-        <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar Verifikasi
+    {{-- Tombol Aksi di Header (Lebih UX Friendly) --}}
+    <div class="d-flex gap-2">
+      <a href="{{ route('admin.lamaran.index') }}" class="btn btn-secondary shadow-sm">
+        <i class="fas fa-arrow-left me-1"></i> Kembali
       </a>
 
-      {{-- Tombol Aksi --}}
+      {{-- Include Component Tombol --}}
       @include('admin.lamaran.components.action_buttons', [
       'lamaran' => $lamaran,
       'modalDataAttributes' => $modalDataAttributes
       ])
+    </div>
+  </div>
 
+  {{-- ALERT JIKA DITOLAK --}}
+  @if($lamaran->status == 'ditolak')
+  <div class="alert alert-danger shadow-sm border-left-danger mb-4" role="alert">
+    <h5 class="alert-heading fw-bold"><i class="fas fa-times-circle me-2"></i>Lamaran Ditolak</h5>
+    <p class="mb-0">Alasan penolakan: <strong>{{ $lamaran->catatan_admin ?? '-' }}</strong></p>
+  </div>
+  @endif
+
+  <div class="row">
+    {{-- KOLOM KIRI (8): PROFIL UTAMA --}}
+    <div class="col-lg-8 mb-4">
+      @include('admin.lamaran.components.profile_card', ['lamaran' => $lamaran])
+    </div>
+
+    {{-- KOLOM KANAN (4): INFO & META DATA --}}
+    <div class="col-lg-4 mb-4">
+      @include('admin.lamaran.components.info_card', ['lamaran' => $lamaran])
     </div>
   </div>
 

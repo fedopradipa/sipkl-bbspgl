@@ -1,145 +1,76 @@
-{{-- Header with Breadcrumb & Quick Info --}}
-<div class="d-flex justify-content-between align-items-center mb-4">
+{{-- Hitung Status Tanggal --}}
+@php
+$now = \Carbon\Carbon::now();
+$endDate = \Carbon\Carbon::parse($item->tgl_selesai_resmi);
+$isExpired = $now->greaterThan($endDate);
+@endphp
 
-  {{-- Left: Back Button & Title --}}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+
+  {{-- BAGIAN KIRI: Tombol Kembali & Judul --}}
   <div>
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb mb-2">
-        <li class="breadcrumb-item">
-          <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-        </li>
-        <li class="breadcrumb-item">
-          <a href="{{ route('admin.peserta_aktif.index') }}">Peserta Aktif</a>
-        </li>
-        <li class="breadcrumb-item active">Detail</li>
-      </ol>
-    </nav>
-    <h4 class="fw-bold mb-0">Detail Peserta Magang</h4>
+    <a href="{{ route('admin.peserta_aktif.index') }}" class="text-decoration-none text-muted small mb-1 d-inline-block hover-arrow">
+      <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar Peserta
+    </a>
+    <h4 class="fw-bold text-dark m-0">
+      Detail Peserta Magang
+    </h4>
   </div>
 
-  {{-- Right: Status Badge & Actions --}}
-  <div class="d-flex gap-2 align-items-center">
+  {{-- BAGIAN KANAN: Status & Action Bar --}}
+  <div class="d-flex align-items-center gap-2 flex-wrap">
 
-    {{-- Status Badge --}}
-    @php
-    $now = \Carbon\Carbon::now();
-    $endDate = \Carbon\Carbon::parse($item->tgl_selesai_resmi);
-    $isExpired = $now->greaterThan($endDate);
-    @endphp
-
+    {{-- 1. Status Badge (Lebih Modern dengan Border) --}}
     @if($isExpired)
-    <span class="badge bg-warning text-dark badge-status">
-      <i class="fas fa-clock me-1"></i> Masa Habis
-    </span>
+    <div class="badge bg-danger-subtle text-danger border border-danger px-3 py-2 rounded-pill d-flex align-items-center">
+      <i class="fas fa-exclamation-circle me-2"></i> Masa Magang Habis
+    </div>
     @else
-    <span class="badge bg-success badge-status">
-      <i class="fas fa-check-circle me-1"></i> Aktif
-    </span>
+    <div class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill d-flex align-items-center">
+      <i class="fas fa-check-circle me-2"></i> Status Aktif
+    </div>
     @endif
 
-    {{-- Action Buttons --}}
-    <div class="btn-group">
-      <button
-        type="button"
-        class="btn btn-primary btn-sm"
-        data-bs-toggle="modal"
-        data-bs-target="#editMagangModal"
-        title="Edit Data">
-        <i class="fas fa-edit me-1"></i> Edit
-      </button>
+    {{-- Separator Vertikal --}}
+    <div class="vr mx-1 text-muted d-none d-md-block" style="height: 30px;"></div>
 
-      <button
-        type="button"
-        class="btn btn-outline-primary btn-sm dropdown-toggle dropdown-toggle-split"
-        data-bs-toggle="dropdown">
-        <span class="visually-hidden">Toggle Dropdown</span>
-      </button>
+    {{-- 2. Tombol EDIT (Kuning - Koreksi) --}}
+    {{-- Kita pasang Data Attributes agar modal Edit otomatis terisi --}}
+    <button type="button" class="btn btn-warning btn-sm fw-bold text-dark"
+      data-bs-toggle="modal"
+      data-bs-target="#editMagangModal"
+      data-lamaran-id="{{ $item->id }}"
+      data-pembimbing-id="{{ $item->pembimbing_id }}"
+      data-start="{{ $item->tgl_mulai_resmi ? $item->tgl_mulai_resmi->format('Y-m-d') : '' }}"
+      data-end="{{ $item->tgl_selesai_resmi ? $item->tgl_selesai_resmi->format('Y-m-d') : '' }}"
+      data-days="{{ json_encode($item->hari_kerja_resmi ?? []) }}"
+      title="Edit Data / Perpanjang">
+      <i class="fas fa-pen me-1"></i> Edit
+    </button>
 
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li>
-          <button
-            class="dropdown-item text-success"
-            data-bs-toggle="modal"
-            data-bs-target="#lulusModal{{ $item->id }}">
-            <i class="fas fa-graduation-cap me-2"></i> Luluskan
-          </button>
-        </li>
-        <li>
-          <button
-            class="dropdown-item text-danger"
-            data-bs-toggle="modal"
-            data-bs-target="#dropoutModal{{ $item->id }}">
-            <i class="fas fa-ban me-2"></i> Hentikan
-          </button>
-        </li>
-        <li>
-          <hr class="dropdown-divider">
-        </li>
-        <li>
-          <a class="dropdown-item" href="{{ route('admin.peserta_aktif.index') }}">
-            <i class="fas fa-arrow-left me-2"></i> Kembali ke Daftar
-          </a>
-        </li>
-      </ul>
-    </div>
+    {{-- 3. Tombol DROP OUT (Merah Outline - Destruktif) --}}
+    <button type="button" class="btn btn-outline-danger btn-sm fw-bold"
+      data-bs-toggle="modal"
+      data-bs-target="#dropoutModal{{ $item->id }}"
+      title="Hentikan Peserta">
+      <i class="fas fa-ban me-1"></i> Hentikan
+    </button>
+
+    {{-- 4. Tombol LULUSKAN (Hijau Solid - Primary Action) --}}
+    {{-- Jika expired, beri animasi blink agar Admin sadar harus segera meluluskan --}}
+    <button type="button" class="btn btn-success btn-sm fw-bold px-3 {{ $isExpired ? 'blink-animation' : '' }}"
+      data-bs-toggle="modal"
+      data-bs-target="#lulusModal{{ $item->id }}"
+      title="Luluskan Peserta">
+      <i class="fas fa-graduation-cap me-1"></i> Luluskan
+    </button>
+
   </div>
 </div>
 
-{{-- Quick Stats Row --}}
-<div class="row g-3 mb-4">
-  <div class="col-md-3">
-    <div class="card border-0 shadow-sm bg-primary bg-opacity-10">
-      <div class="card-body text-center py-3">
-        <div class="text-primary mb-1">
-          <i class="fas fa-calendar-check fa-2x"></i>
-        </div>
-        <h6 class="mb-0 text-primary fw-bold">
-          {{ \Carbon\Carbon::parse($item->tgl_mulai_resmi)->diffInDays(\Carbon\Carbon::parse($item->tgl_selesai_resmi)) }}
-        </h6>
-        <small class="text-muted">Total Hari</small>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-3">
-    <div class="card border-0 shadow-sm bg-success bg-opacity-10">
-      <div class="card-body text-center py-3">
-        <div class="text-success mb-1">
-          <i class="fas fa-check-double fa-2x"></i>
-        </div>
-        <h6 class="mb-0 text-success fw-bold">
-          {{ $item->presensi ? $item->presensi->where('status', 'hadir')->count() : 0 }}
-        </h6>
-        <small class="text-muted">Hari Hadir</small>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-3">
-    <div class="card border-0 shadow-sm bg-warning bg-opacity-10">
-      <div class="card-body text-center py-3">
-        <div class="text-warning mb-1">
-          <i class="fas fa-clock fa-2x"></i>
-        </div>
-        <h6 class="mb-0 text-warning fw-bold">
-          {{ abs(\Carbon\Carbon::now()->diffInDays(\Carbon\Carbon::parse($item->tgl_selesai_resmi), false)) }}
-        </h6>
-        <small class="text-muted">Sisa Hari</small>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-3">
-    <div class="card border-0 shadow-sm bg-info bg-opacity-10">
-      <div class="card-body text-center py-3">
-        <div class="text-info mb-1">
-          <i class="fas fa-percentage fa-2x"></i>
-        </div>
-        <h6 class="mb-0 text-info fw-bold">
-          {{ round((\Carbon\Carbon::parse($item->tgl_mulai_resmi)->diffInDays(\Carbon\Carbon::now()) / \Carbon\Carbon::parse($item->tgl_mulai_resmi)->diffInDays(\Carbon\Carbon::parse($item->tgl_selesai_resmi))) * 100) }}%
-        </h6>
-        <small class="text-muted">Progress</small>
-      </div>
-    </div>
-  </div>
-</div>
+{{-- INCLUDE MODAL PARTIALS --}}
+{{-- 1. Modal Edit (Shared) --}}
+@include('admin.shared.modals.edit-magang-modal')
+{{-- PENTING: Sertakan file modal yang sudah kita pisahkan tadi di sini --}}
+@include('admin.peserta_aktif.partials.modal_lulus', ['item' => $item, 'isOverdue' => $isExpired])
+@include('admin.peserta_aktif.partials.modal_dropout', ['item' => $item])
