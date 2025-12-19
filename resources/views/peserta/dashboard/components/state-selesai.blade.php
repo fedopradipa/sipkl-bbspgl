@@ -19,20 +19,7 @@
           <strong>BBSPGL</strong> dengan sangat baik.
         </p>
 
-        {{-- Tombol Aksi --}}
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
 
-          {{-- 1. DOWNLOAD SERTIFIKAT --}}
-          {{-- Pastikan route 'sertifikat.download' sudah dibuat --}}
-          <a href="{{-- route('sertifikat.download', $lamaran->id) --}}" class="btn btn-success px-4 py-2 fw-bold shadow-sm hover-scale">
-            <i class="fas fa-file-download me-2"></i> Download E-Sertifikat
-          </a>
-
-          {{-- 2. DOWNLOAD TRANSKRIP NILAI (Opsional) --}}
-          <a href="#" class="btn btn-outline-primary px-4 py-2 fw-bold shadow-sm hover-scale">
-            <i class="fas fa-star me-2"></i> Transkrip Nilai
-          </a>
-        </div>
       </div>
     </div>
 

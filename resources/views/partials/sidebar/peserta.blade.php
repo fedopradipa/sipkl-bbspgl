@@ -91,12 +91,6 @@
   </li>
 
   {{-- Fitur Download Sertifikat --}}
-  <li class="nav-item">
-    {{-- Ganti '#' dengan route download sertifikat jika sudah ada --}}
-    <a class="nav-link text-dark" href="#">
-      <i class="fas fa-certificate fa-fw me-2"></i> E-Sertifikat
-    </a>
-  </li>
   @endif
 
 

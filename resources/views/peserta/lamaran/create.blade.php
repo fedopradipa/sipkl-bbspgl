@@ -75,7 +75,7 @@
               <i class="fas fa-business-time fa-2x me-3"></i>
               <div>
                 <strong>Lowongan Full-Time</strong><br>
-                Peserta wajib masuk kantor setiap hari kerja.
+                Peserta wajib masuk kantor setiap hari kerja yang ditentukan.
               </div>
             </div>
             <input type="hidden" name="is_fulltime_agreement" value="1">
