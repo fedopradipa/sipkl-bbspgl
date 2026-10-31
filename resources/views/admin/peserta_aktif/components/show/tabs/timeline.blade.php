@@ -38,7 +38,7 @@
                   <i class="fas fa-paper-plane me-2 text-primary"></i>Pendaftaran Lamaran
                 </h6>
                 <p class="text-muted small mb-0">
-                  Peserta mengajukan lamaran untuk posisi <span class="badge bg-primary">{{ $item->lowongan->judul }}</span>
+                  Peserta mengajukan lamaran untuk posisi <span class="badge bg-primary">{{ $item->lowongan->posisi }}</span>
                 </p>
               </div>
               <span class="badge bg-light text-dark">
@@ -88,41 +88,14 @@
             <div class="d-flex justify-content-between align-items-start mb-2">
               <div>
                 <h6 class="fw-bold mb-1">
-                  <i class="fas fa-door-open me-2 text-info"></i>Memulai Magang
+                  <i class="fas fa-door-open me-2 text-info"></i>Memulai PKL
                 </h6>
                 <p class="text-muted small mb-0">
-                  Peserta resmi memulai program magang
+                  Peserta resmi memulai program PKL
                 </p>
               </div>
               <span class="badge bg-info">
                 {{ $startDate->format('d M Y') }}
-              </span>
-            </div>
-          </div>
-        </div>
-        @endif
-
-        {{-- Event 4: First Attendance --}}
-        @php
-        $firstPresensi = $item->presensi ? $item->presensi->sortBy('tanggal')->first() : null;
-        @endphp
-        @if($firstPresensi)
-        <div class="timeline-event">
-          <div class="timeline-marker bg-warning">
-            <i class="fas fa-fingerprint"></i>
-          </div>
-          <div class="timeline-content">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <div>
-                <h6 class="fw-bold mb-1">
-                  <i class="fas fa-calendar-check me-2 text-warning"></i>Absensi Pertama
-                </h6>
-                <p class="text-muted small mb-0">
-                  Check-in: <span class="badge bg-warning text-dark">{{ \Carbon\Carbon::parse($firstPresensi->jam_masuk)->format('H:i') }}</span>
-                </p>
-              </div>
-              <span class="badge bg-warning text-dark">
-                {{ \Carbon\Carbon::parse($firstPresensi->tanggal)->format('d M Y') }}
               </span>
             </div>
           </div>
@@ -164,11 +137,11 @@
               <div>
                 <h6 class="fw-bold mb-1">
                   <i class="fas {{ $hasEnded ? 'fa-stop-circle' : 'fa-bullseye' }} me-2 {{ $hasEnded ? 'text-danger' : 'text-secondary' }}"></i>
-                  {{ $hasEnded ? 'Masa Magang Berakhir' : 'Target Selesai' }}
+                  {{ $hasEnded ? 'Masa PKL Berakhir' : 'Target Selesai' }}
                 </h6>
                 <p class="text-muted small mb-0">
                   @if($hasEnded)
-                  Periode magang telah berakhir.
+                  Periode PKL telah berakhir.
                   @if($item->status == 'diterima')
                   <span class="badge bg-warning text-dark">
                     <i class="fas fa-exclamation-triangle me-1"></i>Menunggu Proses Kelulusan

@@ -9,7 +9,7 @@
         <p class="text-muted">Lengkapi data untuk memulai PKL</p>
     </div>
 
-    <form action="{{ route('register') }}" method="POST">
+    <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">
@@ -60,7 +60,26 @@
         <div class="row g-3">
 
             <div class="col-md-12">
-                <label class="form-label">Asal Sekolah/Kampus</label>
+                <div class="col-md-12">
+                    <label class="form-label">Pas Foto <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-camera"></i>
+                        </span>
+                        <input type="file"
+                            name="foto_profil"
+                            class="form-control @error('foto_profil') is-invalid @enderror"
+                            accept="image/*"
+                            required>
+                    </div>
+                    <small class="text-muted">
+                        Maks. 2MB (Wajib Diisi)
+                    </small>
+                    @error('foto_profil')
+                    <div class="text-danger small mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
+                <label class="form-label mt-2">Asal Sekolah/Kampus</label>
                 <div class="input-group">
                     <span class="input-group-text"><i class="fas fa-university"></i></span>
                     <input type="text" name="institusi" class="form-control @error('institusi') is-invalid @enderror"

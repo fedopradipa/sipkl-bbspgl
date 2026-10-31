@@ -13,7 +13,7 @@
           <thead class="bg-light text-secondary">
             <tr>
               <th class="ps-4">Peserta</th>
-              <th>Posisi & Divisi</th>
+              <th>Posisi</th>
               <th width="25%">Durasi & Progress</th>
               <th>Pembimbing</th>
               <th class="text-end pe-4">Aksi</th>

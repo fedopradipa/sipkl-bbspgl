@@ -7,10 +7,9 @@
     <div class="card-body py-3">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
 
-        {{-- 1. Filter Status (Updated: Group Style Senada Alumni) --}}
         <div class="d-flex align-items-center gap-2">
           <div class="btn-group shadow-sm">
-            @foreach(['pending', 'disetujui', 'ditolak', 'all'] as $st)
+            @foreach(['pending', 'disetujui', 'ditolak'] as $st)
             <a href="{{ route('admin.izin.index', ['status' => $st, 'search' => request('search')]) }}"
               class="btn btn-sm {{ $currentStatus == $st ? 'btn-primary' : 'btn-white border' }} text-capitalize px-3">
               {{ $st }}
@@ -19,7 +18,6 @@
           </div>
         </div>
 
-        {{-- 2. Search Bar (Updated Style) --}}
         <form action="{{ route('admin.izin.index') }}" method="GET">
           <input type="hidden" name="status" value="{{ request('status', 'pending') }}">
 
@@ -32,7 +30,8 @@
             </button>
 
             @if(request('search'))
-            <a href="{{ route('admin.izin.index', ['status' => request('status', 'pending')]) }}" class="btn btn-outline-secondary border-start-0 bg-white" title="Reset">
+            <a href="{{ route('admin.izin.index', ['status' => request('status', 'pending')]) }}"
+              class="btn btn-outline-secondary border-start-0 bg-white" title="Reset">
               <i class="fas fa-times"></i>
             </a>
             @endif
@@ -43,7 +42,6 @@
     </div>
   </div>
 
-  {{-- TABEL DATA --}}
   <div class="card shadow mb-4">
     <div class="card-body p-0">
       <div class="table-responsive">
@@ -55,36 +53,53 @@
               <th>Alasan</th>
               <th>Bukti</th>
               <th>Status</th>
+              @if($currentStatus == 'pending')
               <th class="text-end pe-4">Aksi</th>
+              @endif
             </tr>
           </thead>
+
           <tbody>
             @forelse($dataIzin as $item)
-
-            {{-- LOGIC HITUNG TANGGAL (TETAP SAMA) --}}
             @php
             $dates = $item->tanggal_izin ?? [];
             sort($dates);
             $firstDate = count($dates) > 0 ? \Carbon\Carbon::parse($dates[0]) : null;
             $lastDate = count($dates) > 0 ? \Carbon\Carbon::parse(end($dates)) : null;
             $totalHari = count($dates);
+
+            // ==== FOTO PROFIL (AMAN) ====
+            $user = $item->lamaran->pengguna;
+            $filename = optional($user->profile)->foto_profil;
+
+            if ($filename) {
+            $path = str_contains($filename, '/') ? $filename : 'foto_profil/'.$filename;
+            $fotoUrl = asset('storage/'.$path);
+            } else {
+            $fotoUrl = 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random&color=fff&size=40';
+            }
+
+            $fallback = 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random&color=fff&size=40';
             @endphp
-            {{-- END LOGIC --}}
 
             <tr>
+              {{-- KOLOM PESERTA + FOTO --}}
               <td class="ps-4">
                 <div class="d-flex align-items-center">
-                  {{-- Avatar Initials (UX Tambahan: Biar lebih manis) --}}
-                  <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3"
-                    style="width: 40px; height: 40px; font-weight:bold;">
-                    {{ substr($item->lamaran->pengguna->name, 0, 1) }}
-                  </div>
+                  <img src="{{ $fotoUrl }}"
+                    class="rounded-circle me-3 shadow-sm border"
+                    width="40" height="40"
+                    style="object-fit: cover;"
+                    alt="Foto {{ $user->name }}"
+                    onerror="this.onerror=null; this.src='{{ $fallback }}';">
+
                   <div>
-                    <div class="fw-bold text-dark">{{ $item->lamaran->pengguna->name }}</div>
-                    <small class="text-muted">{{ $item->lamaran->lowongan->divisi }}</small>
+                    <div class="fw-bold text-dark">{{ $user->name }}</div>
+                    <small class="text-muted">{{ $item->lamaran->lowongan->posisi }}</small>
                   </div>
                 </div>
               </td>
+
               <td>
                 @if($item->jenis_izin == 'sakit')
                 <span class="badge bg-info bg-opacity-10 text-info border border-info mb-1">Sakit</span>
@@ -107,7 +122,6 @@
                 <small class="text-muted">({{ $totalHari }} Hari)</small>
               </td>
 
-              {{-- UX UPDATE: TOOLTIP BOOTSTRAP --}}
               <td style="max-width: 250px;">
                 <span class="d-inline-block text-truncate w-100 cursor-pointer"
                   data-bs-toggle="tooltip"
@@ -118,14 +132,15 @@
               </td>
 
               <td>
-                @if($item->bukti_foto)
-                <a href="{{ asset('storage/'.$item->bukti_foto) }}" target="_blank" class="btn btn-sm btn-light border text-primary">
+                @if($item->bukti_lampiran)
+                <a href="{{ asset('storage/'.$item->bukti_lampiran) }}" target="_blank" class="btn btn-sm btn-light border text-primary">
                   <i class="fas fa-paperclip me-1"></i> Bukti
                 </a>
                 @else
                 <span class="text-muted small fst-italic">-</span>
                 @endif
               </td>
+
               <td>
                 @if($item->status == 'pending')
                 <span class="badge bg-secondary">Menunggu</span>
@@ -136,10 +151,9 @@
                 @endif
               </td>
 
+              @if($currentStatus == 'pending')
               <td class="text-end pe-4">
-                @if($item->status == 'pending')
                 <div class="btn-group gap-1">
-                  {{-- Tombol Approve --}}
                   <button type="button" class="btn btn-sm btn-success rounded"
                     data-bs-toggle="modal"
                     data-bs-target="#approveIzinModal"
@@ -148,7 +162,6 @@
                     <i class="fas fa-check"></i>
                   </button>
 
-                  {{-- Tombol Reject --}}
                   <button type="button" class="btn btn-sm btn-danger rounded"
                     data-bs-toggle="modal"
                     data-bs-target="#rejectIzinModal"
@@ -157,27 +170,24 @@
                     <i class="fas fa-times"></i>
                   </button>
                 </div>
-                @else
-                @if($item->status == 'disetujui')
-                <i class="fas fa-check-circle text-success fs-5" title="Disetujui"></i>
-                @else
-                <i class="fas fa-times-circle text-danger fs-5" title="Ditolak"></i>
-                @endif
-                @endif
               </td>
+              @endif
             </tr>
+
             @empty
             <tr>
-              <td colspan="6" class="text-center py-5">
+              <td colspan="{{ $currentStatus == 'pending' ? 6 : 5 }}" class="text-center py-5">
                 <div class="text-muted mb-2"><i class="fas fa-inbox fa-3x opacity-25"></i></div>
                 <p class="text-muted">Tidak ada data pengajuan ditemukan.</p>
               </td>
             </tr>
             @endforelse
           </tbody>
+
         </table>
       </div>
     </div>
+
     <div class="card-footer bg-white border-top-0 py-3">
       {{ $dataIzin->withQueryString()->links() }}
     </div>
@@ -185,41 +195,32 @@
 
 </div>
 
-{{-- INCLUDE PARTIAL MODALS --}}
 @include('admin.izin.partials.modals')
-
 @endsection
 
 @push('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-
-    // 1. INISIALISASI BOOTSTRAP TOOLTIP (UX BEST PRACTICE)
-    // Ini membuat title="..." muncul sebagai popup hitam cantik
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl)
+    tooltipTriggerList.map(function(el) {
+      return new bootstrap.Tooltip(el)
     })
 
-    // 2. LOGIC MODAL APPROVE
     const approveModal = document.getElementById('approveIzinModal');
     if (approveModal) {
       approveModal.addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget;
         const url = button.getAttribute('data-url');
-        const form = document.getElementById('formApproveIzin');
-        form.action = url;
+        document.getElementById('formApproveIzin').action = url;
       });
     }
 
-    // 3. LOGIC MODAL REJECT
     const rejectModal = document.getElementById('rejectIzinModal');
     if (rejectModal) {
       rejectModal.addEventListener('show.bs.modal', function(event) {
         const button = event.relatedTarget;
         const url = button.getAttribute('data-url');
-        const form = document.getElementById('formRejectIzin');
-        form.action = url;
+        document.getElementById('formRejectIzin').action = url;
         document.getElementById('catatan_admin_izin').value = '';
       });
     }

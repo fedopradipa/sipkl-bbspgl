@@ -20,26 +20,15 @@
                             <i class="fas fa-check-circle fa-3x text-success"></i>
                         </div>
                         <h5 class="fw-bold">{{ $item->pengguna->name }}</h5>
-                        <p class="text-muted small">Akan dinyatakan LULUS magang.</p>
+                        <p class="text-muted small">Akan dinyatakan LULUS PKL.</p>
                     </div>
 
                     @if($isOverdue)
                     <div class="alert alert-warning d-flex align-items-center small border-0 shadow-sm">
                         <i class="fas fa-clock fa-lg me-3"></i>
-                        <div>Masa magang peserta ini sudah berakhir.</div>
+                        <div>Masa PKL peserta ini sudah berakhir.</div>
                     </div>
                     @endif
-
-                    <div class="alert alert-info small d-flex align-items-start border-0 bg-light-info text-dark">
-                        <i class="fas fa-info-circle mt-1 me-2 text-primary"></i>
-                        <div>
-                            Pastikan peserta sudah:
-                            <ul class="mb-0 ps-3 mt-1">
-                                <li>Mengumpulkan Laporan Akhir</li>
-                                <li>Mengembalikan Aset Kantor</li>
-                            </ul>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="modal-footer bg-light">

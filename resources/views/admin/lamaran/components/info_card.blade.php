@@ -13,8 +13,7 @@
     <ul class="list-group list-group-flush">
       <li class="list-group-item px-0">
         <small class="text-muted d-block">Posisi Dilamar</small>
-        <div class="fw-bold text-dark">{{ $lamaran->lowongan->judul }}</div>
-        <div class="text-secondary small">{{ $lamaran->lowongan->divisi }}</div>
+        <div class="fw-bold text-dark">{{ $lamaran->lowongan->posisi }}</div>
       </li>
 
       <li class="list-group-item px-0">

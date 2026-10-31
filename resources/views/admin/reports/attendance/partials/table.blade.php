@@ -5,7 +5,7 @@
       <tr class="header-main">
         <th rowspan="2" class="col-sticky col-no">NO</th>
         <th rowspan="2" class="col-sticky col-nama">NAMA</th>
-        <th rowspan="2" class="col-divisi">DIVISI</th>
+        <th rowspan="2" class="col-posisi">posisi</th>
         @foreach($dates as $ymd => $info)
         <th class="col-hari">{{ strtoupper($info['hari']) }}</th>
         @endforeach
@@ -32,36 +32,45 @@
           <div class="nama-truncate" title="{{ $data['nama'] }}">{{ $data['nama'] }}</div>
         </td>
 
-        <td class="col-divisi">{{ $data['divisi'] }}</td>
+        <td class="col-posisi">{{ $data['posisi'] }}</td>
 
         {{-- Loop Tanggal --}}
         @foreach($dates as $ymd => $info)
         @php
         $log = $data['harian'][$ymd];
         $status = $log['status'];
-        $class = ''; $content = '';
+        $class = '';
+        $content = '';
 
         if ($status == 'alpha') {
-        $class = 'status-alpha'; $content = '<span class="badge-cell">A</span>';
+        $class = 'status-alpha';
+        $content = '<span class="badge-cell">A</span>';
         } elseif ($status == 'libur' || $status == 'off_period') {
         $class = 'status-libur';
+        $content = '';
         } elseif ($status == 'sakit') {
-        $class = 'status-sakit'; $content = '<span class="badge-cell">S</span>';
+        $class = 'status-sakit';
+        $content = '<span class="badge-cell">S</span>';
         } elseif ($status == 'izin') {
-        $class = 'status-izin'; $content = '<span class="badge-cell">I</span>';
+        $class = 'status-izin';
+        $content = '<span class="badge-cell">I</span>';
         } elseif ($status == 'hadir' || $status == 'terlambat') {
         $masuk = $log['jam_masuk'] ? substr($log['jam_masuk'], 0, 5) : '-';
-        $pulang = $log['jam_pulang'] ? substr($log['jam_pulang'], 0, 5) : '-';
         $clsM = $status == 'terlambat' ? 'waktu-telat' : 'waktu-normal';
 
-        $content = "<div class='waktu-container'><span class='$clsM'>$masuk</span><span>-</span><span class='waktu-normal'>$pulang</span></div>";
-        if ($status == 'terlambat') $content .= "<span class='label-telat'>Telat</span>";
+        $content = "<div class='waktu-container'><span class='$clsM'>$masuk</span></div>";
+
+        if ($status == 'terlambat') {
+        $content .= "<span class='label-telat'>Telat</span>";
+        }
         } elseif ($status == 'belum' || $status == '-') {
-        $class = 'status-belum'; $content = '-';
+        $class = 'status-belum';
+        $content = '-';
         } else {
-        $content = '<span class="badge-cell">'.strtoupper(substr($status,0,3)).'</span>';
+        $content = '<span class="badge-cell">' . strtoupper(substr($status, 0, 3)) . '</span>';
         }
         @endphp
+
         <td class="{{ $class }}">{!! $content !!}</td>
         @endforeach
 

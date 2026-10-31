@@ -28,7 +28,6 @@ class Lamaran extends Model
         'tgl_selesai_resmi',
         'hari_kerja_resmi',
         'file_surat_pengantar',
-        'path_laporan_akhir'
     ];
 
     // Casting agar JSON dan Date otomatis terformat
@@ -91,7 +90,7 @@ class Lamaran extends Model
     */
 
     /**
-     * Cek apakah masa magang sudah habis
+     * Cek apakah masa PKL sudah habis
      */
     public function isExpired(): bool
     {
@@ -103,7 +102,7 @@ class Lamaran extends Model
     }
 
     /**
-     * Hitung sisa hari masa magang
+     * Hitung sisa hari masa PKL
      */
     public function getDaysLeftAttribute(): int
     {

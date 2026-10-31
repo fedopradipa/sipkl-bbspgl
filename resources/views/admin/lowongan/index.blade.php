@@ -42,10 +42,8 @@
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Judul</th>
-              <th scope="col">Divisi</th>
+              <th scope="col">posisi</th>
               <th scope="col">Periode Pendaftaran</th>
-              <th scope="col">Jam Kerja</th>
               <th scope="col">Status</th>
               <th scope="col">Aksi</th>
             </tr>
@@ -56,20 +54,12 @@
               {{-- Penomoran Pagination --}}
               <th scope="row">{{ ($lowongans->currentPage() - 1) * $lowongans->perPage() + $loop->iteration }}</th>
 
-              <td>{{ $item->judul }}</td>
-              <td>{{ $item->divisi }}</td>
+              <td>{{ $item->posisi }}</td>
 
               {{-- OPTIMASI KECIL: Langsung format tanpa parse ulang (karena sudah di-casts di Model) --}}
               <td>
                 {{ $item->window_start_date->format('d M Y') }} - {{ $item->window_end_date->format('d M Y') }}
               </td>
-
-              {{-- Jam Kerja tetap butuh Parse karena Time tidak di-casts otomatis --}}
-              <td>
-                {{ \Carbon\Carbon::parse($item->jam_masuk_standar)->format('H:i') }} - {{ \Carbon\Carbon::parse($item->jam_pulang_standar)->format('H:i') }}
-              </td>
-
-
 
               <td>
                 {{-- Logika Visualisasi Status (Sesuai Desain Asli Anda) --}}
@@ -95,15 +85,6 @@
               <td class="align-top">
                 <div class="d-flex gap-1">
                   <a class="btn btn-info btn-sm" href="{{ route('lowongan.show', $item->id) }}" title="Lihat Detail"><i class="fas fa-eye"></i></a>
-                  <a class="btn btn-warning btn-sm" href="{{ route('lowongan.edit', $item->id) }}" title="Edit"><i class="fas fa-pencil-alt"></i></a>
-
-                  <form action="{{ route('lowongan.destroy', $item->id) }}" method="POST">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus lowongan ini?')" title="Hapus">
-                      <i class="fas fa-trash"></i>
-                    </button>
-                  </form>
                 </div>
               </td>
             </tr>

@@ -6,7 +6,7 @@
   {{-- Header --}}
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h4 class="fw-bold text-primary mb-1">Arsip Alumni Magang</h4>
+      <h4 class="fw-bold text-primary mb-1">Arsip Alumni PKL</h4>
       <p class="text-muted small mb-0">Database riwayat peserta yang telah menyelesaikan program.</p>
     </div>
     {{-- TOMBOL PDF SUDAH DIHAPUS DARI SINI --}}
@@ -68,9 +68,8 @@
         <thead class="bg-light text-secondary">
           <tr>
             <th class="ps-4 py-3 text-uppercase small fw-bold">Alumni</th>
-            <th class="text-uppercase small fw-bold">Riwayat Magang</th>
+            <th class="text-uppercase small fw-bold">Riwayat PKL</th>
             <th class="text-uppercase small fw-bold">Status Akhir</th>
-            <th class="text-end pe-4 text-uppercase small fw-bold">File Laporan</th>
           </tr>
         </thead>
         <tbody class="border-top-0">
@@ -97,7 +96,7 @@
 
             {{-- 2. Riwayat --}}
             <td>
-              <div class="fw-bold text-dark small mb-1">{{ $item->lowongan->judul }}</div>
+              <div class="fw-bold text-dark small mb-1">{{ $item->lowongan->posisi }}</div>
               <div class="d-flex align-items-center small text-muted">
                 <i class="far fa-calendar-alt me-1"></i>
                 {{ $item->tgl_mulai_resmi->format('M Y') }} -
@@ -124,20 +123,6 @@
                 </span>
                 @endif
               </div>
-              @endif
-            </td>
-
-            {{-- 4. Arsip Laporan --}}
-            <td class="text-end pe-4">
-              @if($item->path_laporan_akhir)
-              <a href="{{ asset('storage/laporan_akhir/'.$item->path_laporan_akhir) }}"
-                target="_blank"
-                class="btn btn-sm btn-outline-danger shadow-sm border-danger"
-                title="Download Laporan Akhir (PDF)">
-                <i class="fas fa-file-pdf me-1"></i> Laporan Akhir
-              </a>
-              @else
-              <span class="text-muted small fst-italic">Tidak ada file</span>
               @endif
             </td>
           </tr>

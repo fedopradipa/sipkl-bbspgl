@@ -71,7 +71,7 @@
                         <td class="align-top">
                             <div class="d-flex gap-1">
                                 {{-- Diperbarui ke user.* dan $item->id --}}
-                                <a class="btn btn-info btn-sm" href="{{ route('user.show', $item->id) }}"><i class="fas fa-eye"></i></a>
+                                <!-- <a class="btn btn-info btn-sm" href="{{ route('user.show', $item->id) }}"><i class="fas fa-eye"></i></a> -->
                                 <a class="btn btn-warning btn-sm" href="{{ route('user.edit', $item->id) }}"><i class="fas fa-pencil-alt"></i></a>
 
                                 {{--

@@ -70,7 +70,7 @@
             <i class="fas fa-file-pdf fa-2x"></i>
           </div>
           <div>
-            <h6 class="mb-0 fw-bold text-dark">Surat Pengantar Magang</h6>
+            <h6 class="mb-0 fw-bold text-dark">Surat Pengantar PKL</h6>
             <small class="text-muted">
               @if($lamaran->file_surat_pengantar)
               Dokumen tersedia untuk ditinjau.

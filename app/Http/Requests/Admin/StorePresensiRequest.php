@@ -18,7 +18,6 @@ class StorePresensiRequest extends FormRequest
       'tanggal'    => 'required|date',
       'status'     => 'required|in:hadir,terlambat,sakit,izin,alpha',
       'jam_masuk'  => 'nullable|required_if:status,hadir,terlambat',
-      'jam_pulang' => 'nullable',
       'catatan_harian' => 'nullable|string|max:255',
     ];
   }

@@ -14,24 +14,16 @@ class Presensi extends Model
   protected $table = 'presensis';
 
   protected $fillable = [
-    'user_id',
+    'pengguna_id',
     'lamaran_id',
     'tanggal',
     'jam_masuk',
-    'jam_pulang',
-    'status',           // hadir, sakit, izin, alpha
-    'lat_masuk',
-    'long_masuk',
-    'lat_pulang',
-    'long_pulang',
+    'status',
     'catatan_harian',
-    'is_auto_closed'
   ];
 
   protected $casts = [
     'tanggal' => 'date',
-    'is_auto_closed' => 'boolean',
-    // jam_masuk dan jam_pulang biarkan string/time agar mudah dimanipulasi
   ];
 
   /**
@@ -46,6 +38,6 @@ class Presensi extends Model
   // Relasi ke User 
   public function user()
   {
-    return $this->belongsTo(User::class, 'user_id');
+    return $this->belongsTo(User::class, 'pengguna_id');
   }
 }

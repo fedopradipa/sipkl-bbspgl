@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\ProfilePeserta;
-use App\Models\ProfileAdmin; // <-- WAJIB: Tambah import ProfilAdmin
 
 class User extends Authenticatable
 {
@@ -43,11 +42,6 @@ class User extends Authenticatable
     // RELASI PROFIL (WAJIB DIBUAT)
     // ===========================================
 
-    // Relasi 1: Profil Admin/Pembimbing
-    public function adminProfile()
-    {
-        return $this->hasOne(ProfileAdmin::class, 'user_id');
-    }
 
     // Relasi 2: Profil Peserta (Menggantikan 'biodata()')
     public function participantProfile()
@@ -97,24 +91,14 @@ class User extends Authenticatable
             return route('profile.peserta.edit');
         }
 
-        if ($role === 'admin' || $role === 'superadmin') {
-            // Mengarahkan ke route general untuk Admin/Superadmin
-            return route('profile.general.edit');
-        }
-
         return '#';
     }
-
     // public function participantProfile() { ... }
 
     // ACCESSOR BARU: Ambil foto profil secara dinamis
     public function getFotoProfilAttribute()
     {
-        // A. Jika dia Admin/Superadmin
-        if ($this->isAdmin() || $this->isSuperadmin()) {
-            // Asumsi foto Admin ada di kolom 'foto_profil' di tabel 'profil_admins'
-            return optional($this->adminProfile)->foto_profil;
-        }
+
 
         // B. Jika dia Peserta
         if ($this->isPeserta()) {

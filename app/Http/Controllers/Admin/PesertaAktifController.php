@@ -3,37 +3,38 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Admin\PesertaAktifIndexRequest;
 use App\Models\Lamaran;
 use App\Models\Pembimbing;
 
 class PesertaAktifController extends Controller
 {
-  public function index(Request $request)
+  public function index(PesertaAktifIndexRequest $request)
   {
-    // Query Peserta (Kode lama Anda)
+    $request->validated();
     $peserta = Lamaran::with(['pengguna.profile', 'lowongan', 'pembimbing'])
       ->where('status', 'diterima')
       ->when($request->search, function ($q) use ($request) {
-        $q->whereHas('pengguna', function ($user) use ($request) {
-          $user->where('name', 'like', '%' . $request->search . '%');
-        })->orWhereHas('lowongan', function ($lowongan) use ($request) {
-          $lowongan->where('divisi', 'like', '%' . $request->search . '%');
+        $search = $request->search;
+        $q->where(function ($sub) use ($search) {
+          $sub->whereHas('pengguna', function ($user) use ($search) {
+            $user->where('name', 'like', '%' . $search . '%');
+          })
+            ->orWhereHas('lowongan', function ($lowongan) use ($search) {
+              $lowongan->where('posisi', 'like', '%' . $search . '%');
+            });
         });
       })
       ->latest()
-      ->paginate(10);
-
-    // 2. AMBIL DATA MENTORS UNTUK DROPDOWN MODAL
-    $mentors = Pembimbing::orderBy('nama', 'asc')->get(); // <--- TAMBAHKAN INI
-
+      ->paginate(10)
+      ->withQueryString();;
+    $mentors = Pembimbing::orderBy('nama', 'asc')->get();
     return view('admin.peserta_aktif.index', [
       'title'   => 'Daftar Peserta Aktif',
       'peserta' => $peserta,
       'mentors' => $mentors
     ]);
   }
-
   public function show($id)
   {
     $lamaran = Lamaran::with([
@@ -42,12 +43,11 @@ class PesertaAktifController extends Controller
       'pembimbing',
       'presensi',
       'izin'
-    ])
-      ->findOrFail($id);
+    ])->findOrFail($id);
     $mentors = Pembimbing::orderBy('nama', 'asc')->get();
     return view('admin.peserta_aktif.show', [
-      'title' => 'Detail Peserta Magang',
-      'item' => $lamaran,
+      'title'   => 'Detail Peserta PKL',
+      'item'    => $lamaran,
       'mentors' => $mentors
     ]);
   }

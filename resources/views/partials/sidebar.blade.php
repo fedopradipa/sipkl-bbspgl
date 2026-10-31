@@ -49,14 +49,14 @@
 
             <form action="{{ route('logout') }}" method="POST" class="d-flex align-items-center gap-2 ms-auto">
                 @csrf
-
+                @if(auth()->user()->isSuperadmin())
                 <!-- Tombol Edit Profile -->
                 <a href="{{ Auth::user()->edit_profile_route }}"
                     class="btn btn-sm btn-light"
                     title="Edit Profil Saya">
                     <i class="fas fa-cog"></i>
                 </a>
-
+                @endif
                 <!-- Tombol Logout -->
                 <button type="submit"
                     class="btn btn-sm btn-danger"

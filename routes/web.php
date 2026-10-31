@@ -9,7 +9,6 @@ use App\Http\Controllers\GuestController;
 
 // --- CONTROLLERS ADMIN  ---
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\LamaranAdminController;
 use App\Http\Controllers\Admin\AlumniController;
 use App\Http\Controllers\Admin\PesertaAktifController;
@@ -20,11 +19,13 @@ use App\Http\Controllers\Admin\PembimbingController;
 use App\Http\Controllers\Admin\LowonganController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Admin\LaporanPenerimaanController;
 
 // --- CONTROLLERS PESERTA ---
 use App\Http\Controllers\peserta\LamaranPesertaController;
 use App\Http\Controllers\peserta\DashboardPesertaController;
 use App\Http\Controllers\peserta\PesertaProfileController;
+use App\Http\Controllers\peserta\RiwayatPresensiController;
 use App\Http\Controllers\peserta\PresensiController;
 use App\Http\Controllers\peserta\IzinController;
 
@@ -60,15 +61,12 @@ Route::middleware('auth')->group(function () {
 
     // SUPERADMIN & ADMIN SHARED
     Route::middleware(['role:superadmin|admin'])->group(function () {
-        // Profile Management Admin
-        Route::get('/profile/general', [ProfileController::class, 'edit'])->name('profile.general.edit');
-        Route::put('/profile/general', [ProfileController::class, 'update'])->name('profile.general.update');
 
+        Route::resource('role', RoleController::class);
+        Route::resource('user', UserController::class);
         // Master Data
         Route::resource('lowongan', LowonganController::class);
         Route::resource('pembimbing', PembimbingController::class);
-        Route::resource('role', RoleController::class);
-        Route::resource('user', UserController::class);
     });
 
     // SUPERADMIN ONLY
@@ -137,8 +135,13 @@ Route::middleware('auth')->group(function () {
             Route::get('/reports/attendance', [RekapPresensiController::class, 'index'])->name('reports.attendance.index');
             Route::get('/reports/attendance/export-pdf', [RekapPresensiController::class, 'exportPdf'])->name('reports.attendance.pdf');
 
-            Route::resource('role', RoleController::class);
-            Route::resource('user', UserController::class);
+            // === GROUP LAPORAN PENERIMAAN ===
+            Route::controller(LaporanPenerimaanController::class)->group(function () {
+                // Halaman Filter & Preview
+                Route::get('/laporan-penerimaan', 'index')->name('laporan.penerimaan.index');
+                // Halaman Cetak (Print Window)
+                Route::get('/laporan-penerimaan/cetak', 'cetak')->name('laporan.penerimaan.cetak');
+            });
         });
 
     // ===============================================
@@ -165,16 +168,18 @@ Route::middleware('auth')->group(function () {
 
         // Presensi
         Route::controller(PresensiController::class)->prefix('presensi')->name('presensi.')->group(function () {
+            Route::get('/', 'index')->name('index');
             Route::post('/checkin', 'checkin')->name('checkin');
-            Route::post('/checkout', 'checkout')->name('checkout');
-            Route::get('/riwayat', 'riwayat')->name('riwayat');
         });
-
+        Route::get('/riwayat-presensi', [RiwayatPresensiController::class, 'index'])
+            ->name('presensi.riwayat');
         // Izin
         Route::resource('izin', IzinController::class)->except(['destroy']);
 
-        Route::post('/lamaran/upload-laporan', [LamaranPesertaController::class, 'uploadLaporan'])
-            ->name('peserta.lamaran.uploadLaporan');
+        Route::get('/peserta/lowongan', [DashboardPesertaController::class, 'indexLowongan'])
+            ->name('peserta.lowongan.index');
+        Route::get('/peserta/lowongan/{id}', [DashboardPesertaController::class, 'showLowongan'])
+            ->name('peserta.lowongan.show');
     });
 });
 

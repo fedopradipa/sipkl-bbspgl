@@ -1,14 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid "> {{-- Ubah py-2 jadi py-3 agar spacing atas lebih lega sedikit --}}
+<div class="container-fluid">
 
   {{-- Header Halaman --}}
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      {{-- PERBAIKAN DISINI: Ganti text-gray-800 menjadi text-primary --}}
       <h1 class="h3 mb-0 text-primary fw-bold">Monitoring Presensi</h1>
-      <p class="text-muted small mb-0">Pantau kehadiran peserta magang secara real-time.</p>
+      <p class="text-muted small mb-0">Pantau kehadiran peserta PKL secara real-time.</p>
     </div>
   </div>
 
@@ -20,8 +19,8 @@
     <div class="card-body p-3">
       @include('admin.presensi.components.filter-bar', [
       'tanggal' => $tanggal,
-      'divisi' => $divisi_list,
-      'selected_divisi' => request('divisi_id')
+      'posisi' => $posisi_list,
+      'selected_posisi' => request('posisi')
       ])
     </div>
   </div>

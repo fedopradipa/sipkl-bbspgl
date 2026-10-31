@@ -3,61 +3,78 @@
 namespace App\Http\Controllers\Peserta;
 
 use App\Http\Controllers\Controller;
-use App\Services\LamaranService;    // <--- Import Service
+use App\Http\Requests\Peserta\PesertaLowonganIndexRequest;
 use App\Models\Lamaran;
+use App\Models\Lowongan;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class DashboardPesertaController extends Controller
 {
-    protected $lamaranService;
-
-    // Inject Service
-    public function __construct(LamaranService $lamaranService)
-    {
-        $this->lamaranService = $lamaranService;
-    }
-
     public function index()
     {
         $user = Auth::user();
-
-        // 1. Ambil Data Lamaran Terkini
         $lamaran = Lamaran::with(['lowongan', 'pembimbing'])
             ->where('pengguna_id', $user->id)
             ->latest()
             ->first();
-
-        // Jika belum melamar sama sekali
         if (!$lamaran) {
             return view('peserta.dashboard.empty', ['title' => 'Selamat Datang']);
         }
+        $state = $this->determineDashboardState($lamaran);
+        return view('peserta.dashboard.index', [
+            'title'   => 'Dashboard Peserta',
+            'user'    => $user,
+            'lamaran' => $lamaran,
+            'state'   => $state,
+        ]);
+    }
+    public function indexLowongan(PesertaLowonganIndexRequest $request)
+    {
+        $request->validated();
+        $search = $request->input('keyword');
 
-        // 2. Logic Service: Tentukan State (Pending/Active/Selesai/Berhenti)
-        $state = $this->lamaranService->determineDashboardState($lamaran);
+        $lowongans = Lowongan::tersedia()
+            ->when($search, function ($query, $search) {
+                return $query->where('posisi', 'like', "%{$search}%");
+            })
+            ->latest('window_start_date')
+            ->paginate(9)
+            ->appends(['keyword' => $search]);
 
-        // 3. Logic Service: Auto Close Absen Kemarin
-        $this->lamaranService->runAutoCloseCheck($lamaran->id);
+        return view('peserta.lowongan.index', [
+            'lowongans' => $lowongans,
+            'title' => 'Bursa Lowongan PKL'
+        ]);
+    }
 
-        // 4. Siapkan Data Presensi (Hanya jika Active)
-        $isHariKerja = false;
-        $presensi    = null;
+    public function showLowongan($id)
+    {
+        $lowongan = Lowongan::findOrFail($id);
 
-        if ($state == 'active') {
-            $isHariKerja = $this->lamaranService->isWorkingDay($lamaran);
-
-            if ($isHariKerja) {
-                $presensi = $this->lamaranService->getTodayPresensi($lamaran->id);
-            }
+        if (!$lowongan->is_open) {
+            abort(404);
         }
 
-        return view('peserta.dashboard.index', [
-            'title'       => 'Dashboard Peserta',
-            'user'        => $user,
-            'lamaran'     => $lamaran,
-            'state'       => $state,
-            'presensi'    => $presensi,
-            'isHariKerja' => $isHariKerja,
+        return view('peserta.lowongan.show', [
+            'lowongan' => $lowongan,
+            'title' => $lowongan->posisi
         ]);
+    }
+
+    private function determineDashboardState(Lamaran $lamaran): string
+    {
+        if (in_array($lamaran->status, ['pending', 'ditolak', 'selesai', 'berhenti'])) {
+            return $lamaran->status;
+        }
+        if ($lamaran->status == 'diterima') {
+            $today = Carbon::today();
+            $start = Carbon::parse($lamaran->tgl_mulai_resmi ?? $lamaran->tgl_mulai_usulan);
+            $end   = Carbon::parse($lamaran->tgl_selesai_resmi ?? $lamaran->tgl_selesai_usulan);
+            if ($today->lt($start)) return 'pra_mulai';
+            if ($today->gt($end)) return 'finalisasi';
+            return 'active';
+        }
+        return 'kosong';
     }
 }

@@ -24,14 +24,14 @@
         </select>
       </div>
 
-      {{-- Filter Divisi --}}
+      {{-- Filter posisi --}}
       <div class="col-md-3">
-        <label class="form-label fw-bold small">Divisi</label>
+        <label class="form-label fw-bold small">posisi</label>
         <select name="lowongan_id" class="form-select">
-          <option value="">-- Semua Divisi --</option>
-          @foreach($divisiList as $divisi)
-          <option value="{{ $divisi->id }}" {{ $selectedDivisi == $divisi->id ? 'selected' : '' }}>
-            {{ $divisi->divisi }}
+          <option value="">-- Semua posisi --</option>
+          @foreach($posisiList as $posisi)
+          <option value="{{ $posisi->id }}" {{ $selectedPosisi == $posisi->id ? 'selected' : '' }}>
+            {{ $posisi->posisi }}
           </option>
           @endforeach
         </select>

@@ -82,8 +82,8 @@
             </div>
 
             {{-- KANAN: Tombol Lihat Bukti --}}
-            @if($item->bukti_foto)
-            <a href="{{ asset('storage/'.$item->bukti_foto) }}" target="_blank" class="btn btn-sm btn-light text-primary" title="Lihat Bukti">
+            @if($item->bukti_lampiran)
+            <a href="{{ asset('storage/'.$item->bukti_lampiran) }}" target="_blank" class="btn btn-sm btn-light text-primary" title="Lihat Bukti">
               <i class="fas fa-paperclip"></i>
             </a>
             @endif

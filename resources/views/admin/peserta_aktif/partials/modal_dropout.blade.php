@@ -1,5 +1,5 @@
 {{--
-    Partial: Modal Konfirmasi Drop Out / Berhenti
+    Partial: Modal Konfirmasi Berhenti
     Menerima parameter: $item (Object Lamaran)
 --}}
 <div class="modal fade text-start" id="dropoutModal{{ $item->id }}" tabindex="-1" aria-hidden="true">
@@ -11,37 +11,35 @@
       </div>
 
       <form action="{{ route('admin.lamaran.updateStatus', $item->id) }}" method="POST">
-        @csrf @method('PUT')
+        @csrf
+        @method('PUT')
+
+        {{-- status utama --}}
         <input type="hidden" name="status" value="berhenti">
 
-        <div class="modal-body p-4">
-          <p class="mb-3">Pilih kategori pemberhentian untuk <strong>{{ $item->pengguna->name }}</strong>:</p>
+        {{-- kategori DO dihapus, hanya 1 kategori --}}
+        <input type="hidden" name="kategori" value="Mengundurkan Diri">
 
-          <div class="card bg-light border-0 mb-3">
-            <div class="card-body">
-              {{-- Opsi 1: Mengundurkan Diri --}}
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" name="kategori" id="cat1-{{$item->id}}" value="Mengundurkan Diri" checked>
-                <label class="form-check-label fw-bold text-dark" for="cat1-{{$item->id}}">
-                  Mengundurkan Diri
-                </label>
-                <div class="small text-muted ps-0">Karena alasan sakit, pribadi, atau akademik.</div>
-              </div>
-              <hr class="my-2">
-              {{-- Opsi 2: Diberhentikan --}}
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="kategori" id="cat2-{{$item->id}}" value="Diberhentikan">
-                <label class="form-check-label fw-bold text-danger" for="cat2-{{$item->id}}">
-                  Diberhentikan (DO)
-                </label>
-                <div class="small text-muted ps-0">Karena pelanggaran tata tertib atau disiplin.</div>
-              </div>
-            </div>
+        <div class="modal-body p-4">
+          <p class="mb-3">
+            Anda akan menghentikan peserta <strong>{{ $item->pengguna->name }}</strong>.
+          </p>
+
+          <div class="alert alert-warning small mb-3">
+            Status akan diubah menjadi <strong>Berhenti</strong>.
           </div>
 
           <div class="mb-2">
-            <label for="note-{{$item->id}}" class="form-label small text-uppercase text-muted fw-bold">Detail Alasan <span class="text-danger">*</span></label>
-            <textarea name="catatan_detail" id="note-{{$item->id}}" class="form-control" rows="3" placeholder="Tuliskan alasan detail..." required></textarea>
+            <label for="note-{{$item->id}}" class="form-label small text-uppercase text-muted fw-bold">
+              Detail Alasan <span class="text-danger">*</span>
+            </label>
+            <textarea
+              name="catatan_detail"
+              id="note-{{$item->id}}"
+              class="form-control"
+              rows="3"
+              placeholder="Tuliskan alasan detail..."
+              required></textarea>
           </div>
         </div>
 

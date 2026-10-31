@@ -26,7 +26,7 @@ class StoreIzinRequest extends FormRequest
 
       // Validasi File Bukti (Opsional tapi dibatasi)
       // Max: 5120 KB = 5 MB (Cukup untuk PDF/Foto HP modern)
-      'bukti_foto' => 'nullable|file|max:5120|mimes:jpg,jpeg,png,pdf',
+      'bukti_lampiran' => 'nullable|file|max:5120|mimes:jpg,jpeg,png,pdf',
 
       /**
        * VALIDASI KHUSUS TANGGAL (Multi-Date String)
@@ -78,8 +78,8 @@ class StoreIzinRequest extends FormRequest
       'alasan.required'       => 'Mohon isi alasan pengajuan izin.',
       'alasan.min'            => 'Alasan terlalu singkat, mohon jelaskan lebih detail.',
 
-      'bukti_foto.max'        => 'Ukuran file bukti maksimal 5MB.',
-      'bukti_foto.mimes'      => 'File bukti harus berupa Gambar (JPG, PNG) atau PDF.',
+      'bukti_lampiran.max'        => 'Ukuran file bukti maksimal 5MB.',
+      'bukti_lampiran.mimes'      => 'File bukti harus berupa Gambar (JPG, PNG) atau PDF.',
     ];
   }
 }

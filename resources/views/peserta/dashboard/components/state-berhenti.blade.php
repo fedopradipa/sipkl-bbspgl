@@ -12,9 +12,9 @@
           </span>
         </div>
 
-        <h3 class="fw-bold text-danger mb-2">Magang Dihentikan</h3>
+        <h3 class="fw-bold text-danger mb-2">PKL Dihentikan</h3>
         <p class="text-muted mb-4">
-          Status kepesertaan magang Anda telah <strong>dinonaktifkan</strong>.
+          Status kepesertaan PKL Anda telah <strong>dinonaktifkan</strong>.
         </p>
 
         {{-- Detail Informasi --}}

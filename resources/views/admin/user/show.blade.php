@@ -18,9 +18,8 @@
 
                 <h5 class="my-3">{{ $user->name }}</h5>
 
-                {{-- Tampilkan Jabatan (jika ada), jika tidak, tampilkan Role --}}
-                <p class="text-muted mb-1">{{ $user->jabatan ?? $user->role->nama_role }}</p>
-                <p class="text-muted mb-4">NIP: {{ $user->nip ?? '-' }}</p>
+                {{-- Hanya menampilkan Role karena Jabatan & NIP dihapus --}}
+                <p class="text-muted mb-4">{{ $user->role->nama_role ?? 'User' }}</p>
 
                 <div class="d-flex justify-content-center gap-2">
                     <a href="{{ route('user.index') }}" class="btn btn-secondary btn-sm">
@@ -67,24 +66,9 @@
                         <span class="badge bg-primary fs-6">{{ $user->role->nama_role ?? 'Tidak ada role' }}</span>
                     </div>
                 </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <p class="mb-0 text-muted">Jabatan</p>
-                    </div>
-                    <div class="col-sm-9">
-                        <p class="mb-0">{{ $user->jabatan ?? '-' }}</p>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-sm-3">
-                        <p class="mb-0 text-muted">NIP</p>
-                    </div>
-                    <div class="col-sm-9">
-                        <p class="mb-0">{{ $user->nip ?? '-' }}</p>
-                    </div>
-                </div>
+
+                {{-- Baris Jabatan dan NIP dihapus di sini --}}
+
                 <hr>
                 <div class="row">
                     <div class="col-sm-3">

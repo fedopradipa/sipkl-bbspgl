@@ -14,7 +14,7 @@
 
           <div class="mb-3">
             <label for="catatan_admin" class="form-label">Catatan Penolakan <span class="text-danger">*</span></label>
-            <textarea name="catatan_admin" id="catatan_admin" class="form-control" rows="4" required placeholder="Contoh: Durasi magang kurang dari minimal 3 bulan."></textarea>
+            <textarea name="catatan_admin" id="catatan_admin" class="form-control" rows="4" required placeholder="Contoh: Durasi PKL kurang dari minimal 3 bulan."></textarea>
           </div>
         </div>
         <div class="modal-footer">

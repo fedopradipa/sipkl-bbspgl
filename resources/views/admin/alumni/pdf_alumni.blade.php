@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Laporan Rekapitulasi Alumni</title>
+  <title>Laporan Rekapitulasi Peserta PKL</title>
   <style>
     body {
       font-family: sans-serif;
@@ -78,53 +78,46 @@
 <body>
 
   <div class="header">
-    <h2>LAPORAN REKAPITULASI PESERTA MAGANG</h2>
+    <h2>LAPORAN REKAPITULASI PESERTA PKL</h2>
     <p>BBSPGL (Balai Besar Survei Pemetaan dan Geologi Kelautan)</p>
-    <p>Tanggal Laporan: {{ $printDate->translatedFormat('d F Y') }}</p>
   </div>
 
   <table>
     <thead>
       <tr>
         <th style="width: 5%" class="text-center">No</th>
-        {{-- KOLOM 1: PESERTA --}}
         <th style="width: 30%">Peserta & Institusi</th>
-
-        {{-- KOLOM 2: POSISI --}}
-        <th style="width: 25%">Posisi Magang</th>
-
-        {{-- KOLOM 3: PERIODE --}}
+        <th style="width: 25%">Posisi PKL</th>
         <th style="width: 20%">Periode Pelaksanaan</th>
-
-        {{-- KOLOM 4: STATUS --}}
         <th style="width: 20%">Status Akhir</th>
       </tr>
     </thead>
+
     <tbody>
       @foreach($data as $index => $item)
+      @php
+      $mulai = \Carbon\Carbon::parse($item->tgl_mulai_resmi ?? $item->tgl_mulai_usulan);
+      $selesai = \Carbon\Carbon::parse($item->tgl_selesai_resmi ?? $item->tgl_selesai_usulan);
+      @endphp
+
       <tr>
         <td class="text-center">{{ $index + 1 }}</td>
 
-        {{-- SENADA DENGAN WEB: Nama & Institusi --}}
         <td>
           <strong>{{ $item->pengguna->name }}</strong><br>
-          {{ $item->pengguna->profile->institusi ?? '-' }}<br>
-          <span class="text-muted">{{ $item->pengguna->profile->jurusan ?? '' }}</span>
+          {{ optional($item->pengguna->profile)->institusi ?? '-' }}<br>
+          <span class="text-muted">{{ optional($item->pengguna->profile)->jurusan ?? '' }}</span>
         </td>
 
-        {{-- SENADA DENGAN WEB: Posisi --}}
         <td>
-          {{ $item->lowongan->judul }}<br>
-          <small>Divisi: {{ $item->lowongan->divisi }}</small>
+          {{ $item->lowongan->posisi ?? '-' }}
         </td>
 
-        {{-- SENADA DENGAN WEB: Periode --}}
         <td>
-          {{ $item->tgl_mulai_resmi->format('d/m/Y') }} s/d<br>
-          {{ $item->tgl_selesai_resmi->format('d/m/Y') }}
+          {{ $mulai->format('d/m/Y') }} s/d<br>
+          {{ $selesai->format('d/m/Y') }}
         </td>
 
-        {{-- SENADA DENGAN WEB: Status --}}
         <td>
           @if($item->status == 'selesai')
           <span class="badge-lulus">LULUS</span>

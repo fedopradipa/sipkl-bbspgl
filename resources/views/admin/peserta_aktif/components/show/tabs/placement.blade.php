@@ -23,26 +23,25 @@
         {{-- Kiri: Posisi & Jam --}}
         <div class="col-md-6 border-end-md">
           <div class="mb-4">
-            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">POSISI & DIVISI</small>
+            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">POSISI</small>
             <div class="d-flex align-items-center mt-2">
               <div class="bg-white p-2 rounded border me-3">
                 <i class="fas fa-briefcase text-primary"></i>
               </div>
               <div>
-                <h6 class="fw-bold mb-0 text-dark">{{ $item->lowongan->judul }}</h6>
-                <span class="text-muted small">{{ $item->lowongan->divisi ?? 'Divisi Umum' }}</span>
+                <h6 class="fw-bold mb-0 text-dark">{{ $item->lowongan->posisi }}</h6>
               </div>
             </div>
           </div>
 
           <div>
-            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">JAM KERJA STANDAR</small>
+            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">JAM MASUK KERJA </small>
             <div class="d-flex align-items-center mt-2">
               <div class="bg-white p-2 rounded border me-3">
                 <i class="far fa-clock text-primary"></i>
               </div>
               <div class="fw-bold text-dark">
-                {{ $item->lowongan->jam_masuk_standar ?? '08:00' }} - {{ $item->lowongan->jam_pulang_standar ?? '16:00' }}
+                {{ $item->lowongan->jam_masuk_standar ?? '08:00' }}
                 <span class="badge bg-white text-secondary border ms-2 fw-normal">WIB</span>
               </div>
             </div>
@@ -97,7 +96,7 @@
       <div class="row">
         <div class="col-12">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">PROGRESS MASA MAGANG</small>
+            <small class="text-uppercase text-muted fw-bold" style="font-size: 0.7rem;">PROGRESS MASA PKL</small>
           </div>
           @include('admin.peserta_aktif.components.progress-bar', [
           'start' => $item->tgl_mulai_resmi,

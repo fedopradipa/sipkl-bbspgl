@@ -2,11 +2,8 @@
 <html>
 
 <head>
-  <title>Laporan Absensi - {{ $bulanNama }} {{ $tahun }}</title>
+  <title>Laporan Presensi - {{ $bulanNama }} {{ $tahun }}</title>
   <style>
-    /* ====================================================
-           1. PAGE SETUP (LANDSCAPE)
-           ==================================================== */
     @page {
       margin: 10mm 10mm 10mm 10mm;
       size: A4 landscape;
@@ -18,9 +15,6 @@
       color: #333;
     }
 
-    /* ====================================================
-           2. COLOR MAPPING
-           ==================================================== */
     .header-main {
       background-color: #003366;
       color: white;
@@ -56,8 +50,6 @@
       color: #666;
     }
 
-    /* Warna Abu-abu */
-
     .total-h {
       background-color: #d4edda;
       color: #155724;
@@ -78,9 +70,6 @@
       color: #0c5460;
     }
 
-    /* ====================================================
-           3. TABLE STYLING
-           ==================================================== */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -99,7 +88,6 @@
       word-wrap: break-word;
     }
 
-    /* Kolom Nama: Wrap Text (Turun ke bawah) */
     .col-nama {
       text-align: left;
       padding-left: 4px;
@@ -107,7 +95,6 @@
       word-wrap: break-word;
     }
 
-    /* Styling Jam */
     .waktu-container {
       display: block;
     }
@@ -154,27 +141,25 @@
 
 <body>
 
-  {{-- HEADER DOKUMEN --}}
   <div class="doc-header">
     <h2>Laporan Rekapitulasi Presensi</h2>
     <p>Periode: <strong>{{ $bulanNama }} {{ $tahun }}</strong></p>
   </div>
 
-  {{-- TABEL --}}
   <table>
     <thead>
-      {{-- Baris 1: Header Utama --}}
       <tr class="header-main">
         <th rowspan="2" style="width: 20px;">NO</th>
         <th rowspan="2" style="width: 120px;">NAMA</th>
-        <th rowspan="2" style="width: 60px;">DIVISI</th>
+        <th rowspan="2" style="width: 60px;">POSISI</th>
 
         @foreach($dates as $ymd => $info)
         <th>{{ substr(strtoupper($info['hari']), 0, 1) }}</th>
         @endforeach
+
         <th colspan="4" style="width: 80px;">TOTAL</th>
       </tr>
-      {{-- Baris 2: Tanggal Angka --}}
+
       <tr class="header-date">
         @foreach($dates as $ymd => $info)
         <th>{{ str_pad($info['tgl'], 2, '0', STR_PAD_LEFT) }}</th>
@@ -185,20 +170,18 @@
         <th class="total-t">T</th>
       </tr>
     </thead>
+
     <tbody>
       @foreach($rekapData as $index => $data)
       <tr>
         <td>{{ $loop->iteration }}</td>
 
-        {{-- KOLOM NAMA --}}
         <td class="col-nama">
           <strong>{{ $data['nama'] }}</strong>
         </td>
 
-        {{-- KOLOM DIVISI --}}
-        <td style="font-size: 7px;">{{ $data['divisi'] }}</td>
+        <td style="font-size: 7px;">{{ $data['posisi'] }}</td>
 
-        {{-- LOOP DATA HARIAN --}}
         @foreach($dates as $ymd => $info)
         @php
         $log = $data['harian'][$ymd];
@@ -224,13 +207,12 @@
         }
         elseif ($status == 'hadir' || $status == 'terlambat') {
         $masuk = $log['jam_masuk'] ? substr($log['jam_masuk'], 0, 5) : '-';
-        $pulang = $log['jam_pulang'] ? substr($log['jam_pulang'], 0, 5) : '-';
         $clsM = ($status == 'terlambat') ? 'waktu-telat' : 'waktu-normal';
 
         $content = "<div class='waktu-container'>
-          <span class='$clsM'>$masuk</span><br>
-          <span class='waktu-normal'>$pulang</span>
+          <span class='$clsM'>$masuk</span>
         </div>";
+
         if ($status == 'terlambat') {
         $content .= "<span class='label-telat'>Telat</span>";
         }
@@ -246,7 +228,6 @@
         </td>
         @endforeach
 
-        {{-- TOTAL --}}
         <td class="total-h"><strong>{{ $data['total']['hadir'] + $data['total']['terlambat'] }}</strong></td>
         <td class="total-si">{{ $data['total']['sakit'] + $data['total']['izin'] }}</td>
         <td class="total-a"><strong>{{ $data['total']['alpha'] }}</strong></td>
@@ -256,36 +237,20 @@
     </tbody>
   </table>
 
-  {{-- FOOTER --}}
   <table style="width: 100%; border: none; margin-top: 10px;">
     <tr style="border: none;">
-      {{-- KETERANGAN WARNA (LEGENDA) --}}
       <td style="border: none; text-align: left; vertical-align: top; width: 60%;">
         <strong>Keterangan Warna:</strong><br>
 
-        {{-- ITEM 1: HADIR --}}
         <span style="display:inline-block; width:10px; height:10px; background:#fff; border:1px solid #ccc; margin-right:5px; vertical-align:middle;"></span> Hadir &nbsp;
 
-        {{-- ITEM 2: SAKIT/IZIN --}}
         <span style="display:inline-block; width:10px; height:10px; background:#ffeb3b; margin-right:5px; vertical-align:middle; border:1px solid #ccc;"></span> Sakit/Izin (S/I) &nbsp;
 
-        {{-- ITEM 3: ALPHA --}}
         <span style="display:inline-block; width:10px; height:10px; background:#ff4444; margin-right:5px; vertical-align:middle;"></span> Alpha (A) &nbsp;
 
-        {{-- ITEM 4: LIBUR --}}
         <span style="display:inline-block; width:10px; height:10px; background:#ff9900; margin-right:5px; vertical-align:middle;"></span> Diluar Jadwal Kerja &nbsp;
 
-        {{-- ITEM 5: BELUM ABSEN (TAMBAHAN BARU) --}}
         <span style="display:inline-block; width:10px; height:10px; background:#e0e0e0; margin-right:5px; vertical-align:middle; border:1px solid #ccc;"></span> Belum Absen
-      </td>
-
-      {{-- TANDA TANGAN --}}
-      <td style="border: none; text-align: center; vertical-align: top;">
-        <p>Jakarta, {{ date('d') }} {{ $bulanNama }} {{ $tahun }}</p>
-        <p>Mengetahui,</p>
-        <br><br><br>
-        <p style="text-decoration: underline; font-weight: bold;">( _______________________ )</p>
-        <p>HRD / Pimpinan</p>
       </td>
     </tr>
   </table>

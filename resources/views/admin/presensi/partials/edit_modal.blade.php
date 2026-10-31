@@ -5,7 +5,7 @@
       @method('PUT')
 
       <div class="modal-header bg-warning text-dark">
-        <h5 class="modal-title">Koreksi Absensi</h5>
+        <h5 class="modal-title">Koreksi Presensi</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
@@ -16,6 +16,7 @@
           <label class="form-label fw-bold small text-uppercase text-muted">Status Kehadiran</label>
           <select name="status" id="edit_status" class="form-select">
             <option value="hadir">Hadir</option>
+            <option value="terlambat">Terlambat</option>
             <option value="sakit">Sakit</option>
             <option value="izin">Izin</option>
             <option value="alpha">Alpha</option>
@@ -27,10 +28,6 @@
           <div class="col-6 mb-3">
             <label class="form-label small">Jam Masuk</label>
             <input type="time" name="jam_masuk" id="edit_masuk" class="form-control">
-          </div>
-          <div class="col-6 mb-3">
-            <label class="form-label small">Jam Pulang</label>
-            <input type="time" name="jam_pulang" id="edit_pulang" class="form-control">
           </div>
         </div>
 
@@ -71,7 +68,6 @@
 
       // Inputs
       const jamMasuk = document.getElementById('edit_masuk');
-      const jamPulang = document.getElementById('edit_pulang');
       const catatanInput = document.getElementById('edit_catatan');
 
       // Base URL Route
@@ -94,7 +90,6 @@
 
           // Bersihkan jam agar tidak tersimpan data jam sampah
           jamMasuk.value = '';
-          jamPulang.value = '';
         }
       }
 
@@ -106,8 +101,7 @@
         const id = btn.getAttribute('data-id');
         const status = btn.getAttribute('data-status');
         const masuk = btn.getAttribute('data-masuk');
-        const pulang = btn.getAttribute('data-pulang');
-        const catatan = btn.getAttribute('data-catatan'); // <--- PASTIKAN INI ADA DI TOMBOL
+        const catatan = btn.getAttribute('data-catatan');
 
         // 2. Update Action Form
         editForm.action = `${baseUrl}/${id}`;
@@ -115,7 +109,6 @@
         // 3. Isi Nilai Input
         statusSelect.value = status;
         jamMasuk.value = masuk ? masuk.substring(0, 5) : '';
-        jamPulang.value = pulang ? pulang.substring(0, 5) : '';
         catatanInput.value = (catatan && catatan !== '-') ? catatan : '';
 
         // 4. Atur Tampilan UI

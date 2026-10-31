@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Role; // <-- DITAMBAHKAN
+use App\Models\Role;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule; // <-- DITAMBAHKAN
+use Illuminate\Validation\Rule;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Hash; // <-- DITAMBAHKAN
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -45,7 +45,7 @@ class UserController extends Controller
         $roles = Role::all();
 
         return view('admin.user.create', [
-            'roles' => $roles, // <-- Kirim data roles
+            'roles' => $roles,
             'title' => 'Tambah Pengguna',
             'header' => 'Form Input Pengguna Baru'
         ]);
@@ -56,14 +56,12 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validasi input (Sesuai tabel users)
+        // 1. Validasi input (NIP dan Jabatan DIHAPUS sesuai view)
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed', // 'confirmed' akan mencari 'password_confirmation'
             'role_id' => 'required|exists:roles,id_role', // Pastikan role_id ada di tabel roles
-            'nip' => 'nullable|string|max:50|unique:users,nip',
-            'jabatan' => 'nullable|string|max:100',
         ], [
             'name.required' => 'Nama wajib diisi.',
             'email.required' => 'Email wajib diisi.',
@@ -73,11 +71,9 @@ class UserController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'role_id.required' => 'Peran (Role) wajib dipilih.',
             'role_id.exists' => 'Peran (Role) yang dipilih tidak valid.',
-            'nip.unique' => 'NIP ini sudah terdaftar.',
         ]);
 
         // 2. Buat data baru (Hash password)
-        // Kita tidak bisa pakai $validatedData langsung karena password
         $dataToCreate = $validatedData;
         $dataToCreate['password'] = Hash::make($request->password); // Enkripsi password
 
@@ -88,7 +84,6 @@ class UserController extends Controller
 
     /**
      * Menampilkan detail dari satu pengguna.
-     * (Kita bisa skip 'show' dan langsung ke 'edit' seperti RoleController)
      */
     public function show(User $user)
     {
@@ -112,7 +107,7 @@ class UserController extends Controller
 
         return view('admin.user.edit', [
             'user' => $user,
-            'roles' => $roles, // <-- Kirim data roles
+            'roles' => $roles,
             'title' => 'Edit Pengguna',
             'header' => 'Form Edit Pengguna: ' . $user->name
         ]);
@@ -123,7 +118,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        // 1. Validasi input
+        // 1. Validasi input (NIP dan Jabatan DIHAPUS)
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => [
@@ -134,14 +129,7 @@ class UserController extends Controller
                 Rule::unique('users', 'email')->ignore($user->id, 'id') // Abaikan email user ini sendiri
             ],
             'role_id' => 'required|exists:roles,id_role',
-            'nip' => [
-                'nullable',
-                'string',
-                'max:50',
-                Rule::unique('users', 'nip')->ignore($user->id, 'id') // Abaikan NIP user ini sendiri
-            ],
-            'jabatan' => 'nullable|string|max:100',
-            'password' => 'nullable|string|min:8|confirmed',
+            'password' => 'nullable|string|min:8|confirmed', // Password nullable saat edit
         ], [
             'name.required' => 'Nama wajib diisi.',
             'email.required' => 'Email wajib diisi.',
@@ -156,11 +144,9 @@ class UserController extends Controller
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'role_id' => $validatedData['role_id'],
-            'nip' => $validatedData['nip'],
-            'jabatan' => $validatedData['jabatan'],
         ];
 
-        // 3. Cek apakah password diisi (opsional)
+        // 3. Cek apakah password diisi (opsional saat edit)
         if ($request->filled('password')) {
             $dataToUpdate['password'] = Hash::make($request->password);
         }
@@ -188,9 +174,9 @@ class UserController extends Controller
             return redirect()->route('user.index')
                 ->with('success', 'Pengguna berhasil dihapus.');
         } catch (QueryException $e) {
-            // (Opsional) Tangkap error jika user terhubung ke data lain
+            // Tangkap error jika user terhubung ke data lain (Foreign Key constraint)
             return redirect()->route('user.index')
-                ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+                ->with('error', 'Gagal menghapus data: Data pengguna ini masih digunakan di tabel lain.');
         }
     }
 }

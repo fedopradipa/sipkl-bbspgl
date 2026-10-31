@@ -29,7 +29,7 @@ $subLabel = "Mulai dalam $daysToStart hari";
 $progress = 100;
 $passedDays = $totalDuration;
 $sisaHari = 0;
-$statusLabel = "Masa Magang Habis";
+$statusLabel = "Masa PKL Habis";
 $statusColor = "text-danger";
 $barColor = "bg-danger";
 

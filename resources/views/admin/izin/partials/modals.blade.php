@@ -55,7 +55,7 @@
       <div class="modal-body">
         <div class="alert alert-warning d-flex align-items-center small" role="alert">
           <i class="fas fa-exclamation-triangle me-2"></i>
-          <div>Alasan penolakan akan muncul di dashboard peserta.</div>
+          <div>Alasan penolakan akan muncul di riwayat pengajuan izin/sakit peserta.</div>
         </div>
 
         <div class="mb-3">

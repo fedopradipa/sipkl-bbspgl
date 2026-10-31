@@ -17,7 +17,7 @@
     </div>
     @endif
     </p>
-    <a href="{{ route('guest.home') }}" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+    <a href="{{ route('peserta.lowongan.index') }}" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
       Cari Lowongan Lain
     </a>
   </div>

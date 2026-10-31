@@ -3,13 +3,13 @@
 @section('content')
 <div class="container-fluid px-4">
 
-  {{-- HEADER: Tombol Kembali & Judul --}}
+  {{-- HEADER: Tombol Kembali & posisi --}}
   <div class="d-flex align-items-center justify-content-between mb-4 mt-4">
     <div>
       <a href="{{ route('admin.alumni.index') }}" class="text-decoration-none text-muted small hover-arrow mb-1 d-inline-block">
         <i class="fas fa-arrow-left me-1"></i> Kembali ke Arsip
       </a>
-      <h4 class="fw-bold text-dark m-0">Detail Alumni Magang</h4>
+      <h4 class="fw-bold text-dark m-0">Detail Alumni PKL</h4>
     </div>
 
     {{-- Status Badge Besar --}}
@@ -93,18 +93,17 @@
     {{-- KOLOM KANAN: Detail Arsip & Dokumen --}}
     <div class="col-lg-8">
 
-      {{-- 1. Informasi Magang --}}
+      {{-- 1. Informasi PKL --}}
       <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
-          <h6 class="fw-bold m-0 text-primary">Data Pelaksanaan Magang</h6>
+          <h6 class="fw-bold m-0 text-primary">Data Pelaksanaan PKL</h6>
           <span class="badge bg-light text-secondary border">Arsip Final</span>
         </div>
         <div class="card-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label class="small text-muted">Posisi Magang</label>
-              <div class="fw-bold fs-5">{{ $item->lowongan->judul }}</div>
-              <span class="badge bg-info bg-opacity-10 text-info border border-info">{{ $item->lowongan->divisi }}</span>
+              <label class="small text-muted">Posisi PKL</label>
+              <div class="fw-bold fs-5">{{ $item->lowongan->posisi }}</div>
             </div>
             <div class="col-md-6">
               <label class="small text-muted">Periode Pelaksanaan</label>
@@ -122,39 +121,6 @@
         </div>
       </div>
 
-      {{-- 2. DOKUMEN LAPORAN AKHIR (Area Paling Penting) --}}
-      <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
-        <div class="card-header bg-primary text-white py-3">
-          <h6 class="fw-bold m-0"><i class="fas fa-folder-open me-2"></i>Arsip Laporan Akhir</h6>
-        </div>
-        <div class="card-body p-4 text-center">
-          @if($item->path_laporan_akhir)
-          <div class="mb-3">
-            <i class="fas fa-file-pdf fa-4x text-danger mb-2"></i>
-            <h5 class="fw-bold mt-2">Laporan Akhir Magang</h5>
-            <p class="text-muted small">Diunggah pada: {{ $item->updated_at->format('d M Y, H:i') }}</p>
-          </div>
-          <a href="{{ asset('storage/laporan_akhir/'.$item->path_laporan_akhir) }}" target="_blank" class="btn btn-danger px-4 fw-bold">
-            <i class="fas fa-download me-2"></i> Download PDF
-          </a>
-
-          @if($item->link_project)
-          <div class="mt-4 pt-3 border-top">
-            <p class="small text-muted mb-2">Link Project / Source Code:</p>
-            <a href="{{ $item->link_project }}" target="_blank" class="btn btn-outline-dark btn-sm">
-              <i class="fab fa-github me-1"></i> Buka Link Project
-            </a>
-          </div>
-          @endif
-          @else
-          <div class="py-3 opacity-50">
-            <i class="fas fa-file-excel fa-3x text-muted mb-3"></i>
-            <h6>Tidak ada file laporan akhir.</h6>
-            <p class="small">Peserta ini lulus/keluar tanpa mengunggah laporan digital ke sistem.</p>
-          </div>
-          @endif
-        </div>
-      </div>
 
       {{-- 3. Jika Status DO / Berhenti --}}
       @if($item->status == 'berhenti')
@@ -177,26 +143,35 @@
             @php
             $total = $item->presensi->count();
             $hadir = $item->presensi->where('status', 'hadir')->count();
-            $izin = $item->presensi->where('status', 'izin')->count();
+            $terlambat = $item->presensi->where('status', 'terlambat')->count();
+            $izin = $item->presensi->whereIn('status', ['izin','sakit'])->count();
             $alpha = $item->presensi->where('status', 'alpha')->count();
             @endphp
-            <div class="col-4 border-end">
-              <h4 class="fw-bold text-success mb-0">{{ $hadir }}</h4>
-              <small class="text-muted">Hadir</small>
+            <div class="row text-center">
+              <div class="col-3 border-end">
+                <h4 class="fw-bold text-success mb-0">{{ $hadir }}</h4>
+                <small class="text-muted">Hadir</small>
+              </div>
+              <div class="col-3 border-end">
+                <h4 class="fw-bold text-info mb-0">{{ $terlambat }}</h4>
+                <small class="text-muted">Terlambat</small>
+              </div>
+              <div class="col-3 border-end">
+                <h4 class="fw-bold text-warning mb-0">{{ $izin }}</h4>
+                <small class="text-muted">Izin/Sakit</small>
+              </div>
+              <div class="col-3">
+                <h4 class="fw-bold text-danger mb-0">{{ $alpha }}</h4>
+                <small class="text-muted">Alpha</small>
+              </div>
             </div>
-            <div class="col-4 border-end">
-              <h4 class="fw-bold text-warning mb-0">{{ $izin }}</h4>
-              <small class="text-muted">Izin/Sakit</small>
-            </div>
-            <div class="col-4">
-              <h4 class="fw-bold text-danger mb-0">{{ $alpha }}</h4>
-              <small class="text-muted">Alpha</small>
-            </div>
+
           </div>
         </div>
       </div>
-
     </div>
+
   </div>
+</div>
 </div>
 @endsection

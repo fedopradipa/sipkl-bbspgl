@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('presensis', function (Blueprint $table) {
             $table->id();
-            // WAJIB: Relasi Langsung ke USER
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+
+            // Relasi
+            $table->foreignId('pengguna_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('lamaran_id')->constrained('lamarans')->onDelete('cascade');
+
             $table->date('tanggal');
 
+            // Waktu Absen
             $table->time('jam_masuk')->nullable();
-            $table->time('jam_pulang')->nullable();
 
             $table->enum('status', [
                 'hadir',
@@ -28,14 +30,10 @@ return new class extends Migration
                 'izin',
                 'alpha'
             ]);
-            // Geolocation (Pakai Decimal untuk akurasi GPS)
-            $table->decimal('lat_masuk', 10, 8)->nullable();
-            $table->decimal('long_masuk', 11, 8)->nullable();
-            $table->decimal('lat_pulang', 10, 8)->nullable();
-            $table->decimal('long_pulang', 11, 8)->nullable();
+
+            // NOTE: Kolom Geolocation (lat/long) SUDAH DIHAPUS sesuai request.
 
             $table->text('catatan_harian')->nullable();
-            $table->boolean('is_auto_closed')->default(false); // Logic "Lazy Update"
 
             $table->timestamps();
         });

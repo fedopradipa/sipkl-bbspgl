@@ -12,19 +12,19 @@ class Lowongan extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'judul',
-        'divisi',
+        'posisi',
         'deskripsi',
         'is_open',
         'window_start_date',
         'window_end_date',
         'is_fulltime',
         'jam_masuk_standar',
-        'jam_pulang_standar',
         'min_duration',
         'jurusan_terkait',
-        'fasilitas',
-        'working_days',
+        'hari_kerja',
+        'jam_buka_absen',
+        'jam_masuk_standar',
+        'jam_tutup_absen',
 
 
     ];
@@ -34,7 +34,7 @@ class Lowongan extends Model
         'window_end_date' => 'date',
         'is_open' => 'boolean',
         'is_fulltime' => 'boolean',
-        'working_days' => 'array',
+        'hari_kerja' => 'array',
     ];
     /**
 

@@ -15,13 +15,15 @@
   @case('ditolak')
   @include('peserta.dashboard.components.state-ditolak', ['lamaran' => $lamaran])
   @break
+
   @case('pra_mulai')
   @include('peserta.dashboard.components.state-pra-mulai', ['lamaran' => $lamaran])
   @break
+
   @case('active')
+  {{-- PERUBAHAN DISINI: Hapus 'presensi' dan 'isHariKerja' --}}
+  {{-- Cukup kirim 'lamaran' saja --}}
   @include('peserta.dashboard.components.state-active', [
-  'isHariKerja' => $isHariKerja,
-  'presensi' => $presensi,
   'lamaran' => $lamaran
   ])
   @break
@@ -42,7 +44,6 @@
   {{-- State Kosong / Belum Melamar --}}
   @include('peserta.dashboard.empty')
   @endswitch
-  {{-- ... --}}
 
 </div>
 
@@ -62,32 +63,9 @@
     box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
   }
 
-  .hover-scale {
-    transition: transform 0.2s;
-  }
-
-  .hover-scale:hover {
-    transform: scale(1.05);
-  }
-
-  .letter-spacing-2 {
-    letter-spacing: 2px;
-  }
-
-  /* Pastikan z-index bekerja */
-  .position-relative {
-    position: relative;
-  }
-
-  .z-1 {
-    z-index: 1;
-  }
+  /* Style lainnya tetap sama */
 </style>
 @endpush
 
 {{-- Global Scripts --}}
-@push('scripts')
-<script src="{{ asset('js/geolocation.js') }}"></script>
-@endpush
-
 @endsection

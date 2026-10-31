@@ -47,12 +47,12 @@ $method = $isEdit ? 'PUT' : 'POST';
   {{-- Upload --}}
   <div class="mb-4">
     <label class="form-label fw-bold">Bukti (Opsional)</label>
-    @if($isEdit && $izin->bukti_foto)
+    @if($isEdit && $izin->bukti_lampiran)
     <div class="mb-2">
-      <a href="{{ asset('storage/'.$izin->bukti_foto) }}" target="_blank" class="badge bg-info text-decoration-none">Lihat Bukti Saat Ini</a>
+      <a href="{{ asset('storage/'.$izin->bukti_lampiran) }}" target="_blank" class="badge bg-info text-decoration-none">Lihat Bukti Saat Ini</a>
     </div>
     @endif
-    <input type="file" name="bukti_foto" class="form-control" accept="image/*,.pdf">
+    <input type="file" name="bukti_lampiran" class="form-control" accept="image/*,.pdf">
     @if($isEdit)
     <small class="text-muted">Biarkan kosong jika tidak ingin mengubah bukti.</small>
     @endif

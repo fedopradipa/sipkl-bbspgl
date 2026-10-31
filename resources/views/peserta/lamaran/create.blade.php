@@ -1,5 +1,20 @@
 @extends('layouts.app')
+{{-- LOGIKA PENENTUAN TANGGAL MINIMAL --}}
+@php
 
+$today = \Carbon\Carbon::now()->addDay()->startOfDay();
+
+// 2. Ambil tanggal buka lowongan
+$windowStart = $lowongan->window_start_date->startOfDay();
+
+// 3. Bandingkan:
+// Jika tanggal buka lowongan MASIH DI MASA DEPAN, gunakan tanggal lowongan.
+// Jika tanggal buka lowongan SUDAH LEWAT (atau hari ini), gunakan hari ini (atau besok).
+$effectiveMinDate = $windowStart->greaterThan($today) ? $windowStart : $today;
+
+// OPSI: Jika ingin minimal "Besok" (agar tidak bisa pilih hari ini), ubah $today menjadi:
+// $today = \Carbon\Carbon::now()->addDay()->startOfDay();
+@endphp
 @section('content')
 <div class="container py-5">
   <div class="row justify-content-center">
@@ -10,9 +25,9 @@
         <div class="card-body p-4">
           <h4 class="fw-bold mb-1">Formulir Pendaftaran PKL</h4>
           <p class="mb-0 opacity-75">Anda melamar untuk posisi:</p>
-          <h2 class="fw-bold mt-2">{{ $lowongan->judul }}</h2>
+          <h2 class="fw-bold mt-2">{{ $lowongan->posisi }}</h2>
           <div class="mt-3">
-            <span class="badge bg-white text-primary me-2">{{ $lowongan->divisi }}</span>
+            <span class="badge bg-white text-primary me-2">{{ $lowongan->posisi }}</span>
             <span class="badge bg-warning text-dark">Min. {{ $lowongan->min_duration }} Bulan</span>
           </div>
         </div>
@@ -42,18 +57,36 @@
             <div class="row mb-4">
               <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Tanggal Mulai (Usulan) <span class="text-danger">*</span></label>
-                <input type="date" name="tgl_mulai_usulan" class="form-control @error('tgl_mulai_usulan') is-invalid @enderror" value="{{ old('tgl_mulai_usulan') }}">
+
+                {{-- Tambahkan atribut min="..." agar kalender memblokir tanggal masa lalu --}}
+                <input type="date"
+                  name="tgl_mulai_usulan"
+                  class="form-control @error('tgl_mulai_usulan') is-invalid @enderror"
+                  value="{{ old('tgl_mulai_usulan') }}"
+                  min="{{ $effectiveMinDate->format('Y-m-d') }}">
+
                 <div class="form-text text-muted">
                   <i class="fas fa-info-circle me-1"></i>
-                  Paling cepat: {{ $lowongan->window_start_date->format('d M Y') }}
+                  {{-- Tampilkan tanggal hasil perhitungan --}}
+                  Paling cepat: {{ $effectiveMinDate->isoFormat('D MMMM Y') }}
                 </div>
+
                 @error('tgl_mulai_usulan') <div class="invalid-feedback">{{ $message }}</div> @enderror
               </div>
+
               <div class="col-md-6 mb-3">
                 <label class="form-label fw-bold">Tanggal Selesai (Usulan) <span class="text-danger">*</span></label>
-                <input type="date" name="tgl_selesai_usulan" class="form-control @error('tgl_selesai_usulan') is-invalid @enderror" value="{{ old('tgl_selesai_usulan') }}">
+
+                {{-- Opsional: Tanggal selesai minimal harus sama dengan tanggal mulai --}}
+                <input type="date"
+                  name="tgl_selesai_usulan"
+                  class="form-control @error('tgl_selesai_usulan') is-invalid @enderror"
+                  value="{{ old('tgl_selesai_usulan') }}"
+                  min="{{ $effectiveMinDate->format('Y-m-d') }}">
+
                 @error('tgl_selesai_usulan') <div class="invalid-feedback">{{ $message }}</div> @enderror
               </div>
+
               {{-- Error Min Duration --}}
               @if($errors->has('min_duration'))
               <div class="col-12">
@@ -137,7 +170,7 @@
               <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm py-3">
                 <i class="fas fa-paper-plane me-2"></i> Kirim Lamaran
               </button>
-              <a href="{{ route('guest.lowongan.show', $lowongan->id) }}" class="btn btn-light text-muted">Batal</a>
+              <a href="{{ route('peserta.lowongan.index', $lowongan->id) }}" class="btn btn-light text-muted">Batal</a>
             </div>
 
           </form>

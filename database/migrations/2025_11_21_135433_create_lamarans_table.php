@@ -31,11 +31,10 @@ return new class extends Migration
             // Data Resmi (Keputusan Admin)
             $table->date('tgl_mulai_resmi')->nullable();
             $table->date('tgl_selesai_resmi')->nullable();
-            $table->json('hari_kerja_resmi')->nullable(); // Acuan untuk Absensi
+            $table->json('hari_kerja_resmi')->nullable(); // Acuan untuk Presensi
 
             // File
             $table->string('file_surat_pengantar')->nullable();
-            $table->string('path_laporan_akhir')->nullable();
 
             $table->timestamps();
         });

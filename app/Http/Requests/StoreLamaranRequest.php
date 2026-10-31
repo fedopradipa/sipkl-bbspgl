@@ -58,7 +58,7 @@ class StoreLamaranRequest extends FormRequest
       if (!$this->hasValidDuration()) {
         $validator->errors()->add(
           'min_duration',
-          "Durasi magang kurang. Minimal {$this->route('lowongan')->min_duration} bulan."
+          "Durasi PKL kurang. Minimal {$this->route('lowongan')->min_duration} bulan."
         );
       }
     });

@@ -1,13 +1,16 @@
 <div class="row g-2 mb-4"> {{-- Ganti g-3 jadi g-2 agar jarak antar card lebih rapat --}}
   {{-- Card Generator Loop --}}
   @php
+  $totalHadir = ($ringkasan['hadir'] ?? 0) + ($ringkasan['terlambat'] ?? 0);
+
   $cards = [
-  ['title' => 'Hadir', 'val' => $ringkasan['hadir'], 'color' => 'success', 'icon' => 'fa-check-circle'],
-  ['title' => 'Terlambat', 'val' => $ringkasan['terlambat'], 'color' => 'warning', 'icon' => 'fa-clock'],
-  ['title' => 'Sakit / Izin', 'val' => $ringkasan['sakit_izin'], 'color' => 'info', 'icon' => 'fa-file-medical'],
-  ['title' => 'Alpha / Absen', 'val' => $ringkasan['alpha'], 'color' => 'danger', 'icon' => 'fa-times-circle'],
+  ['title' => 'Hadir', 'val' => $totalHadir, 'color' => 'success', 'icon' => 'fa-check-circle'],
+  ['title' => 'Terlambat', 'val' => $ringkasan['terlambat'] ?? 0, 'color' => 'warning', 'icon' => 'fa-clock'],
+  ['title' => 'Sakit / Izin', 'val' => $ringkasan['sakit_izin'] ?? 0, 'color' => 'info', 'icon' => 'fa-file-medical'],
+  ['title' => 'Alpha / Absen', 'val' => $ringkasan['alpha'] ?? 0, 'color' => 'danger', 'icon' => 'fa-times-circle'],
   ];
   @endphp
+
 
   @foreach($cards as $c)
   <div class="col-xl-3 col-md-6 col-6"> {{-- Tambahkan col-6 agar di HP berjejer 2 (lebih hemat tempat) --}}
@@ -15,7 +18,7 @@
       {{-- Kurangi padding (p-3 standard, kita coba sesuaikan visual) --}}
       <div class="card-body position-relative p-3">
         <div class="d-flex justify-content-between align-items-center mb-1">
-          {{-- Judul lebih kecil --}}
+          {{-- posisi lebih kecil --}}
           <h6 class="text-uppercase fw-bold text-{{ $c['color'] }}" style="font-size: 0.7rem;">
             {{ $c['title'] }}
           </h6>

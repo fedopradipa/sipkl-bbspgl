@@ -13,8 +13,14 @@ $tanggalExisting = isset($izin) ? $izin->tanggal_izin : [];
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // 1. Ambil Batas Tanggal Magang (Panggil variabel yg sudah didefine di atas)
-    const minDate = "{{ $minDate }}";
+    // 1. Ambil Batas Tanggal PKL (Panggil variabel yg sudah didefine di atas)
+    const minPkl = "{{ $minDate }}";
+    const today = new Date(); // hari ini (client)
+    today.setHours(0, 0, 0, 0);
+
+    // minDate final = max(tgl_mulai_resmi, today)
+    const minDate = (new Date(minPkl) > today) ? minPkl : "today";
+
     const maxDate = "{{ $maxDate }}";
 
     // 2. Data Hari Kerja

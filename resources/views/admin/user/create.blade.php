@@ -45,30 +45,6 @@
                 </div>
             </div>
 
-            {{-- --- TAMBAHAN BARU (Sesuai Model 189) --- --}}
-            <hr class="my-3">
-            <h6 class="mb-3 text-muted">Data Opsional (Profil)</h6>
-
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="nip" class="form-label">NIP</label>
-                    <input type="text" class="form-control @error('nip') is-invalid @enderror"
-                        id="nip" name="nip" value="{{ old('nip') }}" placeholder="NIP Pegawai (jika ada)">
-                    @error('nip')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="jabatan" class="form-label">Jabatan</label>
-                    <input type="text" class="form-control @error('jabatan') is-invalid @enderror"
-                        id="jabatan" name="jabatan" value="{{ old('jabatan') }}" placeholder="Misal: Teknisi, Admin Logistik...">
-                    @error('jabatan')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-            {{-- --- AKHIR TAMBAHAN --- --}}
-
             <hr class="my-3">
             <h6 class="mb-3 text-muted">Password</h6>
 

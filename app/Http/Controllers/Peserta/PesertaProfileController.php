@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\ProfilePeserta;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage; // <--- WAJIB: Import Storage untuk kelola file
+use Illuminate\Support\Facades\Storage;
 
 class PesertaProfileController extends Controller
 {

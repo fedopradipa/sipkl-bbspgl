@@ -26,7 +26,7 @@ class LowonganRequest extends FormRequest
   public function rules(): array
   {
     return [
-      'judul'             => 'required|string|max:255',
+      'posisi'             => 'required|string|max:255',
       'divisi'            => 'required|string|max:255',
       'deskripsi'         => 'nullable|string',
       'jurusan_terkait'   => 'nullable|string',
@@ -39,16 +39,15 @@ class LowonganRequest extends FormRequest
 
       // Validasi Jam
       'jam_masuk_standar'  => 'required|date_format:H:i',
-      'jam_pulang_standar' => 'required|date_format:H:i|after:jam_masuk_standar',
 
       // Validasi Boolean & JSON Array
       'is_fulltime'       => 'boolean',
       'is_open'           => 'boolean',
 
       // LOGIKA WORKING DAYS (Sesuai diskusi sebelumnya)
-      // Jika is_fulltime true, maka working_days wajib ada dan berupa array
-      'working_days'      => 'nullable|array|required_if:is_fulltime,true',
-      'working_days.*'    => 'string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
+      // Jika is_fulltime true, maka hari_kerja wajib ada dan berupa array
+      'hari_kerja'      => 'nullable|array|required_if:is_fulltime,true',
+      'hari_kerja.*'    => 'string|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu',
     ];
   }
 
@@ -57,8 +56,7 @@ class LowonganRequest extends FormRequest
     return [
       'required' => 'Kolom :attribute wajib diisi.',
       'date_format' => 'Format waktu :attribute harus Jam:Menit (Contoh: 08:00).',
-      'jam_pulang_standar.after' => 'Jam pulang harus lebih akhir dari jam masuk.',
-      'working_days.required_if' => 'Jika jadwal terikat dipilih, Anda wajib memilih hari kerja.',
+      'hari_kerja.required_if' => 'Jika jadwal terikat dipilih, Anda wajib memilih hari kerja.',
     ];
   }
 }

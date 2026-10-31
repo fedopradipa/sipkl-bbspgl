@@ -1,8 +1,8 @@
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
 
-  {{-- BAGIAN KIRI: Judul & Counter --}}
+  {{-- BAGIAN KIRI: posisi & Counter --}}
   <div>
-    <h4 class="fw-bold text-primary mb-1">Peserta Magang Aktif</h4>
+    <h4 class="fw-bold text-primary mb-1">Peserta PKL Aktif</h4>
     <p class="text-muted small mb-0">
       <i class="fas fa-users me-1"></i> Memantau {{ $peserta->total() }} peserta yang sedang melaksanakan PKL.
     </p>
@@ -16,7 +16,7 @@
           type="text"
           name="search"
           class="form-control"
-          placeholder="Cari nama atau divisi..."
+          placeholder="Cari nama atau posisi..."
           value="{{ request('search') }}">
 
         <button class="btn btn-primary" type="submit" title="Cari">

@@ -3,66 +3,56 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\FilterRekapRequest;
-use App\Services\Admin\RekapPresensiService;
+use App\Http\Requests\Admin\RekapPresensiRequest;
+use App\Services\RekapPresensiService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 
 class RekapPresensiController extends Controller
 {
-  protected $rekapService;
+  public function __construct(private RekapPresensiService $service) {}
 
-  public function __construct(RekapPresensiService $rekapService)
+  public function index(RekapPresensiRequest $request)
   {
-    $this->rekapService = $rekapService;
-  }
+    $validated = $request->validated();
 
-  /**
-   * Menampilkan Halaman Filter & Preview Matriks
-   */
-  public function index(FilterRekapRequest $request)
-  {
-    // Ambil input atau default ke bulan ini
-    $bulan = $request->input('bulan', Carbon::now()->month);
-    $tahun = $request->input('tahun', Carbon::now()->year);
-    $lowonganId = $request->input('lowongan_id');
+    $bulan      = $validated['bulan'] ?? Carbon::now()->month;
+    $tahun      = $validated['tahun'] ?? Carbon::now()->year;
+    $lowonganId = $validated['lowongan_id'] ?? null;
 
-    // Panggil Service
-    $data = $this->rekapService->getRekapMatrix($bulan, $tahun, $lowonganId);
+    $data = $this->service->getRekapMatrix($bulan, $tahun, $lowonganId);
 
     return view('admin.reports.attendance.index', [
-      'title'     => 'Rekap Presensi Bulanan',
-      'dates'     => $data['header_dates'],
-      'rekapData' => $data['data'],
-      'divisiList' => $data['divisi_list'],
-      'bulanNama' => $data['bulan_nama'],
-      'tahun'     => $data['tahun'],
-      'selectedBulan' => $bulan,
-      'selectedTahun' => $tahun,
-      'selectedDivisi' => $lowonganId
+      'title'          => 'Rekap Presensi Bulanan',
+      'dates'          => $data['header_dates'],
+      'rekapData'      => $data['data'],
+      'posisiList'     => $data['posisi_list'],
+      'bulanNama'      => $data['bulan_nama'],
+      'tahun'          => $data['tahun'],
+      'selectedBulan'  => $bulan,
+      'selectedTahun'  => $tahun,
+      'selectedPosisi' => $lowonganId,
     ]);
   }
 
-  /**
-   * Export ke PDF
-   */
-  public function exportPdf(FilterRekapRequest $request)
+  public function exportPdf(RekapPresensiRequest $request)
   {
-    $bulan = $request->input('bulan', Carbon::now()->month);
-    $tahun = $request->input('tahun', Carbon::now()->year);
-    $lowonganId = $request->input('lowongan_id');
+    $validated = $request->validated();
 
-    $data = $this->rekapService->getRekapMatrix($bulan, $tahun, $lowonganId);
+    $bulan      = $validated['bulan'] ?? Carbon::now()->month;
+    $tahun      = $validated['tahun'] ?? Carbon::now()->year;
+    $lowonganId = $validated['lowongan_id'] ?? null;
+
+    $data = $this->service->getRekapMatrix($bulan, $tahun, $lowonganId);
 
     $pdf = Pdf::loadView('admin.reports.attendance.pdf', [
       'dates'     => $data['header_dates'],
       'rekapData' => $data['data'],
       'bulanNama' => $data['bulan_nama'],
       'tahun'     => $data['tahun'],
-    ])->setPaper('a4', 'landscape'); // Landscape agar muat tanggal 1-31
+    ])->setPaper('a4', 'landscape');
 
     $fileName = 'Rekap_Absensi_' . $data['bulan_nama'] . '_' . $tahun . '.pdf';
-
     return $pdf->download($fileName);
   }
 }

@@ -5,24 +5,40 @@
   {{-- ================================================================= --}}
   @php
   $user = auth()->user();
-  // Ambil lamaran TERAKHIR (Latest)
   $lamaran = \App\Models\Lamaran::where('pengguna_id', $user->id)->latest()->first();
 
   $status = $lamaran ? $lamaran->status : null;
 
-  // Definisi State (Keadaan)
-  $isAktif = ($status === 'diterima'); // Sedang Magang
+  // --- State User ---
+  // Pastikan string 'pending' sesuai dengan value di database Anda (misal: 'menunggu_verifikasi' atau 'pending')
+  $isPending = ($status === 'pending' || $status === 'menunggu_verifikasi');
+  $isAktif = ($status === 'diterima'); // Sedang PKL
   $isSelesai = ($status === 'selesai'); // Alumni
   $isBerhenti = ($status === 'berhenti'); // Drop Out
 
-  // Siapa yang boleh mencari lowongan?
-  // Semua orang KECUALI yang sedang aktif magang.
-  // Alumni & Drop Out boleh cari lagi (untuk re-apply).
-  $canSearchJob = !$isAktif;
+  // --- Logic Menu ---
+
+  // 1. Cari Lowongan:
+  // Muncul jika TIDAK sedang aktif DAN TIDAK sedang menunggu hasil (pending)
+  // Jadi kalau pending, menu ini hilang (sisa Dashboard saja)
+  $canSearchJob = (!$isAktif && !$isPending);
+
+  // 2. Menu Absen:
+  // Muncul jika Aktif DAN Tanggal belum lewat
+  $showMenuAbsen = false;
+  if ($isAktif && $lamaran->tgl_selesai_resmi) {
+  $hariIni = \Carbon\Carbon::now()->startOfDay();
+  $tglSelesai = \Carbon\Carbon::parse($lamaran->tgl_selesai_resmi)->endOfDay();
+  $showMenuAbsen = $hariIni->lte($tglSelesai);
+  }
+
+  // 3. Menu Riwayat:
+  // Muncul untuk peserta Aktif, Alumni (Selesai), ATAU Berhenti
+  $showRiwayat = ($isAktif || $isSelesai || $isBerhenti);
   @endphp
 
   {{-- ================================================================= --}}
-  {{-- MENU UTAMA (SELALU MUNCUL) --}}
+  {{-- A. DASHBOARD (UMUM - SELALU MUNCUL) --}}
   {{-- ================================================================= --}}
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('peserta.dashboard') ? 'active' : 'text-dark' }}"
@@ -32,67 +48,62 @@
   </li>
 
   {{-- ================================================================= --}}
-  {{-- GROUP: PENCARIAN LOWONGAN --}}
-  {{-- Muncul jika: Belum Punya, Pending, Ditolak, Selesai, atau Berhenti --}}
-  {{-- Hilang jika: Sedang Aktif (Diterima) --}}
+  {{-- B. BURSA PKL (PENCARIAN) --}}
   {{-- ================================================================= --}}
+  {{-- Menu ini akan HILANG jika user sedang pending atau sudah diterima --}}
   @if($canSearchJob)
   <li class="nav-heading px-3 mt-3 mb-1 text-muted text-uppercase small">
-    Bursa Magang
+    Bursa PKL
   </li>
-
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('guest.home') ? 'active' : 'text-dark' }}"
-      href="{{ route('guest.home') }}">
+    <a class="nav-link {{ request()->routeIs('peserta.lowongan.*') ? 'active' : 'text-dark' }}"
+      href="{{ route('peserta.lowongan.index') }}">
       <i class="fas fa-search fa-fw me-2"></i> Cari Lowongan
     </a>
   </li>
   @endif
 
   {{-- ================================================================= --}}
-  {{-- GROUP: AKTIVITAS HARIAN (HANYA SAAT AKTIF) --}}
+  {{-- C. AKTIVITAS (ACTION) - HANYA SAAT AKTIF --}}
   {{-- ================================================================= --}}
   @if($isAktif)
   <li class="nav-heading px-3 mt-3 mb-1 text-muted text-uppercase small">
-    Aktivitas Magang
+    Aktivitas Harian
   </li>
 
-  {{-- Menu Absensi (Biasanya Check-in ada di Dashboard, ini ke Riwayat) --}}
+  {{-- 1. Input Absen --}}
+  @if($showMenuAbsen)
   <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('presensi.riwayat') ? 'active' : 'text-dark' }}"
-      href="{{ route('presensi.riwayat') }}">
-      <i class="fas fa-fingerprint fa-fw me-2"></i> Riwayat Kehadiran
+    <a class="nav-link {{ request()->routeIs('presensi.index') ? 'active' : 'text-dark' }}"
+      href="{{ route('presensi.index') }}">
+      <i class="fas fa-clock fa-fw me-2"></i> Presensi Harian
     </a>
   </li>
+  @endif
 
-  {{-- Menu Pengajuan Izin --}}
+  {{-- 2. Input Izin --}}
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('izin.*') ? 'active' : 'text-dark' }}"
       href="{{ route('izin.index') }}">
-      <i class="fas fa-envelope-open-text fa-fw me-2"></i> Pengajuan Izin
+      <i class="fas fa-envelope-open-text fa-fw me-2"></i> Pengajuan Izin/Sakit
     </a>
   </li>
   @endif
 
   {{-- ================================================================= --}}
-  {{-- GROUP: ARSIP & DOKUMEN (HANYA ALUMNI / SELESAI) --}}
+  {{-- D. DATA & RIWAYAT (REPORT) - AKTIF, ALUMNI & BERHENTI --}}
   {{-- ================================================================= --}}
-  @if($isSelesai)
+  @if($showRiwayat)
   <li class="nav-heading px-3 mt-3 mb-1 text-muted text-uppercase small">
-    Arsip & Dokumen
+    Riwayat
   </li>
 
-  {{-- Alumni boleh lihat riwayat kehadiran masa lalu (Read Only) --}}
   <li class="nav-item">
     <a class="nav-link {{ request()->routeIs('presensi.riwayat') ? 'active' : 'text-dark' }}"
       href="{{ route('presensi.riwayat') }}">
-      <i class="fas fa-history fa-fw me-2"></i> Arsip Kehadiran
+      <i class="fas fa-history fa-fw me-2"></i> Riwayat Presensi
     </a>
   </li>
-
-  {{-- Fitur Download Sertifikat --}}
   @endif
-
-
 
 </ul>

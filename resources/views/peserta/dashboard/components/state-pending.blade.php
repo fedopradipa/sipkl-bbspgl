@@ -9,7 +9,7 @@
     <h4 class="fw-bold text-dark">Lamaran Sedang Diproses</h4>
     <p class="text-muted">
       Lamaran Anda untuk posisi
-      <span class="badge bg-primary">{{ $lamaran->lowongan->judul }}</span>
+      <span class="badge bg-primary">{{ $lamaran->lowongan->posisi }}</span>
       sedang diverifikasi.
     </p>
     <button class="btn btn-warning px-4 fw-bold rounded-pill text-white shadow-sm" disabled>

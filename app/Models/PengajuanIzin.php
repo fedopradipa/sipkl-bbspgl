@@ -16,7 +16,7 @@ class PengajuanIzin extends Model
         'jenis_izin',
         'tanggal_izin',
         'alasan',
-        'bukti_foto',
+        'bukti_lampiran',
         'status',
         'catatan_admin'
     ];

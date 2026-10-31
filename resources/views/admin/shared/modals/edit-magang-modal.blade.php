@@ -1,10 +1,10 @@
-{{-- MODAL SHARED: EDIT / APPROVE MAGANG --}}
+{{-- MODAL SHARED: EDIT / APPROVE PKL --}}
 <div class="modal fade" id="editMagangModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       {{-- Header akan berubah warna via JS --}}
       <div class="modal-header bg-warning text-dark bg-opacity-25">
-        <h5 class="modal-title fw-bold"><i class="fas fa-edit me-2"></i>Edit Data Magang</h5>
+        <h5 class="modal-title fw-bold"><i class="fas fa-edit me-2"></i>Edit Data PKL</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
@@ -16,7 +16,7 @@
 
         <div class="modal-body">
           <p class="text-muted small mb-3" id="modalDescription">
-            Silakan lengkapi data resmi magang di bawah ini.
+            Silakan lengkapi data resmi PKL di bawah ini.
           </p>
 
           {{-- 1. Pilih Pembimbing --}}
@@ -105,8 +105,8 @@
         } else {
           // MODE EDIT (Kuning/Warning)
           modalHeader.classList.add('bg-warning', 'text-dark', 'bg-opacity-25');
-          modalTitle.innerHTML = '<i class="fas fa-edit me-2"></i>Edit Data Magang';
-          modalDesc.textContent = "Ubah data resmi pembimbing atau jadwal magang.";
+          modalTitle.innerHTML = '<i class="fas fa-edit me-2"></i>Edit Data PKL';
+          modalDesc.textContent = "Ubah data resmi pembimbing atau jadwal PKL.";
           submitBtn.innerText = 'Simpan Perubahan';
           submitBtn.classList.add('btn-primary');
         }

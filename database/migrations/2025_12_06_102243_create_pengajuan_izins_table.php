@@ -24,7 +24,7 @@ return new class extends Migration
             $table->json('tanggal_izin');
 
             $table->text('alasan');
-            $table->string('bukti_foto')->nullable();
+            $table->string('bukti_lampiran')->nullable();
             $table->enum('status', ['pending', 'disetujui', 'ditolak'])->default('pending');
             $table->text('catatan_admin')->nullable();
             $table->timestamps();

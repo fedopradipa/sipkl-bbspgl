@@ -7,13 +7,13 @@ $isExpired = $now->greaterThan($endDate);
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
 
-  {{-- BAGIAN KIRI: Tombol Kembali & Judul --}}
+  {{-- BAGIAN KIRI: Tombol Kembali & posisi --}}
   <div>
     <a href="{{ route('admin.peserta_aktif.index') }}" class="text-decoration-none text-muted small mb-1 d-inline-block hover-arrow">
       <i class="fas fa-arrow-left me-1"></i> Kembali ke Daftar Peserta
     </a>
     <h4 class="fw-bold text-dark m-0">
-      Detail Peserta Magang
+      Detail Peserta PKL
     </h4>
   </div>
 
@@ -23,7 +23,7 @@ $isExpired = $now->greaterThan($endDate);
     {{-- 1. Status Badge (Lebih Modern dengan Border) --}}
     @if($isExpired)
     <div class="badge bg-danger-subtle text-danger border border-danger px-3 py-2 rounded-pill d-flex align-items-center">
-      <i class="fas fa-exclamation-circle me-2"></i> Masa Magang Habis
+      <i class="fas fa-exclamation-circle me-2"></i> Masa PKL Habis
     </div>
     @else
     <div class="badge bg-success-subtle text-success border border-success px-3 py-2 rounded-pill d-flex align-items-center">

@@ -21,16 +21,23 @@
           <select name="lamaran_id" id="create_lamaran_id" class="form-select" required>
             <option value="">-- Pilih Peserta --</option>
             @foreach($pesertaAktif as $p)
-            <option value="{{ $p->id }}">{{ $p->pengguna->name }} ({{ $p->lowongan->divisi }})</option>
+            <option value="{{ $p->id }}">
+              {{ $p->pengguna->name }} ({{ $p->lowongan->posisi }})
+            </option>
             @endforeach
           </select>
-          {{-- Hidden input untuk memastikan value terkirim saat select didisable secara visual --}}
         </div>
 
-        {{-- 2. INPUT TANGGAL (Auto-Lock jika dari tabel) --}}
+        {{-- 2. INPUT TANGGAL (mengikuti filter halaman, tidak bisa diedit) --}}
         <div class="mb-3">
           <label class="form-label fw-bold small text-uppercase text-muted">Tanggal</label>
-          <input type="date" name="tanggal" id="create_tanggal" class="form-control" value="{{ date('Y-m-d') }}" required>
+
+          {{-- nilai yang dikirim ke controller --}}
+          <input type="hidden" name="tanggal" id="create_tanggal_hidden" value="{{ $tanggal ?? date('Y-m-d') }}">
+
+          {{-- hanya tampilan (dikunci) --}}
+          <input type="date" id="create_tanggal" class="form-control"
+            value="{{ $tanggal ?? date('Y-m-d') }}" disabled>
         </div>
 
         <hr class="border-secondary opacity-10 my-4">
@@ -40,21 +47,18 @@
           <label class="form-label fw-bold small text-uppercase text-muted">Status Kehadiran</label>
           <select name="status" id="create_status" class="form-select bg-light border-primary" required>
             <option value="hadir" selected>Hadir (Masuk Kerja)</option>
+            <option value="terlambat">Terlambat</option>
             <option value="sakit">Sakit</option>
             <option value="izin">Izin</option>
             <option value="alpha">Alpha (Tanpa Keterangan)</option>
           </select>
         </div>
 
-        {{-- 4. KONTAINER JAM (Hanya Muncul jika HADIR) --}}
+        {{-- 4. KONTAINER JAM (Muncul jika HADIR/TERLAMBAT) --}}
         <div class="row g-2" id="jamContainer">
           <div class="col-6">
             <label class="form-label small">Jam Masuk <span class="text-danger">*</span></label>
             <input type="time" name="jam_masuk" id="create_masuk" class="form-control" value="08:00">
-          </div>
-          <div class="col-6">
-            <label class="form-label small">Jam Pulang</label>
-            <input type="time" name="jam_pulang" id="create_pulang" class="form-control">
           </div>
         </div>
 
@@ -67,7 +71,6 @@
             <i class="fas fa-magic me-1"></i> Jika dikosongkan, sistem akan mengisi otomatis: "Diinput manual oleh Admin (Sakit/Izin)".
           </div>
         </div>
-
       </div>
 
       <div class="modal-footer bg-light">
@@ -87,17 +90,19 @@
       // Definisi Elemen
       const elPeserta = document.getElementById('create_lamaran_id');
       const elTanggal = document.getElementById('create_tanggal');
+      const elTanggalHidden = document.getElementById('create_tanggal_hidden');
       const elStatus = document.getElementById('create_status');
       const elJamContainer = document.getElementById('jamContainer');
       const elNoteContainer = document.getElementById('noteContainer');
       const elJamMasuk = document.getElementById('create_masuk');
       const elModalTitle = document.getElementById('modalTitle');
+      const elCatatan = document.getElementById('create_catatan');
 
       // 1. Logic Ganti Tampilan Berdasarkan Status
       function toggleStatusUI() {
         const status = elStatus.value;
 
-        if (status === 'hadir') {
+        if (status === 'hadir' || status === 'terlambat') {
           // Tampilkan Jam, Sembunyikan Catatan
           elJamContainer.style.display = 'flex';
           elNoteContainer.style.display = 'none';
@@ -110,11 +115,12 @@
 
           // Reset Jam agar bersih saat disubmit
           elJamMasuk.value = '';
-          document.getElementById('create_pulang').value = '';
 
-          // Otomatis isi catatan jika Alpha 
+          // Placeholder khusus jika Alpha
           if (status === 'alpha') {
-            document.getElementById('create_catatan').placeholder = "Tanpa keterangan...";
+            elCatatan.placeholder = "Tanpa keterangan...";
+          } else {
+            elCatatan.placeholder = "Contoh: Sakit demam, ada surat dokter...";
           }
         }
       }
@@ -124,36 +130,35 @@
         const btn = event.relatedTarget;
 
         // Ambil data dari tombol (jika ada)
-        const dataId = btn.getAttribute('data-lamaran-id');
-        const dataTanggal = "{{ $tanggal ?? date('Y-m-d') }}"; // Ambil dari Controller variable $tanggal
+        const dataId = btn ? btn.getAttribute('data-lamaran-id') : null;
+
+        // Tanggal selalu mengikuti filter halaman
+        const dataTanggal = "{{ $tanggal ?? date('Y-m-d') }}";
+        elTanggal.value = dataTanggal;
+        elTanggalHidden.value = dataTanggal;
 
         if (dataId) {
-          // === MODE: INPUT DARI TABEL (Contextual Input) ===
+          // MODE: INPUT DARI TABEL
           elModalTitle.innerText = "Input Kehadiran Peserta";
 
           // Isi & Kunci Peserta
           elPeserta.value = dataId;
-          elPeserta.style.pointerEvents = 'none'; // User tidak bisa klik
-          elPeserta.style.backgroundColor = '#e9ecef'; // Visual abu-abu (Readonly look)
-
-          // Isi & Kunci Tanggal
-          elTanggal.value = dataTanggal;
-          elTanggal.readOnly = true;
+          elPeserta.style.pointerEvents = 'none';
+          elPeserta.style.backgroundColor = '#e9ecef';
         } else {
-          // === MODE: INPUT MANUAL UMUM ===
+          // MODE: INPUT MANUAL UMUM
           elModalTitle.innerText = "Input Absen Manual";
 
           // Reset & Buka Kunci
           elPeserta.value = "";
           elPeserta.style.pointerEvents = 'auto';
           elPeserta.style.backgroundColor = '#fff';
-
-          elTanggal.value = "{{ date('Y-m-d') }}";
-          elTanggal.readOnly = false;
         }
 
-        // Reset Status ke Default (Hadir)
+        // Reset Status ke Default (Hadir) + reset field
         elStatus.value = 'hadir';
+        elJamMasuk.value = '08:00';
+        elCatatan.value = '';
         toggleStatusUI();
       });
 

@@ -29,7 +29,7 @@
       <option value="">-- Semua Posisi --</option>
       @foreach($lowongans as $l)
       <option value="{{ $l->id }}" {{ request('lowongan_id') == $l->id ? 'selected' : '' }}>
-        {{ $l->judul }}
+        {{ $l->posisi }}
       </option>
       @endforeach
     </select>

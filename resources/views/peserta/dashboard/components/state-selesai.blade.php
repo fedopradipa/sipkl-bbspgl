@@ -29,25 +29,11 @@
         <i class="fas fa-archive me-2 text-secondary"></i> Arsip Dokumen Anda
       </div>
       <div class="list-group list-group-flush">
-
-        {{-- Link ke Laporan Akhir yang sudah diupload --}}
-        @if($lamaran->path_laporan_akhir)
+        {{-- Link ke Riwayat Presensi --}}
         <div class="list-group-item d-flex justify-content-between align-items-center py-3">
           <div>
-            <div class="fw-bold text-dark">Laporan Akhir Magang</div>
-            <div class="small text-muted">Diverifikasi pada {{ $lamaran->updated_at->format('d M Y') }}</div>
-          </div>
-          <a href="{{ asset('storage/laporan_akhir/' . $lamaran->path_laporan_akhir) }}" target="_blank" class="btn btn-sm btn-light border">
-            <i class="fas fa-eye me-1"></i> Lihat
-          </a>
-        </div>
-        @endif
-
-        {{-- Link ke Riwayat Absensi --}}
-        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
-          <div>
-            <div class="fw-bold text-dark">Riwayat Kehadiran</div>
-            <div class="small text-muted">Rekapitulasi seluruh absensi selama magang.</div>
+            <div class="fw-bold text-dark">Riwayat Presensi</div>
+            <div class="small text-muted">Rekapitulasi seluruh Presensi selama PKL.</div>
           </div>
           <a href="{{ route('presensi.riwayat') }}" class="btn btn-sm btn-light border">
             <i class="fas fa-list-alt me-1"></i> Buka

@@ -10,18 +10,11 @@
     </div>
     <div class="card-body">
 
-        {{-- =================================================== --}}
         {{-- 1. INFORMASI DASAR --}}
-        {{-- =================================================== --}}
         <div class="row">
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Judul Lowongan</label>
-                <input type="text" class="form-control bg-light" value="{{ $lowongan->judul }}" disabled>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Divisi</label>
-                <input type="text" class="form-control bg-light" value="{{ $lowongan->divisi }}" disabled>
+            <div class="col-md-12 mb-3">
+                <label class="form-label fw-bold">posisi Lowongan</label>
+                <input type="text" class="form-control bg-light" value="{{ $lowongan->posisi }}" disabled>
             </div>
         </div>
 
@@ -31,19 +24,13 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-12 mb-3">
                 <label class="form-label fw-bold">Jurusan Terkait</label>
                 <input type="text" class="form-control bg-light" value="{{ $lowongan->jurusan_terkait ?? '-' }}" disabled>
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="form-label fw-bold">Fasilitas</label>
-                <input type="text" class="form-control bg-light" value="{{ $lowongan->fasilitas ?? '-' }}" disabled>
-            </div>
         </div>
 
-        {{-- =================================================== --}}
-        {{-- 2. PERIODE PENDAFTARAN --}}
-        {{-- =================================================== --}}
+        {{-- 2. PERIODE --}}
         <fieldset class="border p-3 mb-4 rounded bg-light">
             <legend class="w-auto h6 fw-bold text-uppercase text-secondary px-2"><i class="far fa-calendar-alt me-1"></i> Periode & Durasi</legend>
             <div class="row">
@@ -62,15 +49,12 @@
             </div>
         </fieldset>
 
-        {{-- =================================================== --}}
         {{-- 3. ATURAN KERJA --}}
-        {{-- =================================================== --}}
         <fieldset class="border p-3 mb-4 rounded bg-light">
             <legend class="w-auto h6 fw-bold text-uppercase text-secondary px-2"><i class="fas fa-clock me-1"></i> Aturan & Jadwal Kerja</legend>
 
-            {{-- A. TIPE JADWAL --}}
             <div class="mb-3">
-                <label class="form-label fw-bold">Tipe Jadwal Magang</label>
+                <label class="form-label fw-bold">Tipe Jadwal PKL</label>
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" disabled {{ $lowongan->is_fulltime ? 'checked' : '' }}>
                     <label class="form-check-label fw-bold {{ $lowongan->is_fulltime ? 'text-primary' : 'text-secondary' }}">
@@ -79,15 +63,13 @@
                 </div>
             </div>
 
-            {{-- B. HARI KERJA (Hanya tampil jika Fulltime) --}}
             @if($lowongan->is_fulltime)
             <div class="mb-3 p-3 border rounded bg-white">
                 <label class="form-label small text-uppercase text-secondary fw-bold mb-2">Hari Kerja Wajib:</label>
                 <div class="d-flex flex-wrap gap-3">
                     @php
                     $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-                    // Pastikan working_days di-cast ke array di Model
-                    $savedDays = $lowongan->working_days ?? [];
+                    $savedDays = $lowongan->hari_kerja ?? [];
                     @endphp
                     @foreach($days as $day)
                     <div class="form-check">
@@ -101,41 +83,34 @@
             </div>
             @endif
 
-            {{-- C. JAM KERJA --}}
+            {{-- JAM KERJA (tanpa toleransi) --}}
             <div class="row mt-3">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Jam Masuk Standar</label>
-                    <input type="time" class="form-control" value="{{ \Carbon\Carbon::parse($lowongan->jam_masuk_standar)->format('H:i') }}" disabled>
-                    <div class="form-text">Acuan status "Terlambat"</div>
+                    <label class="form-label fw-bold text-success">Jam Buka Absen</label>
+                    <input type="time" class="form-control" value="{{ \Carbon\Carbon::parse($lowongan->jam_buka_absen)->format('H:i') }}" disabled>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-danger">Jam Tutup Absen</label>
+                    <input type="time" class="form-control" value="{{ \Carbon\Carbon::parse($lowongan->jam_tutup_absen)->format('H:i') }}" disabled>
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Jam Pulang Standar</label>
-                    <input type="time" class="form-control" value="{{ \Carbon\Carbon::parse($lowongan->jam_pulang_standar)->format('H:i') }}" disabled>
-                    <div class="form-text">Acuan status "Auto-Close"</div>
+                    <label class="form-label fw-bold">Jam Masuk Resmi</label>
+                    <input type="time" class="form-control" value="{{ \Carbon\Carbon::parse($lowongan->jam_masuk_standar)->format('H:i') }}" disabled>
                 </div>
+
             </div>
         </fieldset>
 
-        {{-- =================================================== --}}
-        {{-- 4. TOMBOL AKSI --}}
-        {{-- =================================================== --}}
         <div class="d-flex gap-2">
-            <a href="{{ route('lowongan.index') }}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left me-1"></i> Kembali
-            </a>
-
-            <a href="{{ route('lowongan.edit', $lowongan->id) }}" class="btn btn-warning">
-                <i class="fas fa-edit me-1"></i> Edit
-            </a>
-
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                <i class="fas fa-trash me-1"></i> Hapus
-            </button>
+            <a href="{{ route('lowongan.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i> Kembali</a>
+            <a href="{{ route('lowongan.edit', $lowongan->id) }}" class="btn btn-warning"><i class="fas fa-edit me-1"></i> Edit</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fas fa-trash me-1"></i> Hapus</button>
         </div>
     </div>
 </div>
 
+{{-- MODAL HAPUS --}}
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -144,15 +119,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Apakah Anda yakin ingin menghapus lowongan <strong>{{ $lowongan->judul }}</strong>?
-                <br><br>
+                Apakah Anda yakin ingin menghapus lowongan <strong>{{ $lowongan->posisi }}</strong>? <br><br>
                 <small class="text-danger">Tindakan ini tidak dapat dibatalkan.</small>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                 <form action="{{ route('lowongan.destroy', $lowongan->id) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
+                    @csrf @method('DELETE')
                     <button type="submit" class="btn btn-danger">Hapus Permanen</button>
                 </form>
             </div>

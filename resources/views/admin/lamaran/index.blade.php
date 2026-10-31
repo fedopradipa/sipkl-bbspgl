@@ -6,7 +6,7 @@
   {{-- Header Halaman --}}
   <div class="mb-4">
     <h4 class="fw-bold text-primary mb-1">Verifikasi Lamaran</h4>
-    <p class="text-muted small mb-0">Kelola dan seleksi calon peserta magang yang masuk.</p>
+    <p class="text-muted small mb-0">Kelola dan seleksi calon peserta PKL yang masuk.</p>
   </div>
 
   {{-- Filter Bar --}}
@@ -50,7 +50,7 @@
 
             {{-- KOLOM 2: POSISI --}}
             <td>
-              <div class="fw-bold text-dark mb-1">{{ $lamaran->lowongan->judul }}</div>
+              <div class="fw-bold text-dark mb-1">{{ $lamaran->lowongan->posisi }}</div>
               <div class="d-flex align-items-center text-muted small">
                 <div class="badge bg-light text-secondary border me-2">
                   <i class="far fa-calendar-alt me-1"></i> Usulan
@@ -77,43 +77,6 @@
                   title="Lihat Detail">
                   <i class="fas fa-eye"></i>
                 </a>
-
-                {{-- 2. Terima Peserta (Hanya jika belum diterima) --}}
-                @if($lamaran->status != 'diterima')
-                <button type="button" class="btn btn-success btn-sm"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editMagangModal"
-                  data-mode="approve"
-                  data-lamaran-id="{{ $lamaran->id }}"
-                  data-start="{{ $lamaran->tgl_mulai_usulan->format('Y-m-d') }}"
-                  data-end="{{ $lamaran->tgl_selesai_usulan->format('Y-m-d') }}"
-                  data-days="{{ json_encode($lamaran->hari_kerja_usulan) }}"
-                  data-pembimbing-id=""
-                  title="Terima Peserta">
-                  <i class="fas fa-check"></i>
-                </button>
-                @endif
-
-                {{-- 3. Tolak (Hanya jika belum final) --}}
-                @if(!in_array($lamaran->status, ['ditolak', 'diterima']))
-                <button type="button" class="btn btn-warning btn-sm text-dark"
-                  data-bs-toggle="modal"
-                  data-bs-target="#rejectModal"
-                  data-lamaran-id="{{ $lamaran->id }}"
-                  title="Tolak Lamaran">
-                  <i class="fas fa-times"></i>
-                </button>
-                @endif
-
-                {{-- 4. Hapus --}}
-                <form action="{{ route('admin.lamaran.destroy', $lamaran->id) }}" method="POST" class="d-inline">
-                  @csrf @method('DELETE')
-                  <button type="submit" class="btn btn-danger btn-sm"
-                    onclick="return confirm('Hapus permanen data lamaran ini?');"
-                    title="Hapus Data">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </form>
 
               </div>
             </td>

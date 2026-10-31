@@ -12,9 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Jalankan setiap hari pukul 01:00 pagi
-        // Memproses data hari sebelumnya
-        $schedule->command('presensi:autoclose')->dailyAt('07:45');
+
+        $schedule->command('presensi:auto-alpha')->everyMinute();
     }
 
     /**
