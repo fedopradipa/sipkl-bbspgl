@@ -153,8 +153,18 @@ class RekapPresensiService
           continue;
         }
 
-        // e) default belum/alpha
-        if ($d->gt($today)) {
+        // e) Tentukan Belum Absen / Alfa untuk tanggal tanpa catatan.
+        // Pada hari ini, peserta tidak dihitung Alfa sebelum jam tutup presensi.
+        // Jika jam tutup tidak tersedia, jangan menyimpulkan Alfa untuk hari ini.
+        $belumTutupHariIni = false;
+        if ($d->isSameDay($today)) {
+          $jamTutup = $lamaran->lowongan?->jam_tutup_absen;
+          $belumTutupHariIni = !$jamTutup || Carbon::now()->lt(
+            $today->copy()->setTimeFrom(Carbon::parse($jamTutup))
+          );
+        }
+
+        if ($d->gt($today) || $belumTutupHariIni) {
           $log['status'] = 'belum';
         } else {
           $log['status'] = 'alpha';
